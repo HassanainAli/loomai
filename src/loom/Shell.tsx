@@ -10,11 +10,21 @@ export function Shell({ children }: { children: ReactNode }) {
   );
 }
 
-export function Brand({ className = "" }: { className?: string }) {
+export function Brand({
+  className = "",
+  style,
+}: {
+  className?: string;
+  style?: React.CSSProperties;
+}) {
   return (
     <h1
       className={`font-black tracking-tighter lowercase text-white ${className}`}
-      style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.05em" }}
+      style={{
+        fontFamily: "Inter, sans-serif",
+        letterSpacing: "-0.05em",
+        ...style,
+      }}
     >
       loom
       <span
