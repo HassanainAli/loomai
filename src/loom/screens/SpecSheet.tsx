@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Lock, Camera, Plus } from "lucide-react";
 import { PrimaryButton } from "../Shell";
+import { CURRENT_USER_SPEC } from "../types";
 
 export function SpecSheet({
   onNext,
@@ -28,7 +29,7 @@ export function SpecSheet({
           Step 4 of 4
         </p>
         <h2 className="text-3xl font-black tracking-tight">
-          Reviewing your specifications.
+          Spec Sheet
         </h2>
       </div>
 
@@ -81,6 +82,37 @@ export function SpecSheet({
               Engine will strictly filter matches outside your immediate area.
             </p>
           </div>
+        </div>
+      </div>
+
+      {/* Identity Specs */}
+      <div className="bg-zinc-950 border-b border-zinc-800 px-8 py-6 font-mono">
+        <div className="flex items-center gap-2 mb-1">
+          <Lock className="w-3.5 h-3.5 text-[#FACC15]" />
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15]">
+            Identity Specs
+          </p>
+        </div>
+        <p className="text-xs text-zinc-500 mb-5">
+          Read-only system parameters. Locked at signup.
+        </p>
+
+        <div className="space-y-3">
+          {[
+            { k: "Name", v: CURRENT_USER_SPEC.name },
+            { k: "Gender", v: CURRENT_USER_SPEC.gender },
+            { k: "Interested In", v: CURRENT_USER_SPEC.seeking },
+          ].map(({ k, v }) => (
+            <div
+              key={k}
+              className="flex items-center justify-between border border-zinc-800 bg-black rounded-lg px-3 py-2.5"
+            >
+              <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                {k}
+              </span>
+              <span className="text-sm text-[#FACC15] font-mono">{v}</span>
+            </div>
+          ))}
         </div>
       </div>
 
