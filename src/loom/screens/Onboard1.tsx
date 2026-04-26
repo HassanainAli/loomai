@@ -18,10 +18,10 @@ export function Onboard1({
   ];
 
   return (
-    <div className="flex flex-col h-full p-8 pt-12 overflow-y-auto">
+    <div className="flex flex-col h-full p-8 pt-8 overflow-y-auto">
       <button
         onClick={onBack}
-        className="absolute top-5 left-5 p-2 text-foreground/70 hover:text-foreground transition-colors"
+        className="-ml-2 mb-4 p-2 w-9 text-foreground/70 hover:text-foreground transition-colors"
         aria-label="Back"
       >
         <ArrowLeft className="w-5 h-5" />
