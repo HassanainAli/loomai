@@ -22,14 +22,9 @@ export function Profile({
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-3 mb-1">
-              <p className="text-[10px] font-black uppercase tracking-widest">
-                Why we matched you
-              </p>
-              <p className="text-[10px] font-black uppercase tracking-widest shrink-0">
-                Match Strength: 94%
-              </p>
-            </div>
+            <p className="text-[10px] font-black uppercase tracking-widest mb-1">
+              Why we matched you
+            </p>
             <p className="text-sm font-semibold leading-snug">
               {match.whyMatched}
             </p>
@@ -108,13 +103,13 @@ export function Profile({
         <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5 flex gap-4">
           <button
             onClick={onPass}
-            className="flex-1 bg-secondary border-2 border-border rounded-2xl py-4 flex items-center justify-center hover:border-foreground transition-colors"
+            className="flex-1 bg-zinc-900 border-2 border-rose-900 text-rose-500 rounded-2xl py-4 flex items-center justify-center hover:border-rose-700 transition-colors"
           >
             <X className="w-7 h-7" strokeWidth={2.5} />
           </button>
           <button
             onClick={onGreenLight}
-            className="flex-[2] bg-primary text-primary-foreground rounded-2xl py-4 flex items-center justify-center font-bold gap-2 active:scale-[0.98] transition-transform"
+            className="flex-[2] bg-emerald-400 text-black rounded-2xl py-4 flex items-center justify-center font-bold gap-2 active:scale-[0.98] transition-transform"
           >
             <Check className="w-7 h-7" strokeWidth={3} />
             <span className="text-sm">Green Light</span>
