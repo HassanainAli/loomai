@@ -10,9 +10,11 @@ interface Msg {
 
 export function Focus({
   match,
+  currentUserName,
   onEject,
 }: {
   match: Match;
+  currentUserName?: string;
   onEject: () => void;
 }) {
   const [messages, setMessages] = useState<Msg[]>([
@@ -35,7 +37,12 @@ export function Focus({
 
   if (showProfile) {
     return (
-      <Profile match={match} hideActions onBack={() => setShowProfile(false)} />
+      <Profile
+        match={match}
+        currentUserName={currentUserName}
+        hideActions
+        onBack={() => setShowProfile(false)}
+      />
     );
   }
 
