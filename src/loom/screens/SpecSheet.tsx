@@ -46,7 +46,7 @@ export function SpecSheet({
           </p>
         </div>
         <p className="text-xs text-zinc-500 mb-5">
-          Literal specs. For the AI's eyes only.
+          For the AI's eyes only.
         </p>
 
         <div className="grid grid-cols-2 gap-3 items-start">
