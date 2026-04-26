@@ -35,13 +35,22 @@ function Index() {
     <Shell>
       {screen === "auth" && <Auth onNext={() => setScreen("onboard1")} />}
       {screen === "onboard1" && (
-        <Onboard1 onNext={() => setScreen("onboard2")} />
+        <Onboard1
+          onNext={() => setScreen("onboard2")}
+          onBack={() => setScreen("auth")}
+        />
       )}
       {screen === "onboard2" && (
-        <Onboard2 onNext={() => setScreen("onboard3")} />
+        <Onboard2
+          onNext={() => setScreen("onboard3")}
+          onBack={() => setScreen("onboard1")}
+        />
       )}
       {screen === "onboard3" && (
-        <Onboard3 onNext={() => setScreen("dailyGate")} />
+        <Onboard3
+          onNext={() => setScreen("dailyGate")}
+          onBack={() => setScreen("onboard2")}
+        />
       )}
       {screen === "dailyGate" && (
         <DailyGate

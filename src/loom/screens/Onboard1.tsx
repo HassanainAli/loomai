@@ -1,7 +1,14 @@
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 
-export function Onboard1({ onNext }: { onNext: () => void }) {
+export function Onboard1({
+  onNext,
+  onBack,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+}) {
   const [intention, setIntention] = useState<string | null>(null);
   const [dealbreakers, setDealbreakers] = useState("");
 
@@ -12,6 +19,13 @@ export function Onboard1({ onNext }: { onNext: () => void }) {
 
   return (
     <div className="flex flex-col h-full p-8 pt-12 overflow-y-auto">
+      <button
+        onClick={onBack}
+        className="absolute top-5 left-5 p-2 text-foreground/70 hover:text-foreground transition-colors"
+        aria-label="Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
         Step 1 of 3
       </p>

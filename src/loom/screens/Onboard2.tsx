@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 
 const PROMPTS = [
@@ -7,12 +8,25 @@ const PROMPTS = [
   "What is a hill you are absolutely willing to die on?",
 ];
 
-export function Onboard2({ onNext }: { onNext: () => void }) {
+export function Onboard2({
+  onNext,
+  onBack,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+}) {
   const [answers, setAnswers] = useState(["", "", ""]);
   const allFilled = answers.every((a) => a.trim().length > 10);
 
   return (
     <div className="flex flex-col h-full p-8 pt-12 overflow-y-auto">
+      <button
+        onClick={onBack}
+        className="absolute top-5 left-5 p-2 text-foreground/70 hover:text-foreground transition-colors"
+        aria-label="Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
         Step 2 of 3
       </p>
