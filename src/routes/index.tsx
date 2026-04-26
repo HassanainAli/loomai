@@ -11,7 +11,8 @@ import { Anticipation } from "@/loom/screens/Anticipation";
 import { Queue } from "@/loom/screens/Queue";
 import { Profile } from "@/loom/screens/Profile";
 import { Focus } from "@/loom/screens/Focus";
-import type { Match, Screen } from "@/loom/types";
+import type { Match, Screen, UserSpec } from "@/loom/types";
+import { CURRENT_USER_SPEC } from "@/loom/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,6 +32,9 @@ function Index() {
   const [screen, setScreen] = useState<Screen>("auth");
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
   const [passStreak, setPassStreak] = useState(5); // demo: one more pass triggers recalibration
+  const [userSpec, setUserSpec] = useState<UserSpec>(CURRENT_USER_SPEC);
+  const updateUserSpec = (patch: Partial<UserSpec>) =>
+    setUserSpec((prev) => ({ ...prev, ...patch }));
 
   return (
     <Shell>
@@ -57,6 +61,8 @@ function Index() {
         <SpecSheet
           onNext={() => setScreen("dailyGate")}
           onBack={() => setScreen("onboard3")}
+          userSpec={userSpec}
+          onUpdateUserSpec={updateUserSpec}
         />
       )}
       {screen === "dailyGate" && (
@@ -82,6 +88,7 @@ function Index() {
       {screen === "profile" && activeMatch && (
         <Profile
           match={activeMatch}
+          userSpec={userSpec}
           onBack={() => setScreen("queue")}
           onPass={() => {
             setPassStreak((p) => p + 1);
