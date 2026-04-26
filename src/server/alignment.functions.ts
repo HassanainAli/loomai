@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import { GoogleGenAI } from "@google/genai";
 
 interface AlignmentInput {
   user: { pace: string; intention: string };
@@ -9,9 +10,13 @@ export const generateAlignmentSpec = createServerFn({ method: "POST" })
   .inputValidator((input: AlignmentInput) => input)
   .handler(async ({ data }) => {
     const apiKey = process.env.GEMINI_API_KEY;
+
     if (!apiKey) {
-      return { text: null, error: "GEMINI_API_KEY is not configured." };
+      console.error("[AlignmentEngine] API Key Missing from Environment");
+      return { text: null, error: "API Key Missing from Environment" };
     }
+
+    console.log("Gemma 4 Request Initiated for Project 652894558236");
 
     const systemInstruction =
       "You are the Loom Alignment Engine. Analyze the provided Spec Sheets for Pace and Intention. Generate a tactical, 2-sentence summary of their high-signal compatibility. Tone: Technical, intentional, Neon-Noir.";
@@ -25,43 +30,35 @@ Pace: ${data.match.pace}
 Intention: ${data.match.intention}`;
 
     const model = "gemma-4-31b-it";
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
     try {
-      console.log(`[AlignmentEngine] Calling Gemini API model=${model} for match=${data.match.name}`);
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemInstruction }] },
-          contents: [{ role: "user", parts: [{ text: userPrompt }] }],
-          generationConfig: { temperature: 0.7, maxOutputTokens: 256 },
-        }),
+      const ai = new GoogleGenAI({ apiKey });
+      console.log(`[AlignmentEngine] Calling Gemma model=${model} for match=${data.match.name}`);
+
+      // Gemma models on Gemini API don't support a separate system instruction —
+      // prepend it to the user prompt for compatibility.
+      const composedPrompt = `${systemInstruction}\n\n${userPrompt}`;
+
+      const response = await ai.models.generateContent({
+        model,
+        contents: composedPrompt,
+        config: {
+          temperature: 0.7,
+          maxOutputTokens: 256,
+        },
       });
 
-      console.log(`[AlignmentEngine] Gemini response status=${res.status}`);
+      const text = (response.text ?? "").trim();
+      console.log(`[AlignmentEngine] Gemma response received length=${text.length}`);
 
-      if (res.status === 429) {
-        return { text: null, error: "Rate limit reached. Try again in a moment." };
-      }
-      if (!res.ok) {
-        const t = await res.text();
-        console.error("[AlignmentEngine] Gemini API error:", res.status, t);
-        return { text: null, error: "Engine offline. Try again." };
-      }
-
-      const json = (await res.json()) as {
-        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-      };
-      const text =
-        json.candidates?.[0]?.content?.parts
-          ?.map((p) => p.text ?? "")
-          .join("")
-          .trim() ?? null;
       if (!text) return { text: null, error: "No response generated." };
       return { text, error: null };
-    } catch (err) {
-      console.error("[AlignmentEngine] Request failed:", err);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[AlignmentEngine] Request failed:", message);
+      if (/429|rate/i.test(message)) {
+        return { text: null, error: "Rate limit reached. Try again in a moment." };
+      }
       return { text: null, error: "Engine offline. Try again." };
     }
   });

@@ -199,7 +199,7 @@ export function Profile({
 
             <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
               <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
-                Engine · Gemini 2.5
+                Engine · Gemma 4 (31B)
               </p>
               <p className="text-[9px] font-mono uppercase tracking-widest text-fuchsia-400">
                 {match.name}
