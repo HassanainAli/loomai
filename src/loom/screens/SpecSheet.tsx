@@ -98,7 +98,7 @@ export function SpecSheet({
           </p>
         </div>
         <p className="text-xs text-zinc-500 mb-5">
-          System configuration. Confirm parameters before initialization.
+          Input your baseline specs for the engine sync.
         </p>
 
         <div className="space-y-3">
