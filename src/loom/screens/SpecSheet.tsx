@@ -122,8 +122,13 @@ export function SpecSheet({
               <select
                 value={userSpec.gender}
                 onChange={(e) => onUpdateUserSpec({ gender: e.target.value })}
-                className="w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono"
+                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono ${
+                  userSpec.gender ? "" : "italic opacity-60"
+                }`}
               >
+                <option value="" disabled>
+                  SELECT PARAMETER...
+                </option>
                 <option value="Man">Man</option>
                 <option value="Woman">Woman</option>
                 <option value="Non-Binary">Non-Binary</option>
@@ -140,8 +145,13 @@ export function SpecSheet({
               <select
                 value={userSpec.seeking}
                 onChange={(e) => onUpdateUserSpec({ seeking: e.target.value })}
-                className="w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono"
+                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono ${
+                  userSpec.seeking ? "" : "italic opacity-60"
+                }`}
               >
+                <option value="" disabled>
+                  SELECT PARAMETER...
+                </option>
                 <option value="Men">Men</option>
                 <option value="Women">Women</option>
                 <option value="Everyone">Everyone</option>
