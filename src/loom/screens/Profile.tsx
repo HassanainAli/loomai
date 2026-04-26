@@ -1,5 +1,8 @@
-import { X, Check, ArrowLeft } from "lucide-react";
-import { Match } from "../types";
+import { useState } from "react";
+import { X, Check, ArrowLeft, Sparkles, Loader2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { Match, CURRENT_USER_SPEC } from "../types";
+import { generateAlignmentSpec } from "@/server/alignment.functions";
 
 export function Profile({
   match,
@@ -14,6 +17,33 @@ export function Profile({
   onBack: () => void;
   hideActions?: boolean;
 }) {
+  const generate = useServerFn(generateAlignmentSpec);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [spec, setSpec] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleViewAlignment = async () => {
+    setOpen(true);
+    if (spec || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await generate({
+        data: {
+          user: CURRENT_USER_SPEC,
+          match: { pace: match.pace, intention: match.intention, name: match.name },
+        },
+      });
+      if (res.error) setError(res.error);
+      else setSpec(res.text);
+    } catch {
+      setError("Engine offline. Try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto pb-32">
@@ -96,6 +126,15 @@ export function Profile({
               ))}
             </div>
           </div>
+
+          {/* View Alignment Spec CTA */}
+          <button
+            onClick={handleViewAlignment}
+            className="w-full mt-2 relative rounded-2xl border-2 border-[#FACC15] bg-black/40 px-5 py-4 flex items-center justify-center gap-2 text-[#FACC15] font-bold text-sm tracking-wider uppercase shadow-[0_0_24px_-4px_rgba(250,204,21,0.6)] hover:shadow-[0_0_36px_-2px_rgba(250,204,21,0.85)] transition-shadow"
+          >
+            <Sparkles className="w-4 h-4" />
+            View Alignment Spec
+          </button>
         </div>
       </div>
 
@@ -114,6 +153,59 @@ export function Profile({
             <Check className="w-7 h-7" strokeWidth={3} />
             <span className="text-sm">Green Light</span>
           </button>
+        </div>
+      )}
+
+      {open && (
+        <div
+          className="absolute inset-0 z-50 flex items-center justify-center p-6"
+          onClick={() => setOpen(false)}
+        >
+          {/* Magenta blur backdrop */}
+          <div className="absolute inset-0 backdrop-blur-2xl bg-fuchsia-900/30" />
+          <div
+            className="relative w-full max-w-sm rounded-3xl border border-[#FACC15]/40 bg-black/70 backdrop-blur-xl p-6 shadow-[0_0_60px_-10px_rgba(217,70,239,0.7)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#FACC15]">
+                Alignment Spec
+              </p>
+              <button
+                onClick={() => setOpen(false)}
+                className="text-zinc-400 hover:text-white transition-colors"
+                aria-label="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {loading && (
+              <div className="flex items-center gap-3 text-zinc-300 py-6">
+                <Loader2 className="w-4 h-4 animate-spin text-[#FACC15]" />
+                <span className="text-sm font-mono tracking-wider">Thinking…</span>
+              </div>
+            )}
+
+            {!loading && error && (
+              <p className="text-sm text-rose-400 font-mono py-2">{error}</p>
+            )}
+
+            {!loading && !error && spec && (
+              <p className="text-base text-zinc-100 leading-relaxed font-medium">
+                {spec}
+              </p>
+            )}
+
+            <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
+              <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
+                Engine · Gemini 2.5
+              </p>
+              <p className="text-[9px] font-mono uppercase tracking-widest text-fuchsia-400">
+                {match.name}
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>
