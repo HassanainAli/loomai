@@ -1,8 +1,15 @@
 import { useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 import { Balance } from "../types";
 
-export function Onboard3({ onNext }: { onNext: () => void }) {
+export function Onboard3({
+  onNext,
+  onBack,
+}: {
+  onNext: () => void;
+  onBack: () => void;
+}) {
   const [choice, setChoice] = useState<Balance>(null);
 
   const cards: { id: Balance; title: string; desc: string }[] = [
@@ -20,6 +27,13 @@ export function Onboard3({ onNext }: { onNext: () => void }) {
 
   return (
     <div className="flex flex-col h-full p-8 pt-12">
+      <button
+        onClick={onBack}
+        className="absolute top-5 left-5 p-2 text-foreground/70 hover:text-foreground transition-colors"
+        aria-label="Back"
+      >
+        <ArrowLeft className="w-5 h-5" />
+      </button>
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
         Step 3 of 3
       </p>

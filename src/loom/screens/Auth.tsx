@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Brand, PrimaryButton } from "../Shell";
+import { Brand } from "../Shell";
 
 export function Auth({ onNext }: { onNext: () => void }) {
   const [email, setEmail] = useState("");
@@ -15,15 +15,12 @@ export function Auth({ onNext }: { onNext: () => void }) {
   }
 
   return (
-    <div className="flex flex-col h-full p-8 pt-20">
-      <Brand className="text-5xl mb-3" />
-      <p className="text-muted-foreground text-sm mb-16">
-        Two matches. Once a day. No swiping.
-      </p>
+    <div className="flex flex-col items-center justify-center h-full px-8 text-center">
+      <Brand
+        style={{ fontSize: "5rem", fontWeight: 900 }}
+        className="mb-16 leading-none"
+      />
 
-      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-        University email
-      </label>
       <input
         type="email"
         value={email}
@@ -31,20 +28,22 @@ export function Auth({ onNext }: { onNext: () => void }) {
           setEmail(e.target.value);
           setError("");
         }}
+        onKeyDown={(e) => e.key === "Enter" && submit()}
         placeholder="you@university.edu"
-        className="w-full bg-secondary border border-border rounded-2xl px-5 py-4 text-base focus:outline-none focus:border-foreground transition-colors"
+        className="w-full max-w-xs bg-transparent border-0 border-b border-white/40 focus:border-white text-center text-base text-white placeholder:text-white/30 px-0 py-3 focus:outline-none transition-colors"
       />
       {error && (
-        <p className="text-sm mt-3 text-foreground font-medium">{error}</p>
+        <p className="text-xs mt-3 text-white/70 font-medium">{error}</p>
       )}
 
-      <div className="flex-1" />
-      <PrimaryButton onClick={submit} disabled={!email}>
+      <button
+        onClick={submit}
+        disabled={!email}
+        className="mt-10 px-8 py-2.5 rounded-full text-sm font-bold transition-all active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
+        style={{ backgroundColor: "#FACC15", color: "#000" }}
+      >
         Next
-      </PrimaryButton>
-      <p className="text-xs text-muted-foreground text-center mt-4">
-        We verify .edu addresses to keep Loom student-only.
-      </p>
+      </button>
     </div>
   );
 }
