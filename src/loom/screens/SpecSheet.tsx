@@ -10,7 +10,6 @@ export function SpecSheet({
   onBack: () => void;
 }) {
   const [height, setHeight] = useState("");
-  const [weight, setWeight] = useState("");
   const [hobbies, setHobbies] = useState("");
 
   return (
@@ -24,7 +23,7 @@ export function SpecSheet({
           <ArrowLeft className="w-5 h-5" />
         </button>
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-          Final Step
+          Step 4 of 4
         </p>
         <h2 className="text-3xl font-black tracking-tight">
           Reviewing your specifications.
@@ -43,39 +42,26 @@ export function SpecSheet({
           Literal specs. For the AI's eyes only.
         </p>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
-              Height
-            </label>
-            <input
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
-              placeholder='5&apos;10"'
-              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
-            />
-          </div>
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
-              Weight
-            </label>
-            <input
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              placeholder="160 lbs"
-              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
-            />
-          </div>
+        <div className="max-w-[50%]">
+          <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+            Height
+          </label>
+          <input
+            value={height}
+            onChange={(e) => setHeight(e.target.value)}
+            placeholder='5&apos;10"'
+            className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
+          />
         </div>
       </div>
 
       {/* Public Ledger */}
       <div className="px-8 py-6">
         <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-1">
-          Public Ledger
+          Public Profile
         </p>
         <p className="text-xs text-muted-foreground mb-5">
-          What your matches see. High-signal, low-noise.
+          What your matches see.
         </p>
 
         <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">
@@ -105,7 +91,7 @@ export function SpecSheet({
 
       <div className="flex-1 min-h-4" />
       <div className="p-8 pt-2">
-        <PrimaryButton onClick={onNext}>Finalize &amp; Lock</PrimaryButton>
+        <PrimaryButton onClick={onNext}>Complete Profile</PrimaryButton>
       </div>
     </div>
   );
