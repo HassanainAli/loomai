@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { ArrowLeft, Lock, Camera, Plus } from "lucide-react";
+import { ArrowLeft, Lock, Camera, Plus, ChevronDown } from "lucide-react";
 import { PrimaryButton } from "../Shell";
-import { CURRENT_USER_SPEC } from "../types";
+import { UserSpec } from "../types";
 
 export function SpecSheet({
   onNext,
   onBack,
+  userSpec,
+  onUpdateUserSpec,
 }: {
   onNext: () => void;
   onBack: () => void;
+  userSpec: UserSpec;
+  onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
 }) {
   const [height, setHeight] = useState("");
   const [proximity, setProximity] = useState(true);
@@ -94,25 +98,57 @@ export function SpecSheet({
           </p>
         </div>
         <p className="text-xs text-zinc-500 mb-5">
-          Read-only system parameters. Locked at signup.
+          System configuration. Confirm parameters before initialization.
         </p>
 
         <div className="space-y-3">
-          {[
-            { k: "Name", v: CURRENT_USER_SPEC.name },
-            { k: "Gender", v: CURRENT_USER_SPEC.gender },
-            { k: "Interested In", v: CURRENT_USER_SPEC.seeking },
-          ].map(({ k, v }) => (
-            <div
-              key={k}
-              className="flex items-center justify-between border border-zinc-800 bg-black rounded-lg px-3 py-2.5"
-            >
-              <span className="text-[10px] uppercase tracking-wider text-zinc-500">
-                {k}
-              </span>
-              <span className="text-sm text-[#FACC15] font-mono">{v}</span>
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Name
+            </label>
+            <input
+              value={userSpec.name}
+              onChange={(e) => onUpdateUserSpec({ name: e.target.value })}
+              placeholder="Your name"
+              className="w-full bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Gender
+            </label>
+            <div className="relative">
+              <select
+                value={userSpec.gender}
+                onChange={(e) => onUpdateUserSpec({ gender: e.target.value })}
+                className="w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono"
+              >
+                <option value="Man">Man</option>
+                <option value="Woman">Woman</option>
+                <option value="Non-Binary">Non-Binary</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
-          ))}
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Interested In
+            </label>
+            <div className="relative">
+              <select
+                value={userSpec.seeking}
+                onChange={(e) => onUpdateUserSpec({ seeking: e.target.value })}
+                className="w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono"
+              >
+                <option value="Men">Men</option>
+                <option value="Women">Women</option>
+                <option value="Everyone">Everyone</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
         </div>
       </div>
 

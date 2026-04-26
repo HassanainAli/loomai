@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { X, Check, ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { Match, CURRENT_USER_SPEC } from "../types";
+import { Match, CURRENT_USER_SPEC, UserSpec } from "../types";
 import { generateAlignmentSpec } from "@/server/alignment.functions";
 
 export function Profile({
@@ -10,12 +10,14 @@ export function Profile({
   onGreenLight,
   onBack,
   hideActions = false,
+  userSpec = CURRENT_USER_SPEC,
 }: {
   match: Match;
   onPass?: () => void;
   onGreenLight?: () => void;
   onBack: () => void;
   hideActions?: boolean;
+  userSpec?: UserSpec;
 }) {
   const generate = useServerFn(generateAlignmentSpec);
   const [open, setOpen] = useState(false);
@@ -31,7 +33,7 @@ export function Profile({
     try {
       const res = await generate({
         data: {
-          user: CURRENT_USER_SPEC,
+          user: { pace: userSpec.pace, intention: userSpec.intention },
           match: { pace: match.pace, intention: match.intention, name: match.name },
         },
       });
@@ -169,7 +171,7 @@ export function Profile({
           >
             <div className="flex items-center justify-between mb-4">
               <p className="text-[10px] font-black uppercase tracking-widest text-[#FACC15]">
-                {CURRENT_USER_SPEC.name}'s Alignment Spec
+                {userSpec.name}'s Alignment Spec
               </p>
               <button
                 onClick={() => setOpen(false)}
