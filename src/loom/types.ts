@@ -24,7 +24,13 @@ export interface Match {
   dailyAnswer: string;
   conflictAnswer: string;
   sundayAnswer: string;
+  pace: string;
 }
+
+export const CURRENT_USER_SPEC = {
+  pace: "Slow mornings, deep-focus afternoons, early to bed. Weekends fully unplugged.",
+  intention: "Intentional dating with a long-term partner in mind.",
+};
 
 export const MATCHES: Match[] = [
   {
@@ -43,6 +49,7 @@ export const MATCHES: Match[] = [
       "I sit with it for a day, then I bring it up directly. I hate when things fester. Calm but unflinching.",
     sundayAnswer:
       "Slow morning with coffee and a book, a long walk, then cooking something elaborate for dinner. No phone after 7.",
+    pace: "Early riser, structured weekdays, slow Sundays. Phone off after 7 PM.",
   },
   {
     id: "m2",
@@ -60,5 +67,6 @@ export const MATCHES: Match[] = [
       "Direct conversation, same day if possible. I'd rather have one uncomfortable hour than a week of weirdness.",
     sundayAnswer:
       "Gym early, then a long bike ride. Afternoon at the bookstore, evening cooking with friends. Asleep by 11.",
+    pace: "Early gym, deep work blocks, social evenings. Asleep by 11 sharp.",
   },
 ];
