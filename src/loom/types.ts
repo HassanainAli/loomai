@@ -28,6 +28,9 @@ export interface Match {
 }
 
 export const CURRENT_USER_SPEC = {
+  name: "Hassanain",
+  gender: "Male",
+  seeking: "Women",
   pace: "Slow mornings, deep-focus afternoons, early to bed. Weekends fully unplugged.",
   intention: "Intentional dating with a long-term partner in mind.",
 };

@@ -169,7 +169,7 @@ export function Profile({
           >
             <div className="flex items-center justify-between mb-4">
               <p className="text-[10px] font-black uppercase tracking-widest text-[#FACC15]">
-                Alignment Spec
+                {CURRENT_USER_SPEC.name}'s Alignment Spec
               </p>
               <button
                 onClick={() => setOpen(false)}
