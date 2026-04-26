@@ -2,15 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Shell } from "@/loom/Shell";
 import { Auth } from "@/loom/screens/Auth";
-import { IdentitySpec } from "@/loom/screens/IdentitySpec";
-import { SeedPrompt } from "@/loom/screens/SeedPrompt";
-import { VisualSignature } from "@/loom/screens/VisualSignature";
+import { Onboard1 } from "@/loom/screens/Onboard1";
+import { Onboard2 } from "@/loom/screens/Onboard2";
+import { Onboard3 } from "@/loom/screens/Onboard3";
+import { SpecSheet } from "@/loom/screens/SpecSheet";
 import { DailyGate } from "@/loom/screens/DailyGate";
 import { Anticipation } from "@/loom/screens/Anticipation";
 import { Queue } from "@/loom/screens/Queue";
 import { Profile } from "@/loom/screens/Profile";
 import { Focus } from "@/loom/screens/Focus";
-import { EMPTY_ONBOARDING, type Match, type OnboardingData, type Screen } from "@/loom/types";
+import type { Match, Screen } from "@/loom/types";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,86 +30,35 @@ export const Route = createFileRoute("/")({
 function Index() {
   const [screen, setScreen] = useState<Screen>("auth");
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
-  const [passStreak, setPassStreak] = useState(5);
-  const [data, setData] = useState<OnboardingData>(EMPTY_ONBOARDING);
-
-  const update = (patch: Partial<OnboardingData>) =>
-    setData((d) => ({ ...d, ...patch }));
+  const [passStreak, setPassStreak] = useState(5); // demo: one more pass triggers recalibration
 
   return (
     <Shell>
-      {screen === "auth" && <Auth onNext={() => setScreen("identity")} />}
-
-      {screen === "identity" && (
-        <IdentitySpec
-          initialName={data.name}
-          initialGender={data.gender}
-          initialSeeking={data.seeking}
-          onNext={(v) => {
-            update(v);
-            setScreen("seedConflict");
-          }}
+      {screen === "auth" && <Auth onNext={() => setScreen("onboard1")} />}
+      {screen === "onboard1" && (
+        <Onboard1
+          onNext={() => setScreen("onboard2")}
           onBack={() => setScreen("auth")}
         />
       )}
-
-      {screen === "seedConflict" && (
-        <SeedPrompt
-          step={2}
-          total={5}
-          title="Seed the AI."
-          helper="These answers train your match engine. Honest, not polished."
-          prompt="When you disagree with someone close to you, how do you typically handle it?"
-          initialValue={data.conflict}
-          onNext={(v) => {
-            update({ conflict: v });
-            setScreen("seedSunday");
-          }}
-          onBack={() => setScreen("identity")}
+      {screen === "onboard2" && (
+        <Onboard2
+          onNext={() => setScreen("onboard3")}
+          onBack={() => setScreen("onboard1")}
         />
       )}
-
-      {screen === "seedSunday" && (
-        <SeedPrompt
-          step={3}
-          total={5}
-          title="Map your Sunday."
-          helper="Pacing reveals more than preferences."
-          prompt="Describe your perfect, no-obligations Sunday from morning to night."
-          initialValue={data.sunday}
-          onNext={(v) => {
-            update({ sunday: v });
-            setScreen("seedHill");
-          }}
-          onBack={() => setScreen("seedConflict")}
+      {screen === "onboard3" && (
+        <Onboard3
+          onNext={() => setScreen("specSheet")}
+          onBack={() => setScreen("onboard2")}
         />
       )}
-
-      {screen === "seedHill" && (
-        <SeedPrompt
-          step={4}
-          total={5}
-          title="Pick your hill."
-          helper="One opinion you defend without flinching."
-          prompt="What is a hill you are absolutely willing to die on?"
-          initialValue={data.hill}
-          onNext={(v) => {
-            update({ hill: v });
-            setScreen("visualSignature");
-          }}
-          onBack={() => setScreen("seedSunday")}
+      {screen === "specSheet" && (
+        <SpecSheet
+          onNext={() => setScreen("dailyGate")}
+          onBack={() => setScreen("onboard3")}
         />
       )}
-
-      {screen === "visualSignature" && (
-        <VisualSignature
-          name={data.name}
-          identity={data.gender}
-          onComplete={() => setScreen("dailyGate")}
-          onBack={() => setScreen("seedHill")}
-        />
-      )}
-
       {screen === "dailyGate" && (
         <DailyGate
           passStreak={passStreak}
@@ -132,7 +82,6 @@ function Index() {
       {screen === "profile" && activeMatch && (
         <Profile
           match={activeMatch}
-          currentUserName={data.name}
           onBack={() => setScreen("queue")}
           onPass={() => {
             setPassStreak((p) => p + 1);
@@ -144,7 +93,6 @@ function Index() {
       {screen === "focus" && activeMatch && (
         <Focus
           match={activeMatch}
-          currentUserName={data.name}
           onEject={() => {
             setActiveMatch(null);
             setScreen("dailyGate");

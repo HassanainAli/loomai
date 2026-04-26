@@ -1,10 +1,9 @@
 export type Screen =
   | "auth"
-  | "identity"
-  | "seedConflict"
-  | "seedSunday"
-  | "seedHill"
-  | "visualSignature"
+  | "onboard1"
+  | "onboard2"
+  | "onboard3"
+  | "specSheet"
   | "dailyGate"
   | "anticipation"
   | "queue"
@@ -12,24 +11,6 @@ export type Screen =
   | "focus";
 
 export type Balance = "mirror" | "counterweight" | null;
-
-export interface OnboardingData {
-  name: string;
-  gender: string;
-  seeking: string;
-  conflict: string;
-  sunday: string;
-  hill: string;
-}
-
-export const EMPTY_ONBOARDING: OnboardingData = {
-  name: "",
-  gender: "",
-  seeking: "",
-  conflict: "",
-  sunday: "",
-  hill: "",
-};
 
 export interface Match {
   id: string;

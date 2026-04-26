@@ -6,14 +6,12 @@ import { generateAlignmentSpec } from "@/server/alignment.functions";
 
 export function Profile({
   match,
-  currentUserName,
   onPass,
   onGreenLight,
   onBack,
   hideActions = false,
 }: {
   match: Match;
-  currentUserName?: string;
   onPass?: () => void;
   onGreenLight?: () => void;
   onBack: () => void;
@@ -171,7 +169,7 @@ export function Profile({
           >
             <div className="flex items-center justify-between mb-4">
               <p className="text-[10px] font-black uppercase tracking-widest text-[#FACC15]">
-                {currentUserName ? `${currentUserName}'s Alignment Spec` : "Alignment Spec"}
+                Alignment Spec
               </p>
               <button
                 onClick={() => setOpen(false)}
