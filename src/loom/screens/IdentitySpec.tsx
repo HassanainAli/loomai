@@ -44,7 +44,7 @@ export function IdentitySpec({
       </p>
 
       <div className="space-y-5">
-        <Field label="Name Spec" hint="Identification">
+        <Field label="Name">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -53,7 +53,7 @@ export function IdentitySpec({
           />
         </Field>
 
-        <Field label="Gender Spec" hint="Identity Spectrum">
+        <Field label="Gender">
           <SelectChips
             options={[...GENDER]}
             value={gender}
@@ -61,7 +61,7 @@ export function IdentitySpec({
           />
         </Field>
 
-        <Field label="Seeking" hint="Target Frequency">
+        <Field label="Seeking">
           <SelectChips
             options={[...SEEKING]}
             value={seeking}
@@ -83,23 +83,16 @@ export function IdentitySpec({
 
 function Field({
   label,
-  hint,
   children,
 }: {
   label: string;
-  hint: string;
   children: React.ReactNode;
 }) {
   return (
     <div>
-      <div className="flex items-baseline justify-between mb-2">
-        <label className="text-[10px] font-black uppercase tracking-widest text-[#FACC15]">
-          {label}
-        </label>
-        <span className="text-[9px] uppercase tracking-widest text-zinc-500 font-mono">
-          {hint}
-        </span>
-      </div>
+      <label className="block mb-2 text-[10px] font-black uppercase tracking-widest text-[#FACC15]">
+        {label}
+      </label>
       {children}
     </div>
   );
