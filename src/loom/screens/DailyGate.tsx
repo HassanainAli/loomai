@@ -1,6 +1,22 @@
 import { useState } from "react";
 import { PrimaryButton } from "../Shell";
 
+const strategicPartyPrompts = [
+  "You're going to hell. What minor inconvenience is your eternal punishment?",
+  "If you were arrested with no explanation, what would your friends assume you did?",
+  "What is a universally beloved food/trend that is actually absolute garbage?",
+  "What is your most harmless, but entirely chaotic, 'red flag'?",
+  "If you had the aux at a party, what song is clearing the room immediately?",
+  "What is a deeply unserious hill you are willing to die on?",
+  "What is your 'social battery is dead' survival strategy?",
+];
+
+function getDailyPrompt() {
+  const idx =
+    Math.floor(Date.now() / 86400000) % strategicPartyPrompts.length;
+  return strategicPartyPrompts[idx];
+}
+
 export function DailyGate({
   passStreak,
   onSubmit,
@@ -12,6 +28,7 @@ export function DailyGate({
 }) {
   const [answer, setAnswer] = useState("");
   const recalibrate = passStreak >= 6;
+  const todaysPrompt = getDailyPrompt();
 
   if (recalibrate) {
     const reasons = [
@@ -55,7 +72,7 @@ export function DailyGate({
 
       <div className="bg-secondary border border-border rounded-2xl p-6 mb-6">
         <p className="text-base font-bold leading-snug">
-          What is a controversial opinion you hold about weekend plans?
+          {todaysPrompt}
         </p>
       </div>
 
