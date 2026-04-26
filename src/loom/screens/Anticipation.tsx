@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
 import { Lock } from "lucide-react";
 
+function getSecondsUntil8PM() {
+  const now = new Date();
+  const target = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    20,
+    0,
+    0,
+    0,
+  );
+  const diff = Math.floor((target.getTime() - now.getTime()) / 1000);
+  return Math.max(0, diff);
+}
+
 export function Anticipation({ onDrop }: { onDrop: () => void }) {
-  const [seconds, setSeconds] = useState(4 * 3600 + 22 * 60 + 10);
+  const [seconds, setSeconds] = useState(getSecondsUntil8PM);
 
   useEffect(() => {
-    const id = setInterval(() => setSeconds((s) => Math.max(0, s - 1)), 1000);
+    const id = setInterval(() => setSeconds(getSecondsUntil8PM()), 1000);
     return () => clearInterval(id);
   }, []);
 
