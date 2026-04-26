@@ -28,7 +28,7 @@ export function Onboard2({
         <ArrowLeft className="w-5 h-5" />
       </button>
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-        Step 2 of 3
+        Step 2 of 4
       </p>
       <h2 className="text-3xl font-black tracking-tight mb-2">Seed the AI.</h2>
       <p className="text-sm text-muted-foreground mb-8">
