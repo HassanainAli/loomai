@@ -37,8 +37,8 @@ export interface UserSpec {
 
 export const CURRENT_USER_SPEC: UserSpec = {
   name: "Hassanain",
-  gender: "Male",
-  seeking: "Women",
+  gender: "",
+  seeking: "",
   pace: "Slow mornings, deep-focus afternoons, early to bed. Weekends fully unplugged.",
   intention: "Intentional dating with a long-term partner in mind.",
 };
