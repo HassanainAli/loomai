@@ -27,7 +27,15 @@ export interface Match {
   pace: string;
 }
 
-export const CURRENT_USER_SPEC = {
+export interface UserSpec {
+  name: string;
+  gender: string;
+  seeking: string;
+  pace: string;
+  intention: string;
+}
+
+export const CURRENT_USER_SPEC: UserSpec = {
   name: "Hassanain",
   gender: "Male",
   seeking: "Women",
