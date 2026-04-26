@@ -35,7 +35,7 @@ export function Onboard3({
         <ArrowLeft className="w-5 h-5" />
       </button>
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
-        Step 3 of 3
+        Step 3 of 4
       </p>
       <h2 className="text-3xl font-black tracking-tight mb-8">
         How should we match your energy?
@@ -69,7 +69,7 @@ export function Onboard3({
 
       <div className="flex-1" />
       <PrimaryButton onClick={onNext} disabled={!choice}>
-        Complete Profile
+        Next
       </PrimaryButton>
     </div>
   );
