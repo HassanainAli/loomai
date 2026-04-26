@@ -5,6 +5,7 @@ import { Auth } from "@/loom/screens/Auth";
 import { Onboard1 } from "@/loom/screens/Onboard1";
 import { Onboard2 } from "@/loom/screens/Onboard2";
 import { Onboard3 } from "@/loom/screens/Onboard3";
+import { SpecSheet } from "@/loom/screens/SpecSheet";
 import { DailyGate } from "@/loom/screens/DailyGate";
 import { Anticipation } from "@/loom/screens/Anticipation";
 import { Queue } from "@/loom/screens/Queue";
@@ -48,8 +49,14 @@ function Index() {
       )}
       {screen === "onboard3" && (
         <Onboard3
-          onNext={() => setScreen("dailyGate")}
+          onNext={() => setScreen("specSheet")}
           onBack={() => setScreen("onboard2")}
+        />
+      )}
+      {screen === "specSheet" && (
+        <SpecSheet
+          onNext={() => setScreen("dailyGate")}
+          onBack={() => setScreen("onboard3")}
         />
       )}
       {screen === "dailyGate" && (

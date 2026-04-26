@@ -3,6 +3,7 @@ export type Screen =
   | "onboard1"
   | "onboard2"
   | "onboard3"
+  | "specSheet"
   | "dailyGate"
   | "anticipation"
   | "queue"
