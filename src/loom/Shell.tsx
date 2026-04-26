@@ -2,8 +2,8 @@ import { ReactNode } from "react";
 
 export function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-0 sm:p-6">
-      <div className="w-full max-w-md min-h-screen sm:min-h-[800px] sm:h-[800px] bg-background sm:rounded-3xl sm:border sm:border-border sm:shadow-2xl overflow-hidden flex flex-col relative">
+    <div className="min-h-screen flex items-center justify-center p-0 sm:p-6">
+      <div className="w-full max-w-md min-h-screen sm:min-h-[800px] sm:h-[800px] bg-zinc-950/50 backdrop-blur-sm sm:rounded-3xl border border-zinc-800 sm:shadow-2xl overflow-hidden flex flex-col relative">
         {children}
       </div>
     </div>
@@ -12,8 +12,19 @@ export function Shell({ children }: { children: ReactNode }) {
 
 export function Brand({ className = "" }: { className?: string }) {
   return (
-    <h1 className={`font-black tracking-tighter ${className}`}>
-      Loom<span className="text-primary">.</span>
+    <h1
+      className={`font-black tracking-tighter lowercase text-white ${className}`}
+      style={{ fontFamily: "Inter, sans-serif", letterSpacing: "-0.05em" }}
+    >
+      loom
+      <span
+        className="inline-block align-baseline rounded-full ml-1"
+        style={{
+          width: "0.6em",
+          height: "0.6em",
+          backgroundColor: "#FACC15",
+        }}
+      />
     </h1>
   );
 }

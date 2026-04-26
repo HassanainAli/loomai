@@ -63,25 +63,26 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.05 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.05 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.05 0 0);
-  --primary: oklch(0.88 0.19 102);
+  /* Loom "Void" dark theme — applied globally (no light mode) */
+  --background: oklch(0 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.16 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.16 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.88 0.19 95);
   --primary-foreground: oklch(0.05 0 0);
-  --secondary: oklch(0.96 0 0);
-  --secondary-foreground: oklch(0.05 0 0);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.45 0 0);
-  --accent: oklch(0.88 0.19 102);
+  --secondary: oklch(0.2 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.65 0 0);
+  --accent: oklch(0.88 0.19 95);
   --accent-foreground: oklch(0.05 0 0);
-  --destructive: oklch(0.05 0 0);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.9 0 0);
-  --input: oklch(0.9 0 0);
-  --ring: oklch(0.88 0.19 102);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.27 0 0);
+  --input: oklch(0.27 0 0);
+  --ring: oklch(0.88 0.19 95);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -138,7 +139,9 @@
   }
 
   body {
-    background-color: var(--color-background);
     color: var(--color-foreground);
+    background: radial-gradient(circle at top right, #2e0222 0%, #000000 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
   }
 }
