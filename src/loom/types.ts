@@ -36,7 +36,7 @@ export interface UserSpec {
 }
 
 export const CURRENT_USER_SPEC: UserSpec = {
-  name: "Hassanain",
+  name: "",
   gender: "",
   seeking: "",
   pace: "Slow mornings, deep-focus afternoons, early to bed. Weekends fully unplugged.",
