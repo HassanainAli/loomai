@@ -37,60 +37,8 @@ export function SpecSheet({
         </h2>
       </div>
 
-      {/* Engine Metadata */}
-      <div className="bg-zinc-950 border-y border-zinc-800 px-8 py-6 font-mono">
-        <div className="flex items-center gap-2 mb-1">
-          <Lock className="w-3.5 h-3.5 text-[#FACC15]" />
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15]">
-            Engine Metadata
-          </p>
-        </div>
-        <p className="text-xs text-zinc-500 mb-5">
-          For the AI's eyes only.
-        </p>
-
-        <div className="grid grid-cols-2 gap-3 items-start">
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
-              Height
-            </label>
-            <input
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
-              placeholder='5&apos;10"'
-              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
-            />
-          </div>
-          <div>
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <label className="text-[10px] uppercase tracking-wider text-zinc-500">
-                Prioritize Proximity
-              </label>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={proximity}
-                onClick={() => setProximity((p) => !p)}
-                className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
-                  proximity ? "bg-[#FACC15]" : "bg-zinc-800"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-black transition-transform ${
-                    proximity ? "translate-x-4" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </div>
-            <p className="text-[9px] text-zinc-500 leading-snug normal-case">
-              Engine will strictly filter matches outside your immediate area.
-            </p>
-          </div>
-        </div>
-      </div>
-
       {/* Identity Specs */}
-      <div className="bg-zinc-950 border-b border-zinc-800 px-8 py-6 font-mono">
+      <div className="bg-zinc-950 border-y border-zinc-800 px-8 py-8 font-mono">
         <div className="flex items-center gap-2 mb-1">
           <Lock className="w-3.5 h-3.5 text-[#FACC15]" />
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15]">
@@ -162,8 +110,60 @@ export function SpecSheet({
         </div>
       </div>
 
+      {/* Engine Metadata */}
+      <div className="bg-zinc-950 border-b border-zinc-800 px-8 py-8 font-mono">
+        <div className="flex items-center gap-2 mb-1">
+          <Lock className="w-3.5 h-3.5 text-[#FACC15]" />
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15]">
+            Engine Metadata
+          </p>
+        </div>
+        <p className="text-xs text-zinc-500 mb-5">
+          For the AI's eyes only.
+        </p>
+
+        <div className="grid grid-cols-2 gap-3 items-start">
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Height
+            </label>
+            <input
+              value={height}
+              onChange={(e) => setHeight(e.target.value)}
+              placeholder='5&apos;10"'
+              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
+            />
+          </div>
+          <div>
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <label className="text-[10px] uppercase tracking-wider text-zinc-500">
+                Prioritize Proximity
+              </label>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={proximity}
+                onClick={() => setProximity((p) => !p)}
+                className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
+                  proximity ? "bg-[#FACC15]" : "bg-zinc-800"
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-black transition-transform ${
+                    proximity ? "translate-x-4" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
+            <p className="text-[9px] text-zinc-500 leading-snug normal-case">
+              Engine will strictly filter matches outside your immediate area.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Public Ledger */}
-      <div className="px-8 py-6">
+      <div className="px-8 py-8">
         <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-1">
           Public Profile
         </p>
