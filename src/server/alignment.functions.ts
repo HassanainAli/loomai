@@ -1,14 +1,55 @@
 import { createServerFn } from "@tanstack/react-start";
 import { GoogleGenAI } from "@google/genai";
+import { getRequest } from "@tanstack/react-start/server";
+import { z } from "zod";
 
-interface AlignmentInput {
-  user: { pace: string; intention: string };
-  match: { pace: string; intention: string; name: string };
+const SpecSchema = z.object({
+  pace: z.string().trim().min(1).max(500),
+  intention: z.string().trim().min(1).max(500),
+});
+
+const AlignmentInputSchema = z.object({
+  user: SpecSchema,
+  match: SpecSchema.extend({
+    name: z.string().trim().min(1).max(100),
+  }),
+});
+
+// Simple in-memory rate limit (per server instance).
+// Protects the paid Gemini endpoint from anonymous abuse.
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX = 10;
+const rateBuckets = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(key: string): boolean {
+  const now = Date.now();
+  const bucket = rateBuckets.get(key);
+  if (!bucket || bucket.resetAt < now) {
+    rateBuckets.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (bucket.count >= RATE_LIMIT_MAX) return false;
+  bucket.count += 1;
+  return true;
 }
 
 export const generateAlignmentSpec = createServerFn({ method: "POST" })
-  .inputValidator((input: AlignmentInput) => input)
+  .inputValidator((input: unknown) => AlignmentInputSchema.parse(input))
   .handler(async ({ data }) => {
+    // Rate limit by client IP to prevent budget exhaustion on this paid endpoint.
+    try {
+      const req = getRequest();
+      const ip =
+        req?.headers.get("cf-connecting-ip") ||
+        req?.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+        "unknown";
+      if (!checkRateLimit(ip)) {
+        return { text: null, error: "Rate limit exceeded. Try again shortly." };
+      }
+    } catch {
+      // If request context is unavailable, fall through.
+    }
+
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
