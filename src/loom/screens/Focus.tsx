@@ -75,10 +75,10 @@ export function Focus({
             className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${
+              className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm border border-white ${
                 m.from === "me"
                   ? "bg-foreground text-background rounded-br-md"
-                  : "bg-secondary text-foreground rounded-bl-md"
+                  : "bg-black text-white rounded-bl-md"
               }`}
             >
               {m.text}
