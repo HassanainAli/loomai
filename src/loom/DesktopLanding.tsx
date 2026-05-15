@@ -226,12 +226,12 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
                 // System Integrity
               </div>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60" style={MONO}>
-                ZERO_RETENTION_POLICY = TRUE
-                <br />
-                Unverified signals are discarded at session end. We do not
-                persist behavioral data from accounts that fail .edu
-                verification. Match vectors are encrypted at rest and purged
-                72h after the decay cycle completes.
+                No verified student status, no active dating profile.
+                Accounts that fail .edu verification are not allowed into the
+                matching pool, and their session activity is discarded. For
+                verified users, Loom uses compatibility signals to improve
+                match quality while protecting profile data and limiting what
+                is stored.
               </p>
             </div>
             <div className="nn-reveal" data-delay="2">
