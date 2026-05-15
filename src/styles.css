@@ -226,7 +226,7 @@
   transform: translateY(20px);
 }
 .nn-reveal.is-visible {
-  animation: reveal-up 0.6s linear forwards;
+  animation: reveal-up 400ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 .nn-reveal[data-delay="1"].is-visible { animation-delay: 0.1s; }
 .nn-reveal[data-delay="2"].is-visible { animation-delay: 0.2s; }

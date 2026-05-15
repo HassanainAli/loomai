@@ -16,7 +16,7 @@ function useReveal() {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.2 }
     );
     el.querySelectorAll(".nn-reveal").forEach((n) => io.observe(n));
     return () => io.disconnect();
@@ -221,7 +221,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
       <footer id="terms" className="border-t border-white/10 bg-black">
         <div className="mx-auto max-w-7xl px-8 py-16">
           <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
-            <div id="safety">
+            <div id="safety" className="nn-reveal" data-delay="1">
               <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF]" style={MONO}>
                 // System Integrity
               </div>
@@ -234,7 +234,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
                 72h after the decay cycle completes.
               </p>
             </div>
-            <div>
+            <div className="nn-reveal" data-delay="2">
               <div className="text-[10px] uppercase tracking-[0.22em] text-white/40" style={MONO}>
                 Network
               </div>
@@ -244,7 +244,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
                 <li><a href="#terms" className="hover:text-white">Terms</a></li>
               </ul>
             </div>
-            <div>
+            <div className="nn-reveal" data-delay="3">
               <div className="text-[10px] uppercase tracking-[0.22em] text-white/40" style={MONO}>
                 Status
               </div>
