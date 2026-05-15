@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Shell } from "@/loom/Shell";
+import { DesktopLanding } from "@/loom/DesktopLanding";
 import { Auth } from "@/loom/screens/Auth";
 import { Onboard1 } from "@/loom/screens/Onboard1";
 import { Onboard2 } from "@/loom/screens/Onboard2";
@@ -36,8 +37,8 @@ function Index() {
   const updateUserSpec = (patch: Partial<UserSpec>) =>
     setUserSpec((prev) => ({ ...prev, ...patch }));
 
-  return (
-    <Shell>
+  const app = (
+    <>
       {screen === "auth" && <Auth onNext={() => setScreen("onboard1")} />}
       {screen === "onboard1" && (
         <Onboard1
@@ -106,6 +107,25 @@ function Index() {
           }}
         />
       )}
-    </Shell>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile (<lg): full-screen app shell only */}
+      <div className="lg:hidden">
+        <Shell>{app}</Shell>
+      </div>
+      {/* Desktop (lg+): landing page with the app embedded in a 3D phone */}
+      <div className="hidden lg:block">
+        <DesktopLanding
+          phoneContent={
+            <div className="absolute inset-0 flex flex-col bg-zinc-950">
+              {app}
+            </div>
+          }
+        />
+      </div>
+    </>
   );
 }
