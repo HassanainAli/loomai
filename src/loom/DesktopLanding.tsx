@@ -16,7 +16,7 @@ function useReveal() {
           }
         });
       },
-      { threshold: 0.15 }
+      { threshold: 0.2 }
     );
     el.querySelectorAll(".nn-reveal").forEach((n) => io.observe(n));
     return () => io.disconnect();
