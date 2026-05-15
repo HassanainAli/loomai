@@ -145,3 +145,131 @@
     min-height: 100vh;
   }
 }
+
+/* ============================================================
+   Neon-Noir landing utilities (desktop only)
+   ============================================================ */
+
+@keyframes magenta-breathe {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 0, 255, 0.55), 0 0 24px rgba(255, 0, 255, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(255, 0, 255, 0), 0 0 48px rgba(255, 0, 255, 0.55);
+  }
+}
+
+@keyframes portal-scan {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateY(120vh); opacity: 0; }
+}
+
+@keyframes portal-glitch {
+  0%, 100% { transform: translate(0, 0); filter: none; }
+  20% { transform: translate(-2px, 1px); filter: hue-rotate(20deg); }
+  40% { transform: translate(2px, -1px); filter: hue-rotate(-20deg); }
+  60% { transform: translate(-1px, 2px); filter: none; }
+  80% { transform: translate(1px, -2px); filter: hue-rotate(15deg); }
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.nn-cta {
+  background: #FF00FF;
+  color: #000;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  animation: magenta-breathe 2.8s linear infinite;
+  transition: transform 120ms linear, background-color 120ms linear;
+}
+.nn-cta:hover { background: #ff33ff; transform: translateY(-1px); }
+.nn-cta:active { transform: translateY(0); }
+
+.nn-cta-ghost {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 0, 255, 0.6);
+  transition: background-color 120ms linear, border-color 120ms linear;
+}
+.nn-cta-ghost:hover {
+  background: rgba(255, 0, 255, 0.08);
+  border-color: #FF00FF;
+}
+
+.nn-scan {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    linear-gradient(to bottom,
+      transparent 0%,
+      rgba(255, 0, 255, 0.0) 45%,
+      rgba(255, 0, 255, 0.85) 50%,
+      rgba(255, 0, 255, 0.0) 55%,
+      transparent 100%);
+  animation: portal-scan 0.5s linear forwards;
+}
+
+.nn-glitch {
+  animation: portal-glitch 0.5s linear 1;
+}
+
+.nn-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.nn-reveal.is-visible {
+  animation: reveal-up 0.6s linear forwards;
+}
+.nn-reveal[data-delay="1"].is-visible { animation-delay: 0.1s; }
+.nn-reveal[data-delay="2"].is-visible { animation-delay: 0.2s; }
+.nn-reveal[data-delay="3"].is-visible { animation-delay: 0.3s; }
+
+/* 3D phone frame */
+.nn-phone {
+  position: relative;
+  width: 380px;
+  height: 780px;
+  border-radius: 48px;
+  padding: 14px;
+  background: linear-gradient(160deg, #1a1a1a 0%, #050505 60%, #1a0014 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 30px 80px -20px rgba(255, 0, 255, 0.35),
+    0 50px 120px -40px rgba(0, 0, 0, 0.9),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transform: perspective(1800px) rotateY(-8deg) rotateX(2deg);
+  transition: transform 400ms ease;
+}
+.nn-phone:hover { transform: perspective(1800px) rotateY(-4deg) rotateX(1deg); }
+
+.nn-phone-screen {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 36px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+.nn-phone-notch {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 28px;
+  background: #000;
+  border-radius: 14px;
+  z-index: 5;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
