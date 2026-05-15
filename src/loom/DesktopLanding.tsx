@@ -137,7 +137,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60">
               A closed-loop network for verified university students. Catch the drop every night at{" "}
-              <span className="text-white" style={MONO}>20:00</span>.
+              <span className="text-white" style={MONO}>8pm</span>.
             </p>
             <div className="mt-10 flex items-center gap-4">
               <button
@@ -209,7 +209,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
             <BentoCard
               index={3}
               label="The Drop"
-              title="20:00 nightly. 24-hour decay."
+              title="8pm drop. 24-hour decay."
               body="Two matches drop at 8:00 PM. Greenlight within 24 hours or the queue clears. The scarcity is the feature."
               metric="T-minus 24:00:00"
             />
@@ -255,7 +255,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
                 </li>
                 <li className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
-                  Next drop 20:00
+                  Next drop 8pm
                 </li>
               </ul>
             </div>
