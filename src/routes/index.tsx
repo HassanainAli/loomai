@@ -73,6 +73,8 @@ function Index() {
           onRecalibrate={() => {
             setPassStreak(0);
           }}
+          userSpec={userSpec}
+          onUpdateUserSpec={updateUserSpec}
         />
       )}
       {screen === "anticipation" && (
