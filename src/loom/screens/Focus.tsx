@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, ArrowUp } from "lucide-react";
 import { Match } from "../types";
 import { Profile } from "./Profile";
 
@@ -10,6 +10,7 @@ interface Msg {
 
 // Local blacklist of user-id pairs that should never be matched again.
 const blacklistedPairs: Array<[string, string]> = [];
+const ejectTelemetry: Array<{ matchId: string; reason: string; note: string }> = [];
 const CURRENT_USER_ID = "me";
 
 export function Focus({
@@ -30,14 +31,19 @@ export function Focus({
   const [draft, setDraft] = useState("");
   const [showProfile, setShowProfile] = useState(false);
   const [ejecting, setEjecting] = useState(false);
+  const [selectedReason, setSelectedReason] = useState<string | null>(null);
+  const [ejectNote, setEjectNote] = useState("");
   const [matchStatus, setMatchStatus] = useState<"active" | "expired">("active");
 
-  function handleEject() {
+  function handleEject(reason: string, note: string) {
     // Lock the chat by transitioning match status to expired
     setMatchStatus("expired");
+    ejectTelemetry.push({ matchId: match.id, reason, note });
     // Blacklist this pair from future daily match loops
     blacklistedPairs.push([CURRENT_USER_ID, match.id]);
     setEjecting(false);
+    setSelectedReason(null);
+    setEjectNote("");
     onEject();
   }
 
@@ -139,14 +145,39 @@ export function Focus({
                 (r) => (
                   <button
                     key={r}
-                    onClick={handleEject}
-                    className="w-full text-left p-4 rounded-2xl border-2 border-border font-semibold text-sm hover:border-foreground transition-colors"
+                    onClick={() => setSelectedReason(r)}
+                    className={`w-full text-left p-4 rounded-2xl border-2 font-sans text-sm transition-colors ${
+                      selectedReason === r
+                        ? "border-foreground bg-secondary"
+                        : "border-border hover:border-foreground"
+                    }`}
                   >
                     {r}
                   </button>
                 ),
               )}
             </div>
+            {selectedReason && (
+              <div className="mt-4 relative flex items-center w-full bg-secondary border border-border rounded-full pl-5 pr-1.5 py-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
+                <input
+                  type="text"
+                  value={ejectNote}
+                  onChange={(e) => setEjectNote(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && handleEject(selectedReason, ejectNote.trim())
+                  }
+                  placeholder="Anything specific the system should note? (Optional)"
+                  className="flex-1 bg-transparent text-sm text-white font-sans placeholder:text-muted-foreground focus:outline-none"
+                />
+                <button
+                  onClick={() => handleEject(selectedReason, ejectNote.trim())}
+                  className="w-9 h-9 rounded-full bg-yellow-400 text-black flex items-center justify-center hover:bg-yellow-300 transition-colors shrink-0"
+                  aria-label="Submit"
+                >
+                  <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
