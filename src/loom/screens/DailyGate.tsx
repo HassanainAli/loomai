@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Menu } from "lucide-react";
-import { PrimaryButton } from "../Shell";
+import { ArrowUp, Menu } from "lucide-react";
 import { UserSpec } from "../types";
 
 const strategicPartyPrompts = [
@@ -69,8 +68,8 @@ export function DailyGate({
   }
 
   return (
-    <div className="flex flex-col h-full p-8 pt-12 overflow-y-auto relative">
-      <div className="flex items-start justify-between mb-10">
+    <div className="flex flex-col h-full pt-12 relative">
+      <div className="flex items-start justify-between mb-10 px-8">
         <div>
           <p className="text-sm font-sans text-zinc-500 mb-1 tracking-tight">
             Hello {firstName}.
@@ -87,7 +86,7 @@ export function DailyGate({
         </div>
       </div>
 
-      <div className="flex items-end gap-2 mb-6">
+      <div className="flex items-end gap-2 px-8">
         <div className="shrink-0 w-8 h-8 rounded-full overflow-hidden bg-zinc-800 border border-border flex items-center justify-center">
           <img
             src="/favicon.ico"
@@ -102,19 +101,28 @@ export function DailyGate({
         </div>
       </div>
 
-      <textarea
-        value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
-        rows={6}
-        placeholder="Be honest. This goes to your two matches at 8 PM."
-        className="w-full bg-secondary border border-border rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-foreground transition-colors resize-none"
-      />
+      <div className="flex-1" />
 
-      <div className="flex-1 min-h-8" />
-      <PrimaryButton onClick={onSubmit} disabled={answer.trim().length < 15}>
-        Submit & Unlock
-      </PrimaryButton>
-
+      <div className="px-5 pb-6 pt-4">
+        <div className="relative flex items-center w-full bg-secondary border border-border rounded-full pl-5 pr-1.5 py-1.5">
+          <textarea
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            rows={1}
+            placeholder="Be honest. This goes to your two matches at 8 PM."
+            className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none resize-none leading-6 py-2 max-h-32"
+          />
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={answer.trim().length < 15}
+            aria-label="Submit"
+            className="shrink-0 ml-2 w-9 h-9 rounded-full bg-yellow-400 text-black flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:bg-yellow-300 transition-colors"
+          >
+            <ArrowUp className="w-5 h-5" strokeWidth={2.5} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
