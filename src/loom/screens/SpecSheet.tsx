@@ -67,9 +67,8 @@ export function SpecSheet({
         </h2>
       </div>
 
-      <div className="lg:grid lg:grid-cols-2 lg:gap-6 lg:px-8 lg:pb-6">
       {/* Identity Specs */}
-      <div className="bg-zinc-950 border-y border-zinc-800 px-8 py-8 font-mono lg:border lg:rounded-2xl lg:px-6">
+      <div className="bg-zinc-950 border-y border-zinc-800 px-8 py-8 font-mono">
         <div className="flex items-center gap-2 mb-1">
           <Lock className="w-3.5 h-3.5 text-[#FACC15]" />
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15]">
@@ -167,7 +166,6 @@ export function SpecSheet({
           </div>
         </div>
       </div>
-      </div>
 
       {/* Engine Metadata */}
       <div className="bg-zinc-950 border-b border-zinc-800 px-8 py-8 font-mono">
@@ -222,7 +220,7 @@ export function SpecSheet({
       </div>
 
       {/* Public Ledger */}
-      <div className="px-8 py-8 lg:mx-8 lg:my-6 lg:px-6 lg:py-6 lg:border lg:border-zinc-800 lg:rounded-2xl lg:bg-zinc-950 lg:font-mono">
+      <div className="px-8 py-8">
         <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-1">
           Public Profile
         </p>
