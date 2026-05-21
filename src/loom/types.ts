@@ -33,6 +33,7 @@ export interface UserSpec {
   seeking: string;
   pace: string;
   intention: string;
+  campus: string;
 }
 
 export const CURRENT_USER_SPEC: UserSpec = {
@@ -41,6 +42,7 @@ export const CURRENT_USER_SPEC: UserSpec = {
   seeking: "",
   pace: "Slow mornings, deep-focus afternoons, early to bed. Weekends fully unplugged.",
   intention: "Intentional dating with a long-term partner in mind.",
+  campus: "",
 };
 
 export const MATCHES: Match[] = [
