@@ -15,6 +15,8 @@ export function SpecSheet({
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
 }) {
   const [height, setHeight] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [recoveryPhone, setRecoveryPhone] = useState("");
   const [proximity, setProximity] = useState(true);
   const [location, setLocation] = useState("");
   const [hobbies, setHobbies] = useState("");
