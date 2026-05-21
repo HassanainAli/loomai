@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ArrowLeft, Lock, Camera, Plus, ChevronDown } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowLeft, Lock, Camera, Plus, ChevronDown, X } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 import { UserSpec } from "../types";
 
@@ -18,6 +18,36 @@ export function SpecSheet({
   const [proximity, setProximity] = useState(true);
   const [location, setLocation] = useState("");
   const [hobbies, setHobbies] = useState("");
+  const [photos, setPhotos] = useState<(string | null)[]>([null, null, null]);
+  const fileInputs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
+
+  useEffect(() => {
+    return () => {
+      photos.forEach((p) => p && URL.revokeObjectURL(p));
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleFile = (i: number, file: File | null) => {
+    if (!file) return;
+    setPhotos((prev) => {
+      const next = [...prev];
+      if (next[i]) URL.revokeObjectURL(next[i] as string);
+      next[i] = URL.createObjectURL(file);
+      return next;
+    });
+  };
+
+  const clearPhoto = (i: number) => {
+    setPhotos((prev) => {
+      const next = [...prev];
+      if (next[i]) URL.revokeObjectURL(next[i] as string);
+      next[i] = null;
+      return next;
+    });
+    const input = fileInputs[i].current;
+    if (input) input.value = "";
+  };
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
@@ -37,8 +67,9 @@ export function SpecSheet({
         </h2>
       </div>
 
+      <div className="lg:grid lg:grid-cols-2 lg:gap-6 lg:px-8 lg:pb-6">
       {/* Identity Specs */}
-      <div className="bg-zinc-950 border-y border-zinc-800 px-8 py-8 font-mono">
+      <div className="bg-zinc-950 border-y border-zinc-800 px-8 py-8 font-mono lg:border lg:rounded-2xl lg:px-6">
         <div className="flex items-center gap-2 mb-1">
           <Lock className="w-3.5 h-3.5 text-[#FACC15]" />
           <p className="text-[10px] font-bold uppercase tracking-widest text-[#FACC15]">
@@ -107,7 +138,35 @@ export function SpecSheet({
               <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
+
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Campus Hub
+            </label>
+            <div className="relative">
+              <select
+                required
+                value={userSpec.campus}
+                onChange={(e) => onUpdateUserSpec({ campus: e.target.value })}
+                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono ${
+                  userSpec.campus ? "" : "opacity-50"
+                }`}
+              >
+                <option value="" disabled>
+                  Select campus
+                </option>
+                <option value="UW Bothell">UW Bothell</option>
+                <option value="UW Seattle">UW Seattle</option>
+                <option value="UW Tacoma">UW Tacoma</option>
+              </select>
+              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+            <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
+              Required for system routing. All UW campuses share the same email domain.
+            </p>
+          </div>
         </div>
+      </div>
       </div>
 
       {/* Engine Metadata */}
@@ -137,7 +196,7 @@ export function SpecSheet({
           <div>
             <div className="flex items-center justify-between gap-2 mb-1.5">
               <label className="text-[10px] uppercase tracking-wider text-zinc-500">
-                Prioritize Proximity
+                Campus Lock
               </label>
               <button
                 type="button"
@@ -156,14 +215,14 @@ export function SpecSheet({
               </button>
             </div>
             <p className="text-[9px] text-zinc-500 leading-snug normal-case">
-              Engine will strictly filter matches outside your immediate area.
+              Engine will strictly isolate your match pool to your selected campus hub. Toggle off to allow cross-campus matches with other UW nodes.
             </p>
           </div>
         </div>
       </div>
 
       {/* Public Ledger */}
-      <div className="px-8 py-8">
+      <div className="px-8 py-8 lg:mx-8 lg:my-6 lg:px-6 lg:py-6 lg:border lg:border-zinc-800 lg:rounded-2xl lg:bg-zinc-950 lg:font-mono">
         <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-1">
           Public Profile
         </p>
@@ -175,14 +234,44 @@ export function SpecSheet({
           Photos
         </label>
         <div className="grid grid-cols-3 gap-2 mb-5">
-          {[0, 1, 2].map((i) => (
-            <button
-              key={i}
-              className="aspect-square rounded-2xl bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-zinc-600 hover:border-[#FACC15] hover:text-[#FACC15] transition-colors"
-            >
-              {i === 0 ? <Camera className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-            </button>
-          ))}
+          {[0, 1, 2].map((i) => {
+            const preview = photos[i];
+            return (
+              <div key={i} className="relative aspect-square">
+                <input
+                  ref={fileInputs[i]}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFile(i, e.target.files?.[0] ?? null)}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputs[i].current?.click()}
+                  className="w-full h-full rounded-2xl bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-zinc-600 hover:border-[#FACC15] hover:text-[#FACC15] transition-colors overflow-hidden"
+                  aria-label={preview ? "Replace photo" : "Upload photo"}
+                >
+                  {preview ? (
+                    <img src={preview} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
+                  ) : i === 0 ? (
+                    <Camera className="w-5 h-5" />
+                  ) : (
+                    <Plus className="w-5 h-5" />
+                  )}
+                </button>
+                {preview && (
+                  <button
+                    type="button"
+                    onClick={() => clearPhoto(i)}
+                    aria-label="Remove photo"
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/80 border border-zinc-700 flex items-center justify-center text-white hover:bg-black hover:border-[#FACC15] hover:text-[#FACC15] transition-colors"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
 
         <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">
