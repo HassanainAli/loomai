@@ -219,6 +219,38 @@ export function SpecSheet({
             </p>
           </div>
         </div>
+
+        <div className="mt-3 space-y-3">
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Date of Birth
+            </label>
+            <input
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              placeholder="MM / DD / YYYY"
+              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
+            />
+            <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
+              For age verification and legal compliance. Hidden from your public profile reveal.
+            </p>
+          </div>
+
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Recovery Phone
+            </label>
+            <input
+              value={recoveryPhone}
+              onChange={(e) => setRecoveryPhone(e.target.value)}
+              placeholder="+1 (___) ___-____"
+              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
+            />
+            <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
+              Used strictly for secure account recovery tokens.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Public Ledger */}
