@@ -72,10 +72,10 @@ export function DailyGate({
     <div className="flex flex-col h-full p-8 pt-12 overflow-y-auto relative">
       <div className="flex items-start justify-between mb-10">
         <div>
-          <p className="text-sm font-mono text-zinc-500 mb-1">
-            Hello {firstName}
+          <p className="text-sm font-sans text-zinc-500 mb-1 tracking-tight">
+            Hello {firstName}.
           </p>
-          <h2 className="text-2xl font-black tracking-tight text-white leading-snug">
+          <h2 className="text-2xl font-black tracking-tight text-white leading-snug font-sans">
             Today's prompt is live.
           </h2>
         </div>
@@ -87,10 +87,19 @@ export function DailyGate({
         </div>
       </div>
 
-      <div className="bg-secondary border border-border rounded-2xl p-6 mb-6">
-        <p className="text-base font-bold leading-snug">
-          {todaysPrompt}
-        </p>
+      <div className="flex items-end gap-2 mb-6">
+        <div className="shrink-0 w-8 h-8 rounded-full overflow-hidden bg-zinc-800 border border-border flex items-center justify-center">
+          <img
+            src="/favicon.ico"
+            alt="Loom"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="bg-secondary border border-border rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[85%]">
+          <p className="text-[15px] font-medium leading-snug text-white">
+            {todaysPrompt}
+          </p>
+        </div>
       </div>
 
       <textarea
