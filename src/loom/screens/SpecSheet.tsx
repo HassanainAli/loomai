@@ -242,9 +242,18 @@ export function SpecSheet({
             </label>
             <input
               value={recoveryPhone}
-              onChange={(e) => setRecoveryPhone(e.target.value)}
-              placeholder="+1 (___) ___-____"
-              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
+                const d = digits.startsWith("1") ? digits.slice(1) : digits;
+                let formatted = "+1";
+                if (d.length > 0) formatted += ` (${d.slice(0, 3)}`;
+                if (d.length >= 3) formatted += `) ${d.slice(3, 6)}`;
+                if (d.length >= 6) formatted += `-${d.slice(6, 10)}`;
+                setRecoveryPhone(d.length === 0 ? "" : formatted);
+              }}
+              inputMode="tel"
+              placeholder="+1 (206) 555-0199"
+              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
             />
             <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
               Used strictly for secure account recovery tokens.
