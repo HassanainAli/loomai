@@ -33,10 +33,9 @@ export function DailyGate({
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
 }) {
   const [answer, setAnswer] = useState("");
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [campusLock, setCampusLock] = useState(true);
   const recalibrate = passStreak >= 6;
   const todaysPrompt = getDailyPrompt();
+  const firstName = (userSpec.name?.trim() || "there").split(" ")[0];
 
   if (recalibrate) {
     const reasons = [
