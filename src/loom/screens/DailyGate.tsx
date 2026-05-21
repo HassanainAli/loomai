@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 import { UserSpec } from "../types";
 
