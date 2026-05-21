@@ -71,8 +71,8 @@ export function DailyGate({
     <div className="flex flex-col h-full pt-12 relative">
       <div className="flex items-start justify-between mb-10 px-8">
         <div>
-          <p className="text-sm font-sans text-zinc-500 mb-1 tracking-tight">
-            Hello {firstName}.
+          <p className="text-sm font-sans text-white mb-1 tracking-tight">
+            Hello {firstName}
           </p>
           <h2 className="text-2xl font-black tracking-tight text-white leading-snug font-sans">
             Today's prompt is live.
