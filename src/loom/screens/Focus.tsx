@@ -8,6 +8,10 @@ interface Msg {
   text: string;
 }
 
+// Local blacklist of user-id pairs that should never be matched again.
+const blacklistedPairs: Array<[string, string]> = [];
+const CURRENT_USER_ID = "me";
+
 export function Focus({
   match,
   onEject,
@@ -26,9 +30,19 @@ export function Focus({
   const [draft, setDraft] = useState("");
   const [showProfile, setShowProfile] = useState(false);
   const [ejecting, setEjecting] = useState(false);
+  const [matchStatus, setMatchStatus] = useState<"active" | "expired">("active");
+
+  function handleEject() {
+    // Lock the chat by transitioning match status to expired
+    setMatchStatus("expired");
+    // Blacklist this pair from future daily match loops
+    blacklistedPairs.push([CURRENT_USER_ID, match.id]);
+    setEjecting(false);
+    onEject();
+  }
 
   function send() {
-    if (!draft.trim()) return;
+    if (!draft.trim() || matchStatus === "expired") return;
     setMessages([...messages, { from: "me", text: draft.trim() }]);
     setDraft("");
   }
@@ -92,12 +106,14 @@ export function Focus({
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder="Message…"
-          className="flex-1 bg-secondary border border-border rounded-full px-5 py-3 text-sm focus:outline-none focus:border-foreground"
+          placeholder={matchStatus === "expired" ? "Connection ended" : "Message…"}
+          disabled={matchStatus === "expired"}
+          className="flex-1 bg-secondary border border-border rounded-full px-5 py-3 text-sm focus:outline-none focus:border-foreground disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <button
           onClick={send}
-          className="bg-primary text-primary-foreground font-bold px-5 rounded-full text-sm"
+          disabled={matchStatus === "expired"}
+          className="bg-primary text-primary-foreground font-bold px-5 rounded-full text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Send
         </button>
@@ -115,15 +131,15 @@ export function Focus({
               </button>
             </div>
             <p className="text-sm text-muted-foreground mb-5">
-              Why are you ending this? The chat will be deleted and you'll
-              return to daily matching tomorrow.
+              Calibrating engine. Please log the primary vector mismatch reason
+              below. This session data will be permanently cleared.
             </p>
             <div className="space-y-2">
               {["No spark", "Ghosted", "Met someone offline", "Other"].map(
                 (r) => (
                   <button
                     key={r}
-                    onClick={onEject}
+                    onClick={handleEject}
                     className="w-full text-left p-4 rounded-2xl border-2 border-border font-semibold text-sm hover:border-foreground transition-colors"
                   >
                     {r}
