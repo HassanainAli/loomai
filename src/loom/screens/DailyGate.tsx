@@ -72,21 +72,19 @@ export function DailyGate({
     <div className="flex flex-col h-full p-8 pt-12 overflow-y-auto relative">
       <div className="flex items-start justify-between mb-10">
         <div>
-          <p className="text-sm lowercase text-zinc-500 mb-1">
-            hello {userSpec.name?.trim() || "there"}.
+          <p className="text-sm font-mono text-zinc-500 mb-1">
+            Hello {firstName}
           </p>
           <h2 className="text-2xl font-black tracking-tight text-white leading-snug">
             Today's prompt is live.
           </h2>
         </div>
-        <button
-          type="button"
-          onClick={() => setSettingsOpen(true)}
-          aria-label="Open settings"
-          className="shrink-0 -mr-1 -mt-1 p-2 text-zinc-500 hover:text-white transition-colors"
+        <div
+          aria-label="Menu"
+          className="shrink-0 -mr-1 -mt-1 p-2 text-zinc-500"
         >
-          <Settings className="w-5 h-5" strokeWidth={1.5} />
-        </button>
+          <Menu className="w-5 h-5" strokeWidth={1.5} />
+        </div>
       </div>
 
       <div className="bg-secondary border border-border rounded-2xl p-6 mb-6">
