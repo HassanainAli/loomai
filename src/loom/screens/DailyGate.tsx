@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { ArrowUp, Menu } from "lucide-react";
-import { PrimaryButton } from "../Shell";
 import { UserSpec } from "../types";
 
 const strategicPartyPrompts = [
