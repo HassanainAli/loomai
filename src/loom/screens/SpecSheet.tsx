@@ -2,17 +2,20 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Lock, Camera, Plus, ChevronDown, X } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 import { UserSpec } from "../types";
+import { supabase } from "@/integrations/supabase/client";
 
 export function SpecSheet({
   onNext,
   onBack,
   userSpec,
   onUpdateUserSpec,
+  userId,
 }: {
-  onNext: () => void;
+  onNext: (displayName?: string) => void;
   onBack: () => void;
   userSpec: UserSpec;
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
+  userId: string | null;
 }) {
   const [height, setHeight] = useState("");
   const [dateOfBirth, setDateOfBirth] = useState("");
@@ -20,6 +23,8 @@ export function SpecSheet({
   const [proximity, setProximity] = useState(true);
   const [location, setLocation] = useState("");
   const [hobbies, setHobbies] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<(string | null)[]>([null, null, null]);
   const fileInputs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
 
@@ -50,6 +55,54 @@ export function SpecSheet({
     const input = fileInputs[i].current;
     if (input) input.value = "";
   };
+
+  async function handleComplete() {
+    if (!userId) {
+      setSaveError("You must be signed in.");
+      return;
+    }
+    if (
+      !userSpec.name.trim() ||
+      !userSpec.gender ||
+      !userSpec.campus ||
+      !userSpec.seeking
+    ) {
+      setSaveError("Please fill in name, gender, campus, and preference.");
+      return;
+    }
+    setSaving(true);
+    setSaveError(null);
+    try {
+      const { error: pErr } = await (supabase as any)
+        .from("profiles")
+        .upsert(
+          {
+            id: userId,
+            display_name: userSpec.name.trim(),
+            gender: userSpec.gender,
+            campus_hub: userSpec.campus,
+            target_preference: userSpec.seeking,
+          },
+          { onConflict: "id" },
+        );
+      if (pErr) throw pErr;
+
+      const { error: mErr } = await (supabase as any)
+        .from("matching_preferences")
+        .insert({
+          user_id: userId,
+          campus_lock: proximity,
+          pause_matching: false,
+        });
+      if (mErr) throw mErr;
+
+      onNext(userSpec.name.trim());
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : "Save failed.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
@@ -348,7 +401,12 @@ export function SpecSheet({
 
       <div className="flex-1 min-h-4" />
       <div className="p-8 pt-2">
-        <PrimaryButton onClick={onNext}>Complete Profile</PrimaryButton>
+        {saveError && (
+          <p className="text-xs text-red-400 mb-3">{saveError}</p>
+        )}
+        <PrimaryButton onClick={handleComplete} disabled={saving}>
+          {saving ? "Saving…" : "Complete Profile"}
+        </PrimaryButton>
       </div>
     </div>
   );
