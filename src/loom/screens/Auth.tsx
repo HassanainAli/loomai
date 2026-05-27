@@ -1,22 +1,48 @@
 import { useState } from "react";
 import { Brand } from "../Shell";
+import { supabase } from "@/integrations/supabase/client";
 
 type Mode = "signin" | "signup";
 
 export function Auth({ onNext }: { onNext: () => void }) {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [mode, setMode] = useState<Mode>("signup");
   const [scanning, setScanning] = useState(false);
 
-  function submit() {
-    if (!email.toLowerCase().trim().endsWith(".edu")) {
+  async function submit() {
+    const e = email.trim().toLowerCase();
+    if (!e.endsWith(".edu")) {
       setError("Please use a valid .edu email address.");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
       return;
     }
     setError("");
     setScanning(true);
-    setTimeout(() => onNext(), 900);
+    try {
+      if (mode === "signup") {
+        const { error: err } = await supabase.auth.signUp({
+          email: e,
+          password,
+          options: { emailRedirectTo: `${window.location.origin}/` },
+        });
+        if (err) throw err;
+      } else {
+        const { error: err } = await supabase.auth.signInWithPassword({
+          email: e,
+          password,
+        });
+        if (err) throw err;
+      }
+      onNext();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Authentication failed.");
+      setScanning(false);
+    }
   }
 
   return (
@@ -99,7 +125,20 @@ export function Auth({ onNext }: { onNext: () => void }) {
             }}
             onKeyDown={(e) => e.key === "Enter" && submit()}
             placeholder="name@university.edu"
+            autoComplete="email"
             className="loom-input w-full bg-transparent border-0 border-b border-white/30 text-center text-base text-white placeholder:text-white/25 px-0 py-3 focus:outline-none transition-all"
+          />
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setError("");
+            }}
+            onKeyDown={(e) => e.key === "Enter" && submit()}
+            placeholder="password"
+            autoComplete={mode === "signup" ? "new-password" : "current-password"}
+            className="loom-input w-full bg-transparent border-0 border-b border-white/30 text-center text-base text-white placeholder:text-white/25 px-0 py-3 focus:outline-none transition-all mt-3"
           />
           {error && (
             <p className="text-xs mt-3 text-red-400 font-medium">{error}</p>
@@ -118,10 +157,10 @@ export function Auth({ onNext }: { onNext: () => void }) {
 
           <button
             onClick={submit}
-            disabled={!email || scanning}
+            disabled={!email || !password || scanning}
             className="loom-cta mt-8 w-full px-8 py-3 rounded-full text-sm font-bold text-white tracking-wide active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {mode === "signup" ? "Next" : "Sign in"}
+            {scanning ? "…" : mode === "signup" ? "Create account" : "Sign in"}
           </button>
 
           <div className="flex items-center gap-3 my-6">
@@ -131,20 +170,9 @@ export function Auth({ onNext }: { onNext: () => void }) {
           </div>
 
           <div className="space-y-2.5">
-            <button
-              type="button"
-              onClick={submit}
-              className="loom-oauth w-full px-4 py-2.5 rounded-full text-xs font-medium text-white/90 bg-transparent"
-            >
-              Sign in with University Portal
-            </button>
-            <button
-              type="button"
-              onClick={submit}
-              className="loom-oauth w-full px-4 py-2.5 rounded-full text-xs font-medium text-white/90 bg-transparent"
-            >
-              Sign in with Google
-            </button>
+            <p className="text-[10px] text-white/40 text-center">
+              Email/password authentication. Verify your .edu inbox after signup.
+            </p>
           </div>
         </div>
       </div>
