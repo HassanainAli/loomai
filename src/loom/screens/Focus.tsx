@@ -2,6 +2,7 @@ import { useState } from "react";
 import { X, ArrowUp } from "lucide-react";
 import { Match } from "../types";
 import { Profile } from "./Profile";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Msg {
   from: "me" | "them";
@@ -16,9 +17,11 @@ const CURRENT_USER_ID = "me";
 export function Focus({
   match,
   onEject,
+  userId,
 }: {
   match: Match;
   onEject: () => void;
+  userId: string | null;
 }) {
   const [messages, setMessages] = useState<Msg[]>([
     { from: "them", text: `Okay, brunch is a scam — I respect the take.` },
@@ -35,12 +38,20 @@ export function Focus({
   const [ejectNote, setEjectNote] = useState("");
   const [matchStatus, setMatchStatus] = useState<"active" | "expired">("active");
 
-  function handleEject(reason: string, note: string) {
-    // Lock the chat by transitioning match status to expired
+  async function handleEject(reason: string, note: string) {
     setMatchStatus("expired");
     ejectTelemetry.push({ matchId: match.id, reason, note });
-    // Blacklist this pair from future daily match loops
     blacklistedPairs.push([CURRENT_USER_ID, match.id]);
+    if (userId) {
+      const { error } = await (supabase as any)
+        .from("match_history")
+        .insert({
+          user_id: userId,
+          separation_category: reason,
+          open_feedback: note || null,
+        });
+      if (error) console.error("[match_history] insert failed", error);
+    }
     setEjecting(false);
     setSelectedReason(null);
     setEjectNote("");
