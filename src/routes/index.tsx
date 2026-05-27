@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Shell } from "@/loom/Shell";
 import { DesktopLanding } from "@/loom/DesktopLanding";
 import { Auth } from "@/loom/screens/Auth";
@@ -31,11 +32,64 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [screen, setScreen] = useState<Screen>("auth");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string>("");
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
   const [passStreak, setPassStreak] = useState(5); // demo: one more pass triggers recalibration
   const [userSpec, setUserSpec] = useState<UserSpec>(CURRENT_USER_SPEC);
   const updateUserSpec = (patch: Partial<UserSpec>) =>
     setUserSpec((prev) => ({ ...prev, ...patch }));
+
+  // Hydrate session + profile and react to auth state changes.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFor(uid: string) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name, gender, campus_hub, target_preference")
+        .eq("id", uid)
+        .maybeSingle();
+      if (cancelled) return;
+      if (profile) {
+        setDisplayName(profile.display_name ?? "");
+        setUserSpec((prev) => ({
+          ...prev,
+          name: profile.display_name ?? "",
+          gender: profile.gender ?? "",
+          campus: profile.campus_hub ?? "",
+          seeking: profile.target_preference ?? "",
+        }));
+        setScreen("dailyGate");
+      } else {
+        setScreen("onboard1");
+      }
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      const uid = data.session?.user?.id ?? null;
+      if (cancelled) return;
+      setUserId(uid);
+      if (uid) loadFor(uid);
+      else setScreen("auth");
+    });
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      const uid = session?.user?.id ?? null;
+      setUserId(uid);
+      if (uid) {
+        loadFor(uid);
+      } else {
+        setDisplayName("");
+        setScreen("auth");
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
 
   const app = (
     <>
@@ -60,7 +114,11 @@ function Index() {
       )}
       {screen === "specSheet" && (
         <SpecSheet
-          onNext={() => setScreen("dailyGate")}
+          userId={userId}
+          onNext={(name) => {
+            if (name) setDisplayName(name);
+            setScreen("dailyGate");
+          }}
           onBack={() => setScreen("onboard3")}
           userSpec={userSpec}
           onUpdateUserSpec={updateUserSpec}
@@ -68,6 +126,8 @@ function Index() {
       )}
       {screen === "dailyGate" && (
         <DailyGate
+          userId={userId}
+          displayName={displayName}
           passStreak={passStreak}
           onSubmit={() => setScreen("anticipation")}
           onRecalibrate={() => {
@@ -102,6 +162,7 @@ function Index() {
       )}
       {screen === "focus" && activeMatch && (
         <Focus
+          userId={userId}
           match={activeMatch}
           onEject={() => {
             setActiveMatch(null);
