@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowUp, Menu } from "lucide-react";
 import { UserSpec } from "../types";
+import { supabase } from "@/integrations/supabase/client";
 
 const strategicPartyPrompts = [
   "You're going to hell. What minor inconvenience is your eternal punishment?",
@@ -24,17 +25,44 @@ export function DailyGate({
   onRecalibrate,
   userSpec,
   onUpdateUserSpec,
+  userId,
+  displayName,
 }: {
   passStreak: number;
   onSubmit: () => void;
   onRecalibrate: () => void;
   userSpec: UserSpec;
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
+  userId: string | null;
+  displayName: string;
 }) {
   const [answer, setAnswer] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const recalibrate = passStreak >= 6;
   const todaysPrompt = getDailyPrompt();
-  const firstName = (userSpec.name?.trim() || "there").split(" ")[0];
+  const firstName = (
+    displayName?.trim() || userSpec.name?.trim() || "there"
+  ).split(" ")[0];
+
+  async function handleSubmit() {
+    const text = answer.trim();
+    if (text.length < 15 || !userId) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const { error } = await (supabase as any)
+        .from("prompt_responses")
+        .insert({ user_id: userId, response_text: text });
+      if (error) throw error;
+      setAnswer("");
+      onSubmit();
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Submit failed.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   if (recalibrate) {
     const reasons = [
@@ -104,6 +132,9 @@ export function DailyGate({
       <div className="flex-1" />
 
       <div className="px-5 pb-6 pt-4">
+        {submitError && (
+          <p className="text-xs text-red-400 mb-2 px-3">{submitError}</p>
+        )}
         <div className="relative flex items-center w-full bg-secondary border border-border rounded-full pl-5 pr-1.5 py-1.5">
           <textarea
             value={answer}
@@ -114,8 +145,8 @@ export function DailyGate({
           />
           <button
             type="button"
-            onClick={onSubmit}
-            disabled={answer.trim().length < 15}
+            onClick={handleSubmit}
+            disabled={answer.trim().length < 15 || submitting || !userId}
             aria-label="Submit"
             className="shrink-0 ml-2 w-9 h-9 rounded-full bg-yellow-400 text-black flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:bg-yellow-300 transition-colors"
           >
