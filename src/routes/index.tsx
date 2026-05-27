@@ -45,7 +45,7 @@ function Index() {
     let cancelled = false;
 
     async function loadFor(uid: string) {
-      const { data: profile } = await supabase
+      const { data: profile } = await (supabase as any)
         .from("profiles")
         .select("display_name, gender, campus_hub, target_preference")
         .eq("id", uid)
@@ -115,7 +115,7 @@ function Index() {
       {screen === "specSheet" && (
         <SpecSheet
           userId={userId}
-          onNext={(name) => {
+          onNext={(name?: string) => {
             if (name) setDisplayName(name);
             setScreen("dailyGate");
           }}
