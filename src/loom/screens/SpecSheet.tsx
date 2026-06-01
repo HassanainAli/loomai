@@ -77,27 +77,49 @@ export function SpecSheet({
     setSaving(true);
     setSaveError(null);
     try {
+      if (!activeUserId) {
+        throw new Error(userErr?.message || "No active authenticated user found for onboarding submission.");
+      }
+
       const { error: pErr } = await (supabase as any)
         .from("profiles")
         .upsert(
-          {
+          [
+            {
             id: activeUserId,
             display_name: userSpec.name.trim(),
             gender: userSpec.gender,
             campus_hub: userSpec.campus,
             target_preference: userSpec.seeking,
-          },
+            },
+          ],
           { onConflict: "id" },
         );
       if (pErr) throw pErr;
 
-      const { error: mErr } = await (supabase as any)
+      const { data: existingPreference, error: prefLookupErr } = await (supabase as any)
         .from("matching_preferences")
-        .insert({
-          user_id: activeUserId,
-          campus_lock: proximity,
-          pause_matching: false,
-        });
+        .select("id")
+        .eq("user_id", activeUserId)
+        .maybeSingle();
+      if (prefLookupErr) throw prefLookupErr;
+
+      const { error: mErr } = existingPreference?.id
+        ? await (supabase as any)
+            .from("matching_preferences")
+            .update({
+              campus_lock: proximity,
+              pause_matching: false,
+            })
+            .eq("id", existingPreference.id)
+            .eq("user_id", activeUserId)
+        : await (supabase as any)
+            .from("matching_preferences")
+            .insert({
+              user_id: activeUserId,
+              campus_lock: proximity,
+              pause_matching: false,
+            });
       if (mErr) throw mErr;
 
       onNext(userSpec.name.trim());

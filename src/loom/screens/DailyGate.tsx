@@ -59,10 +59,24 @@ export function DailyGate({
     setSubmitting(true);
     setSubmitError(null);
     try {
-      const { error } = await (supabase as any)
+      if (!activeUserId) {
+        throw new Error(userErr?.message || "No active authenticated user found for prompt submission.");
+      }
+
+      const { data: existingResponse, error: responseLookupErr } = await (supabase as any)
+        .from("prompt_responses")
+        .select("id")
+        .eq("user_id", activeUserId)
+        .eq("response_text", text)
+        .maybeSingle();
+      if (responseLookupErr) throw responseLookupErr;
+
+      if (!existingResponse?.id) {
+        const { error } = await (supabase as any)
         .from("prompt_responses")
         .insert({ user_id: activeUserId, response_text: text });
-      if (error) throw error;
+        if (error) throw error;
+      }
       setAnswer("");
       onSubmit();
     } catch (err) {
