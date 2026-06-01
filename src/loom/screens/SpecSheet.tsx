@@ -101,15 +101,12 @@ export function SpecSheet({
       if (mErr) throw mErr;
 
       onNext(userSpec.name.trim());
-    } catch (err) {
-      console.error("[SpecSheet] profile save failed — exact error:", err);
-      const message =
-        err && typeof err === "object" && "message" in err
-          ? String((err as { message?: unknown }).message)
-          : "Database insert failed. Check the console for the exact error object.";
-      const details = err && typeof err === "object" && "details" in err ? String((err as { details?: unknown }).details) : "";
-      const hint = err && typeof err === "object" && "hint" in err ? String((err as { hint?: unknown }).hint) : "";
-      const dbMessage = [message, details && `Details: ${details}`, hint && `Hint: ${hint}`].filter(Boolean).join("\n");
+    } catch (error) {
+      console.error("[SpecSheet] onboarding submission failed — exact error:", error);
+      const dbMessage =
+        error && typeof error === "object"
+          ? String((error as { message?: unknown; details?: unknown }).message || (error as { message?: unknown; details?: unknown }).details || JSON.stringify(error))
+          : String(error);
       setSaveError(dbMessage);
       window.alert(dbMessage);
     } finally {
