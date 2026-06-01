@@ -57,7 +57,19 @@ export function SpecSheet({
   };
 
   async function handleComplete() {
-    if (!userId) {
+    // Always pull the freshest auth state instead of trusting the prop.
+    const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
+    if (sessionErr) {
+      console.error("[SpecSheet] getSession error:", sessionErr);
+    }
+    let activeUserId = sessionData?.session?.user?.id ?? null;
+    if (!activeUserId) {
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if (userErr) console.error("[SpecSheet] getUser error:", userErr);
+      activeUserId = userData?.user?.id ?? null;
+    }
+    if (!activeUserId) {
+      console.error("[SpecSheet] no active session found", { propUserId: userId });
       setSaveError("You must be signed in.");
       return;
     }
@@ -77,7 +89,7 @@ export function SpecSheet({
         .from("profiles")
         .upsert(
           {
-            id: userId,
+            id: activeUserId,
             display_name: userSpec.name.trim(),
             gender: userSpec.gender,
             campus_hub: userSpec.campus,
@@ -90,7 +102,7 @@ export function SpecSheet({
       const { error: mErr } = await (supabase as any)
         .from("matching_preferences")
         .insert({
-          user_id: userId,
+          user_id: activeUserId,
           campus_lock: proximity,
           pause_matching: false,
         });
@@ -98,7 +110,7 @@ export function SpecSheet({
 
       onNext(userSpec.name.trim());
     } catch (err) {
-      console.error("[SpecSheet] profile save failed", err);
+      console.error("[SpecSheet] profile save failed — exact error:", err);
       setSaveError("Couldn't save your profile. Please try again.");
     } finally {
       setSaving(false);
