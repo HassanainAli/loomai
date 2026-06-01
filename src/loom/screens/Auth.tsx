@@ -40,7 +40,8 @@ export function Auth({ onNext }: { onNext: () => void }) {
       }
       onNext();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Authentication failed.");
+      console.error("[Auth] error:", err);
+      setError("Authentication failed. Please check your credentials and try again.");
       setScanning(false);
     }
   }

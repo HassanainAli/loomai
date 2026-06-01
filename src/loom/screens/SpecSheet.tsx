@@ -144,6 +144,7 @@ export function SpecSheet({
               value={userSpec.name}
               onChange={(e) => onUpdateUserSpec({ name: e.target.value })}
               placeholder="Type your name..."
+              maxLength={100}
               className="w-full bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 text-sm text-[#FACC15] placeholder:text-[#FACC15] placeholder:opacity-50 placeholder:normal-case focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono"
             />
           </div>
