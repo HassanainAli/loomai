@@ -98,7 +98,8 @@ export function SpecSheet({
 
       onNext(userSpec.name.trim());
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : "Save failed.");
+      console.error("[SpecSheet] profile save failed", err);
+      setSaveError("Couldn't save your profile. Please try again.");
     } finally {
       setSaving(false);
     }

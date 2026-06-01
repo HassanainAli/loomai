@@ -59,7 +59,7 @@ export const generateAlignmentSpec = createServerFn({ method: "POST" })
       return { text: null, error: "API Key Missing from Environment" };
     }
 
-    console.log("Gemma 4 Request Initiated for Project 652894558236");
+    console.log("[AlignmentEngine] request initiated");
 
     const systemInstruction =
       "You are the Loom Alignment Engine. Analyze the provided Spec Sheets for Pace and Intention. Generate a tactical, 2-sentence summary of their high-signal compatibility. Tone: Technical, intentional, Neon-Noir.";

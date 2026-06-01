@@ -58,7 +58,8 @@ export function DailyGate({
       setAnswer("");
       onSubmit();
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Submit failed.");
+      console.error("[DailyGate] prompt_responses insert failed", err);
+      setSubmitError("Couldn't submit your response. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -140,6 +141,7 @@ export function DailyGate({
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             rows={1}
+            maxLength={2000}
             placeholder="Be honest. This goes to your two matches at 8 PM."
             className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none resize-none leading-6 py-2 max-h-32"
           />

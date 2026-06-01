@@ -174,6 +174,7 @@ export function Focus({
                   type="text"
                   value={ejectNote}
                   onChange={(e) => setEjectNote(e.target.value)}
+                  maxLength={500}
                   onKeyDown={(e) =>
                     e.key === "Enter" && handleEject(selectedReason, ejectNote.trim())
                   }
