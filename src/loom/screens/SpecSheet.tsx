@@ -58,7 +58,7 @@ export function SpecSheet({
 
   async function handleComplete() {
     const { data: userData, error: userErr } = await supabase.auth.getUser();
-    const activeUserId = userData?.user?.id ?? userId;
+    const activeUserId = userData?.user?.id ?? null;
     console.log("[SpecSheet] latest auth user before onboarding insert", {
       authUserId: userData?.user?.id ?? null,
       propUserId: userId,
