@@ -57,17 +57,9 @@ export function SpecSheet({
   };
 
   async function handleComplete() {
-    const { data: userData, error: userErr } = await supabase.auth.getUser();
     const { data: sessData } = await supabase.auth.getSession();
-    const activeUserId = userData?.user?.id ?? null;
-    console.log("[SpecSheet] pre-insert auth state", {
-      authUserId: activeUserId,
-      propUserId: userId,
-      tokenAttached: !!sessData.session?.access_token,
-      tokenUserId: sessData.session?.user?.id ?? null,
-      authError: userErr,
-    });
-    if (userErr) console.error("[SpecSheet] getUser error before onboarding insert:", userErr);
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    const activeUserId = userData?.user?.id ?? sessData.session?.user?.id ?? null;
     if (
       !userSpec.name.trim() ||
       !userSpec.gender ||
@@ -81,7 +73,9 @@ export function SpecSheet({
     setSaveError(null);
     try {
       if (!activeUserId) {
-        throw new Error(userErr?.message || "No active authenticated user found for onboarding submission.");
+        throw new Error(
+          "Your session expired. Please sign in again to finish onboarding.",
+        );
       }
 
       const { error: pErr } = await (supabase as any)
@@ -131,10 +125,13 @@ export function SpecSheet({
       console.error("[SpecSheet] onboarding submission failed — exact error:", error);
       const dbMessage =
         error && typeof error === "object"
-          ? String((error as { message?: unknown; details?: unknown }).message || (error as { message?: unknown; details?: unknown }).details || JSON.stringify(error))
+          ? String(
+              (error as { message?: unknown; details?: unknown }).message ||
+                (error as { message?: unknown; details?: unknown }).details ||
+                JSON.stringify(error),
+            )
           : String(error);
       setSaveError(dbMessage);
-      window.alert(dbMessage);
     } finally {
       setSaving(false);
     }
