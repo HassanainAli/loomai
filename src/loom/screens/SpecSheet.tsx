@@ -57,22 +57,14 @@ export function SpecSheet({
   };
 
   async function handleComplete() {
-    // Always pull the freshest auth state instead of trusting the prop.
-    const { data: sessionData, error: sessionErr } = await supabase.auth.getSession();
-    if (sessionErr) {
-      console.error("[SpecSheet] getSession error:", sessionErr);
-    }
-    let activeUserId = sessionData?.session?.user?.id ?? null;
-    if (!activeUserId) {
-      const { data: userData, error: userErr } = await supabase.auth.getUser();
-      if (userErr) console.error("[SpecSheet] getUser error:", userErr);
-      activeUserId = userData?.user?.id ?? null;
-    }
-    if (!activeUserId) {
-      console.error("[SpecSheet] no active session found", { propUserId: userId });
-      setSaveError("You must be signed in.");
-      return;
-    }
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    const activeUserId = userData?.user?.id ?? null;
+    console.log("[SpecSheet] latest auth user before onboarding insert", {
+      authUserId: userData?.user?.id ?? null,
+      propUserId: userId,
+      authError: userErr,
+    });
+    if (userErr) console.error("[SpecSheet] getUser error before onboarding insert:", userErr);
     if (
       !userSpec.name.trim() ||
       !userSpec.gender ||
@@ -111,7 +103,15 @@ export function SpecSheet({
       onNext(userSpec.name.trim());
     } catch (err) {
       console.error("[SpecSheet] profile save failed — exact error:", err);
-      setSaveError("Couldn't save your profile. Please try again.");
+      const message =
+        err && typeof err === "object" && "message" in err
+          ? String((err as { message?: unknown }).message)
+          : "Database insert failed. Check the console for the exact error object.";
+      const details = err && typeof err === "object" && "details" in err ? String((err as { details?: unknown }).details) : "";
+      const hint = err && typeof err === "object" && "hint" in err ? String((err as { hint?: unknown }).hint) : "";
+      const dbMessage = [message, details && `Details: ${details}`, hint && `Hint: ${hint}`].filter(Boolean).join("\n");
+      setSaveError(dbMessage);
+      window.alert(dbMessage);
     } finally {
       setSaving(false);
     }

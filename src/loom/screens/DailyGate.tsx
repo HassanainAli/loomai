@@ -46,20 +46,36 @@ export function DailyGate({
   ).split(" ")[0];
 
   async function handleSubmit() {
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    const activeUserId = userData?.user?.id ?? null;
+    console.log("[DailyGate] latest auth user before prompt insert", {
+      authUserId: activeUserId,
+      propUserId: userId,
+      authError: userErr,
+    });
+    if (userErr) console.error("[DailyGate] getUser error before prompt insert:", userErr);
     const text = answer.trim();
-    if (text.length < 15 || !userId) return;
+    if (text.length < 15) return;
     setSubmitting(true);
     setSubmitError(null);
     try {
       const { error } = await (supabase as any)
         .from("prompt_responses")
-        .insert({ user_id: userId, response_text: text });
+        .insert({ user_id: activeUserId, response_text: text });
       if (error) throw error;
       setAnswer("");
       onSubmit();
     } catch (err) {
       console.error("[DailyGate] prompt_responses insert failed", err);
-      setSubmitError("Couldn't submit your response. Please try again.");
+      const message =
+        err && typeof err === "object" && "message" in err
+          ? String((err as { message?: unknown }).message)
+          : "Prompt response insert failed. Check the console for the exact error object.";
+      const details = err && typeof err === "object" && "details" in err ? String((err as { details?: unknown }).details) : "";
+      const hint = err && typeof err === "object" && "hint" in err ? String((err as { hint?: unknown }).hint) : "";
+      const dbMessage = [message, details && `Details: ${details}`, hint && `Hint: ${hint}`].filter(Boolean).join("\n");
+      setSubmitError(dbMessage);
+      window.alert(dbMessage);
     } finally {
       setSubmitting(false);
     }
@@ -148,7 +164,7 @@ export function DailyGate({
           <button
             type="button"
             onClick={handleSubmit}
-            disabled={answer.trim().length < 15 || submitting || !userId}
+            disabled={answer.trim().length < 15 || submitting}
             aria-label="Submit"
             className="shrink-0 ml-2 w-9 h-9 rounded-full bg-yellow-400 text-black flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:bg-yellow-300 transition-colors"
           >
