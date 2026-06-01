@@ -51,7 +51,12 @@ function Index() {
         .eq("id", uid)
         .maybeSingle();
       if (cancelled) return;
-      if (profile) {
+      const onboardingComplete = !!(
+        profile?.gender &&
+        profile?.campus_hub &&
+        profile?.target_preference
+      );
+      if (profile && onboardingComplete) {
         setDisplayName(profile.display_name ?? "");
         setUserSpec((prev) => ({
           ...prev,
@@ -62,6 +67,11 @@ function Index() {
         }));
         setScreen("dailyGate");
       } else {
+        // Pre-fill the display_name from the auto-created profile row if present,
+        // but keep the user inside onboarding until SpecSheet saves the rest.
+        if (profile?.display_name) {
+          setUserSpec((prev) => ({ ...prev, name: profile.display_name }));
+        }
         setScreen("onboard1");
       }
     }
