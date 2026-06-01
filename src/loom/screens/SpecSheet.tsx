@@ -58,10 +58,13 @@ export function SpecSheet({
 
   async function handleComplete() {
     const { data: userData, error: userErr } = await supabase.auth.getUser();
+    const { data: sessData } = await supabase.auth.getSession();
     const activeUserId = userData?.user?.id ?? null;
-    console.log("[SpecSheet] latest auth user before onboarding insert", {
-      authUserId: userData?.user?.id ?? null,
+    console.log("[SpecSheet] pre-insert auth state", {
+      authUserId: activeUserId,
       propUserId: userId,
+      tokenAttached: !!sessData.session?.access_token,
+      tokenUserId: sessData.session?.user?.id ?? null,
       authError: userErr,
     });
     if (userErr) console.error("[SpecSheet] getUser error before onboarding insert:", userErr);
