@@ -14,7 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      match_history: {
+        Row: {
+          created_at: string
+          id: string
+          open_feedback: string | null
+          separation_category: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          open_feedback?: string | null
+          separation_category: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          open_feedback?: string | null
+          separation_category?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      matching_preferences: {
+        Row: {
+          campus_lock: boolean
+          created_at: string
+          id: string
+          pause_matching: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campus_lock?: boolean
+          created_at?: string
+          id?: string
+          pause_matching?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campus_lock?: boolean
+          created_at?: string
+          id?: string
+          pause_matching?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          campus_hub: string | null
+          created_at: string
+          display_name: string | null
+          gender: string | null
+          id: string
+          target_preference: string | null
+          updated_at: string
+        }
+        Insert: {
+          campus_hub?: string | null
+          created_at?: string
+          display_name?: string | null
+          gender?: string | null
+          id: string
+          target_preference?: string | null
+          updated_at?: string
+        }
+        Update: {
+          campus_hub?: string | null
+          created_at?: string
+          display_name?: string | null
+          gender?: string | null
+          id?: string
+          target_preference?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      prompt_responses: {
+        Row: {
+          created_at: string
+          embedding: string | null
+          id: number
+          response_text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding?: string | null
+          id?: number
+          response_text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: string | null
+          id?: number
+          response_text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
