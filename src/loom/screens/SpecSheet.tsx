@@ -86,11 +86,11 @@ export function SpecSheet({
         .upsert(
           [
             {
-            id: activeUserId,
-            display_name: userSpec.name.trim(),
-            gender: userSpec.gender,
-            campus_hub: userSpec.campus,
-            target_preference: userSpec.seeking,
+              id: activeUserId,
+              display_name: userSpec.name.trim(),
+              gender: userSpec.gender,
+              campus_hub: userSpec.campus,
+              target_preference: userSpec.seeking,
             },
           ],
           { onConflict: "id" },
@@ -101,6 +101,7 @@ export function SpecSheet({
         .from("matching_preferences")
         .select("id")
         .eq("user_id", activeUserId)
+        .limit(1)
         .maybeSingle();
       if (prefLookupErr) throw prefLookupErr;
 

@@ -68,13 +68,14 @@ export function DailyGate({
         .select("id")
         .eq("user_id", activeUserId)
         .eq("response_text", text)
+        .limit(1)
         .maybeSingle();
       if (responseLookupErr) throw responseLookupErr;
 
       if (!existingResponse?.id) {
         const { error } = await (supabase as any)
-        .from("prompt_responses")
-        .insert({ user_id: activeUserId, response_text: text });
+          .from("prompt_responses")
+          .insert({ user_id: activeUserId, response_text: text });
         if (error) throw error;
       }
       setAnswer("");
