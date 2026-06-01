@@ -56,7 +56,7 @@ export const generateAlignmentSpec = createServerFn({ method: "POST" })
 
     if (!apiKey) {
       console.error("[AlignmentEngine] API Key Missing from Environment");
-      return { text: null, error: "API Key Missing from Environment" };
+      return { text: null, error: "Engine unavailable. Please try again later." };
     }
 
     console.log("[AlignmentEngine] request initiated");
