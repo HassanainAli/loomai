@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { GoogleGenAI } from "@google/genai";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const SpecSchema = z.object({
   pace: z.string().trim().min(1).max(500),
@@ -34,6 +35,7 @@ function checkRateLimit(key: string): boolean {
 }
 
 export const generateAlignmentSpec = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => AlignmentInputSchema.parse(input))
   .handler(async ({ data }) => {
     // Rate limit by client IP to prevent budget exhaustion on this paid endpoint.
