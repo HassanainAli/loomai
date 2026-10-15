@@ -108,7 +108,7 @@ export function Auth({ onNext }: { onNext: () => void }) {
               setError("");
             }}
             onKeyDown={(e) => e.key === "Enter" && submit()}
-            placeholder="password"
+            placeholder="Password"
             autoComplete={mode === "signup" ? "new-password" : "current-password"}
             className="loom-input w-full bg-transparent border-0 border-b border-white/30 text-center text-base text-white placeholder:text-white/25 px-0 py-3 focus:outline-none transition-all mt-3"
           />
