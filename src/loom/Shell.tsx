@@ -26,15 +26,7 @@ export function Brand({
         ...style,
       }}
     >
-      loom
-      <span
-        className="inline-block align-baseline rounded-full ml-1"
-        style={{
-          width: "0.6em",
-          height: "0.6em",
-          backgroundColor: "#FACC15",
-        }}
-      />
+      loom<span className="font-black text-primary">.</span>
     </h1>
   );
 }
