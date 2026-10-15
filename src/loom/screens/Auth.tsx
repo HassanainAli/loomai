@@ -59,13 +59,15 @@ export function Auth({ onNext }: { onNext: () => void }) {
   async function submit() {
     const e = email.trim().toLowerCase();
     if (mode === "signup") {
-      if (!name.trim()) return setError("Please enter your name.");
+      const problems: string[] = [];
+      if (!name.trim()) problems.push("Please enter your name.");
       const iso = parseDob(dob);
-      if (!iso) return setError("Please enter a valid date of birth.");
-      if (ageFrom(iso) < 18) return setError("You must be 18 or older to join Loom.");
-      if (!e.endsWith(".edu")) return setError("Please use a valid .edu email address.");
-      if (password.length < 6) return setError("Password must be at least 6 characters.");
-      if (password !== confirm) return setError("Passwords don't match.");
+      if (!iso) problems.push("Please enter a valid date of birth (MM / DD / YYYY).");
+      else if (ageFrom(iso) < 18) problems.push("You must be 18 or older to join Loom.");
+      if (!e.endsWith(".edu")) problems.push("Please use your university .edu email, not a personal one.");
+      if (password.length < 6) problems.push("Password must be at least 6 characters.");
+      if (password !== confirm) problems.push("Passwords don't match.");
+      if (problems.length) return setError(problems.join("\n"));
       setError("");
       setBusy(true);
       const { data, error: err } = await supabase.auth.signUp({
@@ -229,7 +231,7 @@ export function Auth({ onNext }: { onNext: () => void }) {
                 />
               )}
               {mismatch && <p className="text-xs pt-1 text-red-400">Passwords don't match.</p>}
-              {error && <p className="text-xs pt-1 text-red-400 font-medium">{error}</p>}
+              {error && <p className="text-xs pt-1 text-red-400 font-medium whitespace-pre-line">{error}</p>}
 
               <button
                 type="submit"
