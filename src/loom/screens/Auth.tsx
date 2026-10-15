@@ -38,7 +38,7 @@ export function ageFrom(iso: string, now = new Date()) {
 }
 
 export function Auth({ onNext }: { onNext: () => void }) {
-  const [mode, setMode] = useState<Mode>("signup");
+  const [mode, setMode] = useState<Mode>("signin");
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
   const [email, setEmail] = useState("");
@@ -164,26 +164,11 @@ export function Auth({ onNext }: { onNext: () => void }) {
         <div className="loom-shutter flex flex-col items-center flex-1 px-8 py-10">
           <Brand style={{ fontSize: "3.5rem", fontWeight: 900 }} className="mb-8 leading-none" />
 
-          <div className="w-full max-w-xs grid grid-cols-2 p-1 rounded-full border border-white/15 bg-white/5 mb-8">
-            {(["signup", "signin"] as Mode[]).map((m) => (
-              <button
-                key={m}
-                type="button"
-                onClick={() => switchMode(m)}
-                className={`py-2.5 rounded-full text-sm font-bold transition-all ${
-                  mode === m ? "bg-[#ff2bd6] text-black" : "text-white/60 hover:text-white"
-                }`}
-              >
-                {m === "signup" ? "Create account" : "Sign in"}
-              </button>
-            ))}
-          </div>
-
           <div key={mode} className="loom-shutter w-full max-w-xs">
-            <h2 className="text-2xl font-black mb-1">
+            <h2 className="text-2xl font-black mb-1 text-center">
               {mode === "signup" ? "Join your campus" : "Welcome back"}
             </h2>
-            <p className="text-sm text-white/50 mb-6">
+            <p className="text-sm text-white/50 mb-6 text-center">
               {mode === "signup"
                 ? "Verified students only. Takes a minute."
                 : "Sign in with your university email."}
@@ -258,6 +243,17 @@ export function Auth({ onNext }: { onNext: () => void }) {
                 ) : mode === "signup" ? "Create account" : "Sign in"}
               </button>
             </form>
+
+            <p className="mt-6 text-center text-sm text-white/50">
+              {mode === "signin" ? "New to Loom? " : "Already have an account? "}
+              <button
+                type="button"
+                onClick={() => switchMode(mode === "signin" ? "signup" : "signin")}
+                className="font-bold text-white underline underline-offset-4 hover:text-[#ff2bd6]"
+              >
+                {mode === "signin" ? "Create account" : "Sign in"}
+              </button>
+            </p>
           </div>
         </div>
       )}
