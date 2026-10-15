@@ -18,7 +18,6 @@ export function SpecSheet({
   userId: string | null;
 }) {
   const [height, setHeight] = useState("");
-  const [dateOfBirth, setDateOfBirth] = useState("");
   const [recoveryPhone, setRecoveryPhone] = useState("");
   const [proximity, setProximity] = useState(true);
   const [location, setLocation] = useState("");
@@ -61,12 +60,11 @@ export function SpecSheet({
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     const activeUserId = userData?.user?.id ?? sessData.session?.user?.id ?? null;
     if (
-      !userSpec.name.trim() ||
       !userSpec.gender ||
       !userSpec.campus ||
       !userSpec.seeking
     ) {
-      setSaveError("Please fill in name, gender, campus, and preference.");
+      setSaveError("Please fill in gender, campus, and preference.");
       return;
     }
     setSaving(true);
@@ -78,13 +76,18 @@ export function SpecSheet({
         );
       }
 
+      const metaName =
+        (userData?.user?.user_metadata?.display_name as string | undefined)?.trim() ||
+        userSpec.name.trim() ||
+        null;
+
       const { error: pErr } = await (supabase as any)
         .from("profiles")
         .upsert(
           [
             {
               id: activeUserId,
-              display_name: userSpec.name.trim(),
+              ...(metaName ? { display_name: metaName } : {}),
               gender: userSpec.gender,
               campus_hub: userSpec.campus,
               target_preference: userSpec.seeking,
@@ -120,7 +123,7 @@ export function SpecSheet({
             });
       if (mErr) throw mErr;
 
-      onNext(userSpec.name.trim());
+      onNext(metaName ?? undefined);
     } catch (error) {
       console.error("[SpecSheet] onboarding submission failed — exact error:", error);
       const dbMessage =
@@ -168,18 +171,6 @@ export function SpecSheet({
         </p>
 
         <div className="space-y-3">
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
-              Name
-            </label>
-            <input
-              value={userSpec.name}
-              onChange={(e) => onUpdateUserSpec({ name: e.target.value })}
-              placeholder="Type your name..."
-              maxLength={100}
-              className="w-full bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 text-sm text-[#FACC15] placeholder:text-[#FACC15] placeholder:opacity-50 placeholder:normal-case focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono"
-            />
-          </div>
 
           <div>
             <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
@@ -308,27 +299,6 @@ export function SpecSheet({
         </div>
 
         <div className="mt-3 space-y-3">
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
-              Date of Birth
-            </label>
-            <input
-              value={dateOfBirth}
-              onChange={(e) => {
-                const d = e.target.value.replace(/\D/g, "").slice(0, 8);
-                let formatted = d.slice(0, 2);
-                if (d.length > 2) formatted += " / " + d.slice(2, 4);
-                if (d.length > 4) formatted += " / " + d.slice(4, 8);
-                setDateOfBirth(formatted);
-              }}
-              inputMode="numeric"
-              placeholder="MM / DD / YYYY"
-              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
-            />
-            <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
-              For age verification and legal compliance. Hidden from your public profile reveal.
-            </p>
-          </div>
 
           <div>
             <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
