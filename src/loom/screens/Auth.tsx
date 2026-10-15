@@ -161,7 +161,8 @@ export function Auth({ onNext }: { onNext: () => void }) {
           </button>
         </div>
       ) : (
-        <div className="loom-shutter flex flex-col items-center justify-center flex-1 px-8 py-10">
+        <div className="loom-shutter flex flex-col items-center flex-1 px-8 py-10">
+          <div aria-hidden className="flex-1" />
           <Brand style={{ fontSize: "3.5rem", fontWeight: 900 }} className="mb-8 leading-none" />
 
           <div key={mode} className="loom-shutter w-full max-w-xs">
@@ -255,6 +256,7 @@ export function Auth({ onNext }: { onNext: () => void }) {
               </button>
             </p>
           </div>
+          <div aria-hidden className="flex-[1.5]" />
         </div>
       )}
 
