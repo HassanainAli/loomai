@@ -250,13 +250,6 @@ export function Auth({ onNext }: { onNext: () => void }) {
                 />
               )}
               {mismatch && <p className="text-xs pt-1 text-red-400">Passwords don't match.</p>}
-              {mode === "signin" && (
-                <div className="text-right pt-1">
-                  <button type="button" onClick={forgot} className="text-xs text-white/50 underline underline-offset-4 hover:text-[#ff2bd6]">
-                    Forgot password?
-                  </button>
-                </div>
-              )}
               {resetSent && <p className="text-xs pt-1 text-white/70">If an account exists, a reset link is on its way to {email.trim().toLowerCase()}.</p>}
               {error && <p className="text-xs pt-1 text-red-400 font-medium whitespace-pre-line">{error}</p>}
 
@@ -274,7 +267,15 @@ export function Auth({ onNext }: { onNext: () => void }) {
               </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-white/50">
+            {mode === "signin" && (
+              <p className="mt-6 text-center">
+                <button type="button" onClick={forgot} className="text-sm text-white/50 underline underline-offset-4 hover:text-[#ff2bd6]">
+                  Forgot password?
+                </button>
+              </p>
+            )}
+
+            <p className="mt-4 text-center text-sm text-white/50">
               {mode === "signin" ? "New to Loom? " : "Already have an account? "}
               <button
                 type="button"
