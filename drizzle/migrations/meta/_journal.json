@@ -8,6 +8,13 @@
       "when": 1792041996437,
       "tag": "0000_remove_live_test_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792066770239,
+      "tag": "0001_enforce_adult_signup",
+      "breakpoints": true
     }
   ]
 }
