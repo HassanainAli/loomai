@@ -58,7 +58,7 @@ function ResetPassword() {
           <>
             <h1 className="text-2xl font-bold">Password updated</h1>
             <p className="mt-2 text-sm text-white/60">Sign in with your new password.</p>
-            <button onClick={() => navigate({ to: "/" })} className="loom-cta mt-8 w-full py-3 rounded-full text-sm font-bold">Back to sign in</button>
+            <button onClick={() => navigate({ to: "/" })} className="bg-primary text-primary-foreground mt-8 w-full py-3 rounded-full text-sm font-bold">Back to sign in</button>
           </>
         ) : !ready ? (
           <>
@@ -71,7 +71,7 @@ function ResetPassword() {
             <input type="password" className={inputCls} placeholder="New password" autoComplete="new-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
             <input type="password" className={inputCls} placeholder="Confirm new password" autoComplete="new-password" value={confirm} onChange={(e) => { setConfirm(e.target.value); setError(""); }} />
             {error && <p className="text-xs pt-1 text-red-400">{error}</p>}
-            <button type="submit" disabled={busy || !password || !confirm} className="loom-cta !mt-8 w-full py-3 rounded-full text-sm font-bold disabled:opacity-40">
+            <button type="submit" disabled={busy || !password || !confirm} className="bg-primary text-primary-foreground !mt-8 w-full py-3 rounded-full text-sm font-bold disabled:opacity-40">
               {busy ? "Saving" : "Update password"}
             </button>
           </form>
