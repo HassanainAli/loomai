@@ -81,7 +81,13 @@ export function Auth({ onNext }: { onNext: () => void }) {
       setBusy(false);
       if (err) {
         console.error("[Auth] signup error:", err);
-        return setError(err.message || "Could not create your account.");
+        const msg = err.message || "";
+        if (/18 or older/i.test(msg)) return setError("You must be 18 or older to join Loom.");
+        if (/date of birth/i.test(msg)) return setError("Please enter a valid date of birth (MM / DD / YYYY).");
+        if (/\.edu/i.test(msg)) return setError("Please use your university .edu email, not a personal one.");
+        if (/database error/i.test(msg))
+          return setError("We couldn't create your account. Check that you're 18+ and using a .edu email.");
+        return setError(msg || "Could not create your account.");
       }
       if (data.session) return onNext();
       setSentTo(e);
