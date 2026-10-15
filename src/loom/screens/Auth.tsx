@@ -48,36 +48,7 @@ export function Auth({ onNext }: { onNext: () => void }) {
 
   return (
     <div className="relative flex flex-col h-full bg-black text-white overflow-hidden">
-      {/* Magenta scan line on success */}
-      {scanning && (
-        <div
-          className="pointer-events-none absolute left-0 right-0 h-[2px] z-30"
-          style={{
-            top: 0,
-            background:
-              "linear-gradient(90deg, transparent, #ff2bd6 20%, #ff70e6 50%, #ff2bd6 80%, transparent)",
-            boxShadow: "0 0 24px 6px #ff2bd6, 0 0 60px 12px rgba(255,43,214,0.6)",
-            animation: "loom-scan 0.9s ease-out forwards",
-          }}
-        />
-      )}
-      {scanning && (
-        <div
-          className="pointer-events-none absolute inset-0 z-20"
-          style={{ animation: "loom-pulse 0.9s ease-out forwards" }}
-        />
-      )}
-
       <style>{`
-        @keyframes loom-scan {
-          0% { transform: translateY(0); opacity: 1; }
-          100% { transform: translateY(800px); opacity: 0.9; }
-        }
-        @keyframes loom-pulse {
-          0%, 70% { background: transparent; }
-          85% { background: rgba(255, 43, 214, 0.18); }
-          100% { background: transparent; }
-        }
         @keyframes loom-shutter {
           0% { opacity: 0; transform: translateY(8px); }
           100% { opacity: 1; transform: translateY(0); }
@@ -161,7 +132,12 @@ export function Auth({ onNext }: { onNext: () => void }) {
             disabled={!email || !password || scanning}
             className="loom-cta mt-8 w-full px-8 py-3 rounded-full text-sm font-bold text-white tracking-wide active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {scanning ? "…" : mode === "signup" ? "Create account" : "Sign in"}
+            {scanning ? (
+              <span className="inline-flex items-center justify-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                {mode === "signup" ? "Creating account" : "Signing in"}
+              </span>
+            ) : mode === "signup" ? "Create account" : "Sign in"}
           </button>
 
           <div className="flex items-center gap-3 my-6">
