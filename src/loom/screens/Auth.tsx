@@ -48,6 +48,7 @@ export function Auth({ onNext }: { onNext: () => void }) {
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const mismatch = mode === "signup" && confirm.length > 0 && confirm !== password;
 
@@ -108,6 +109,18 @@ export function Auth({ onNext }: { onNext: () => void }) {
       );
     }
     onNext();
+  }
+
+  async function forgot() {
+    const e = email.trim().toLowerCase();
+    setResetSent(false);
+    if (!e.endsWith(".edu")) return setError("Enter your university .edu email above, then tap Forgot password.");
+    setError("");
+    const { error: err } = await supabase.auth.resetPasswordForEmail(e, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (err) return setError("Couldn't send the reset email. Try again in a minute.");
+    setResetSent(true);
   }
 
   async function resend() {
@@ -237,6 +250,14 @@ export function Auth({ onNext }: { onNext: () => void }) {
                 />
               )}
               {mismatch && <p className="text-xs pt-1 text-red-400">Passwords don't match.</p>}
+              {mode === "signin" && (
+                <div className="text-right pt-1">
+                  <button type="button" onClick={forgot} className="text-xs text-white/50 underline underline-offset-4 hover:text-[#ff2bd6]">
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+              {resetSent && <p className="text-xs pt-1 text-white/70">If an account exists, a reset link is on its way to {email.trim().toLowerCase()}.</p>}
               {error && <p className="text-xs pt-1 text-red-400 font-medium whitespace-pre-line">{error}</p>}
 
               <button
