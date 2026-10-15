@@ -2,7 +2,7 @@ import { useState } from "react";
 import { X, Check, ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Match, CURRENT_USER_SPEC, UserSpec } from "../types";
-import { generateAlignmentSpec } from "@/server/alignment.functions";
+import { generateAlignmentSpec } from "@/lib/alignment.functions";
 
 export function Profile({
   match,
