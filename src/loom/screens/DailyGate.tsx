@@ -173,8 +173,8 @@ export function DailyGate({
             onChange={(e) => setAnswer(e.target.value)}
             rows={1}
             maxLength={2000}
-            placeholder="Be honest. This goes to your two matches at 8 PM."
-            className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-500 focus:outline-none resize-none leading-6 py-2 max-h-32"
+            placeholder="Your matches will see this."
+            className="flex-1 min-w-0 bg-transparent text-base text-white placeholder:text-zinc-500 focus:outline-none resize-none leading-6 py-2 max-h-32"
           />
           <button
             type="button"
