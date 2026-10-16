@@ -178,6 +178,7 @@ function Index() {
         <Profile
           match={activeMatch}
           userSpec={userSpec}
+          isGuest={guest /* GUEST MODE */}
           onBack={() => setScreen("queue")}
           onPass={() => {
             setPassStreak((p) => p + 1);
