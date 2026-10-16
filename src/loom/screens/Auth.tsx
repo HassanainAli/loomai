@@ -1,3 +1,4 @@
+import { GuestEntryLink } from "../guest/GuestMode"; // GUEST MODE
 import { useState } from "react";
 import { Brand } from "../Shell";
 import { supabase } from "@/integrations/supabase/client";
