@@ -190,7 +190,7 @@ export function DailyGate({
 
       <div className="flex-1" />
 
-      <div className={`px-5 pt-4 ${vv ? "pb-3" : "pb-[max(1.5rem,env(safe-area-inset-bottom))]"} [:has(>[data-guest-bar])_&]:pb-16`}>
+      <div className={`px-5 pt-4 ${vv ? "pb-3" : "pb-[max(1.5rem,env(safe-area-inset-bottom))] [:has(>[data-guest-bar])_&]:pb-16"}`}>
         {submitError && (
           <p className="text-xs text-red-400 mb-2 px-3">{submitError}</p>
         )}
