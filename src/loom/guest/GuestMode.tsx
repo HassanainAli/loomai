@@ -46,7 +46,7 @@ export function ReviewerBar({
   const prev = GUEST_SCREENS[idx - 1];
   const next = GUEST_SCREENS[idx + 1];
   return (
-    <div className="absolute left-1/2 top-3 z-50 -translate-x-1/2 flex items-center gap-1 rounded-full border border-white/15 bg-black/85 px-2 py-1 text-xs text-white shadow-lg backdrop-blur">
+    <div className="absolute left-1/2 bottom-3 z-50 -translate-x-1/2 flex items-center gap-1 rounded-full border border-white/15 bg-black/85 px-2 py-1 text-xs text-white shadow-lg backdrop-blur">
       <button aria-label="Previous screen" disabled={!prev} onClick={() => prev && onJump(prev.id)} className="p-1 disabled:opacity-30">
         <ChevronLeft size={14} />
       </button>
