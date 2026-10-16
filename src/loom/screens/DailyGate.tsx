@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowUp, Menu } from "lucide-react";
 import { UserSpec } from "../types";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,6 +39,30 @@ export function DailyGate({
   const [answer, setAnswer] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  // Keyboard handling: pin the screen to the visible area above the iOS keyboard.
+  const [focused, setFocused] = useState(false);
+  const [vv, setVv] = useState<{ h: number; top: number } | null>(null);
+  useEffect(() => {
+    const v = window.visualViewport;
+    if (!focused || !v) {
+      setVv(null);
+      document.body.classList.remove("kb-open");
+      return;
+    }
+    document.body.classList.add("kb-open");
+    const update = () => {
+      setVv({ h: v.height, top: v.offsetTop });
+      window.scrollTo(0, 0);
+    };
+    update();
+    v.addEventListener("resize", update);
+    v.addEventListener("scroll", update);
+    return () => {
+      v.removeEventListener("resize", update);
+      v.removeEventListener("scroll", update);
+      document.body.classList.remove("kb-open");
+    };
+  }, [focused]);
   const recalibrate = passStreak >= 6;
   const todaysPrompt = getDailyPrompt();
   const firstName = (
@@ -128,7 +152,10 @@ export function DailyGate({
   }
 
   return (
-    <div className="flex flex-col h-full pt-12 relative overflow-y-auto">
+    <div
+      className={vv ? "fixed inset-x-0 top-0 z-40 mx-auto max-w-md flex flex-col pt-12 overflow-hidden bg-background" : "flex flex-col h-full pt-12 relative overflow-y-auto"}
+      style={vv ? { height: vv.h, transform: `translateY(${vv.top}px)` } : undefined}
+    >
       <div className="flex items-start justify-between mb-10 px-8">
         <div>
           <p className="text-sm font-sans text-white mb-1 tracking-tight">
@@ -163,7 +190,7 @@ export function DailyGate({
 
       <div className="flex-1" />
 
-      <div className="px-5 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] [:has(>[data-guest-bar])_&]:pb-16">
+      <div className={`px-5 pt-4 ${vv ? "pb-3" : "pb-[max(1.5rem,env(safe-area-inset-bottom))]"} [:has(>[data-guest-bar])_&]:pb-16`}>
         {submitError && (
           <p className="text-xs text-red-400 mb-2 px-3">{submitError}</p>
         )}
@@ -171,6 +198,8 @@ export function DailyGate({
           <textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
             rows={1}
             maxLength={2000}
             placeholder="Your matches will see this."
