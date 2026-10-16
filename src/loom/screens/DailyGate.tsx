@@ -128,7 +128,7 @@ export function DailyGate({
   }
 
   return (
-    <div className="flex flex-col h-full pt-12 relative">
+    <div className="flex flex-col h-full pt-12 relative overflow-y-auto">
       <div className="flex items-start justify-between mb-10 px-8">
         <div>
           <p className="text-sm font-sans text-white mb-1 tracking-tight">
@@ -163,7 +163,7 @@ export function DailyGate({
 
       <div className="flex-1" />
 
-      <div className="px-5 pb-6 pt-4">
+      <div className="px-5 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] has-[~*]:pb-6">
         {submitError && (
           <p className="text-xs text-red-400 mb-2 px-3">{submitError}</p>
         )}

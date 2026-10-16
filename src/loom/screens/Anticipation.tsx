@@ -29,7 +29,7 @@ export function Anticipation({ onDrop }: { onDrop: () => void }) {
   const s = String(seconds % 60).padStart(2, "0");
 
   return (
-    <div className="flex flex-col h-full p-8 pt-14">
+    <div className="flex flex-col h-full p-8 pt-14 overflow-y-auto">
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
         Drop at 8:00 PM
       </p>

@@ -26,7 +26,7 @@ export function Onboard3({
   ];
 
   return (
-    <div className="flex flex-col h-full p-8 pt-8">
+    <div className="flex flex-col h-full p-8 pt-8 overflow-y-auto">
       <button
         onClick={onBack}
         className="-ml-2 mb-4 p-2 w-9 text-foreground/70 hover:text-foreground transition-colors"
