@@ -14,7 +14,8 @@ import { Queue } from "@/loom/screens/Queue";
 import { Profile } from "@/loom/screens/Profile";
 import { Focus } from "@/loom/screens/Focus";
 import type { Match, Screen, UserSpec } from "@/loom/types";
-import { CURRENT_USER_SPEC } from "@/loom/types";
+import { CURRENT_USER_SPEC, MATCHES } from "@/loom/types";
+import { GUEST_MODE_ENABLED, ReviewerBar } from "@/loom/guest/GuestMode"; // GUEST MODE
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,6 +38,7 @@ function Index() {
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
   const [passStreak, setPassStreak] = useState(5); // demo: one more pass triggers recalibration
   const [userSpec, setUserSpec] = useState<UserSpec>(CURRENT_USER_SPEC);
+  const [guest, setGuest] = useState(false); // GUEST MODE
   const updateUserSpec = (patch: Partial<UserSpec>) =>
     setUserSpec((prev) => ({ ...prev, ...patch }));
 
@@ -101,9 +103,23 @@ function Index() {
     };
   }, []);
 
+  // GUEST MODE (temporary): jump between screens without signing in.
+  const guestJump = (s: Screen) => {
+    if ((s === "profile" || s === "focus") && !activeMatch) setActiveMatch(MATCHES[0]);
+    setScreen(s);
+  };
+
   const app = (
     <>
-      {screen === "auth" && <Auth onNext={() => setScreen("onboard1")} />}
+      {guest && (
+        <ReviewerBar screen={screen} onJump={guestJump} onExit={() => { setGuest(false); setScreen("auth"); }} />
+      )}
+      {screen === "auth" && (
+        <Auth
+          onNext={() => setScreen("onboard1")}
+          onGuest={GUEST_MODE_ENABLED ? () => { setGuest(true); setScreen("onboard1"); } : undefined}
+        />
+      )}
       {screen === "onboard1" && (
         <Onboard1
           onNext={() => setScreen("onboard2")}
