@@ -11,6 +11,7 @@ export function Profile({
   onBack,
   hideActions = false,
   userSpec = CURRENT_USER_SPEC,
+  isGuest = false, // GUEST MODE
 }: {
   match: Match;
   onPass?: () => void;
@@ -18,6 +19,7 @@ export function Profile({
   onBack: () => void;
   hideActions?: boolean;
   userSpec?: UserSpec;
+  isGuest?: boolean; // GUEST MODE
 }) {
   const generate = useServerFn(generateAlignmentSpec);
   const [open, setOpen] = useState(false);
@@ -30,15 +32,22 @@ export function Profile({
     if (spec || loading) return;
     setLoading(true);
     setError(null);
+    // GUEST MODE: show a sample spec instead of calling the engine.
+    if (isGuest) {
+      await new Promise((r) => setTimeout(r, 600));
+      setSpec("Both profiles prioritize intentional pacing and low-stimulus environments. High compatibility signal for quiet 1-on-1 campus walks.");
+      setLoading(false);
+      return;
+    }
     try {
-      const res = await generate({
+      const res: any = await generate({
         data: {
           user: { pace: userSpec.pace, intention: userSpec.intention },
           match: { pace: match.pace, intention: match.intention, name: match.name },
         },
       });
-      if (res.error) setError(res.error);
-      else setSpec(res.text);
+      if (typeof res?.text === "string") setSpec(res.text);
+      else setError(typeof res?.error === "string" ? res.error : "Engine offline. Try again.");
     } catch {
       setError("Engine offline. Try again.");
     } finally {
