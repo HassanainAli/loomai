@@ -37,7 +37,7 @@ export function ageFrom(iso: string, now = new Date()) {
   return age;
 }
 
-export function Auth({ onNext }: { onNext: () => void }) {
+export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => void }) {
   const [mode, setMode] = useState<Mode>("signin");
   const [name, setName] = useState("");
   const [dob, setDob] = useState("");
@@ -285,6 +285,7 @@ export function Auth({ onNext }: { onNext: () => void }) {
                 {mode === "signin" ? "Create account" : "Sign in"}
               </button>
             </p>
+            {onGuest && <GuestEntryLink onClick={onGuest} /> /* GUEST MODE */}
           </div>
           <div aria-hidden className="flex-[1.5]" />
         </div>
