@@ -28,7 +28,7 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" },
       { title: "loom <3" },
       { name: "description", content: "An anti-burnout dating app for university students, offering curated daily matches and exclusive chats." },
       { name: "author", content: "Lovable" },

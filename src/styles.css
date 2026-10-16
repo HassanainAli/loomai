@@ -273,3 +273,4 @@
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
+body.kb-open [data-guest-bar] { display: none; }
