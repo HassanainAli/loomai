@@ -20,13 +20,13 @@ import { GUEST_MODE_ENABLED, ReviewerBar } from "@/loom/guest/GuestMode"; // GUE
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Loom — Two matches a day. No swiping." },
+      { title: "loom. — Connection, minus the swipe." },
       {
         name: "description",
         content:
-          "An anti-burnout dating app for university students. Deep onboarding, one daily prompt, two curated matches at 8 PM.",
+          "An intentional campus network for university students. One daily prompt. One meaningful match. Unlocks at 8:00 PM.",
       },
-      { property: "og:title", content: "Loom — Two matches a day. No swiping." },
+      { property: "og:title", content: "loom. — Connection, minus the swipe." },
       { property: "og:description", content: "A closed-loop campus matching app for verified university students." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -213,8 +213,9 @@ function Index() {
       {/* Desktop (lg+): landing page with the app embedded in a 3D phone */}
       <div className="hidden lg:block">
         <DesktopLanding
+          onEnter={() => { setGuest(false); setScreen("auth"); }}
           phoneContent={
-            <div className="absolute inset-0 flex flex-col bg-zinc-950">
+            <div className="absolute inset-0 flex flex-col bg-background">
               {app}
             </div>
           }
