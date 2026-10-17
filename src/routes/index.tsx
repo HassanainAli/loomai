@@ -26,6 +26,10 @@ export const Route = createFileRoute("/")({
         content:
           "An anti-burnout dating app for university students. Deep onboarding, one daily prompt, two curated matches at 8 PM.",
       },
+      { property: "og:title", content: "Loom — Two matches a day. No swiping." },
+      { property: "og:description", content: "A closed-loop campus matching app for verified university students." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Index,

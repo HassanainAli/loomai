@@ -39,8 +39,6 @@ export const Route = createRootRoute({
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "loom <3" },
       { name: "twitter:description", content: "An anti-burnout dating app for university students, offering curated daily matches and exclusive chats." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/eb798f09-32b9-41a6-a5a1-4d43c4d70269" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/eb798f09-32b9-41a6-a5a1-4d43c4d70269" },
     ],
     links: [
       {
