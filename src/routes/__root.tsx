@@ -41,6 +41,7 @@ export const Route = createRootRoute({
       { name: "twitter:description", content: "An anti-burnout dating app for university students, offering curated daily matches and exclusive chats." },
     ],
     links: [
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" },
       {
         rel: "stylesheet",
         href: appCss,
