@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 
 const MONO = { fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace' };
 
@@ -33,8 +34,8 @@ function Nav({ onCta }: { onCta: () => void }) {
         </a>
         <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-white/70" style={MONO}>
           <a href="#logic" className="hover:text-white transition-colors">The Logic</a>
-          <a href="#safety" className="hover:text-white transition-colors">Safety</a>
-          <a href="#terms" className="hover:text-white transition-colors">Terms</a>
+          <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+          <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
         </div>
         <button
           onClick={onCta}
@@ -240,8 +241,8 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
               </div>
               <ul className="mt-4 space-y-2 text-sm text-white/70" style={MONO}>
                 <li><a href="#logic" className="hover:text-white">The Logic</a></li>
-                <li><a href="#safety" className="hover:text-white">Safety</a></li>
-                <li><a href="#terms" className="hover:text-white">Terms</a></li>
+                <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
               </ul>
             </div>
             <div className="nn-reveal" data-delay="3">

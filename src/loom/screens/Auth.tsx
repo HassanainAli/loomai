@@ -1,5 +1,6 @@
 import { GuestEntryLink } from "../guest/GuestMode"; // GUEST MODE
 import { useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Brand } from "../Shell";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -254,6 +255,15 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
               {resetSent && <p className="text-xs pt-1 text-white/70">If an account exists, a reset link is on its way to {email.trim().toLowerCase()}.</p>}
               {error && <p className="text-xs pt-1 text-red-400 font-medium whitespace-pre-line">{error}</p>}
 
+              {mode === "signup" && (
+                <p className="!mt-6 text-center text-xs leading-5 text-muted-foreground">
+                  By joining, you agree to our{" "}
+                  <Link to="/terms" className="text-foreground underline underline-offset-4 hover:text-primary">Terms of Service</Link>
+                  {" and "}
+                  <Link to="/privacy" className="text-foreground underline underline-offset-4 hover:text-primary">Privacy Policy</Link>
+                </p>
+              )}
+
               <button
                 type="submit"
                 disabled={!canSubmit || busy}
@@ -294,6 +304,10 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
 
       <p className="px-8 pb-6 text-center text-[10px] leading-relaxed text-white/35 max-w-sm mx-auto">
         Loom is a closed-loop network. A verified university email is required to join the pool.
+        <span className="mt-2 flex justify-center gap-4 text-xs text-muted-foreground">
+          <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">Privacy Policy</Link>
+          <Link to="/terms" className="underline underline-offset-4 hover:text-foreground">Terms of Service</Link>
+        </span>
       </p>
     </div>
   );
