@@ -1,7 +1,7 @@
-# Current task: Public legal pages
+# Current task: Desktop editorial redesign
 
-- [x] Add standalone public Privacy and Terms pages with shared reading layout.
-- [x] Connect desktop navigation and mobile signup/sign-in legal links.
-- [x] Verify direct access, navigation and mobile/desktop presentation.
+- [ ] Replace the cyberpunk landing with a monochrome editorial desktop page.
+- [ ] Retain phone demo, sticky navigation, legal links and existing mobile split.
+- [ ] Remove legacy desktop effects and verify CTA and layouts.
 
 Legal copy remains a draft placeholder; final policies and legal review are required before the campus pilot.
