@@ -15,6 +15,13 @@
       "when": 1792066770239,
       "tag": "0001_enforce_adult_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792708518234,
+      "tag": "0002_daily_prompts",
+      "breakpoints": true
     }
   ]
 }

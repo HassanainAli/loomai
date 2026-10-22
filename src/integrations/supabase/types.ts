@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      daily_prompts: {
+        Row: {
+          category: string
+          created_at: string
+          id: number
+          is_active: boolean
+          prompt_text: string
+          sequence: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: number
+          is_active?: boolean
+          prompt_text: string
+          sequence: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: number
+          is_active?: boolean
+          prompt_text?: string
+          sequence?: number
+        }
+        Relationships: []
+      }
       match_history: {
         Row: {
           created_at: string
@@ -98,33 +125,56 @@ export type Database = {
       prompt_responses: {
         Row: {
           created_at: string
+          drop_date: string | null
           embedding: string | null
           id: number
+          prompt_id: number | null
           response_text: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          drop_date?: string | null
           embedding?: string | null
           id?: number
+          prompt_id?: number | null
           response_text: string
           user_id: string
         }
         Update: {
           created_at?: string
+          drop_date?: string | null
           embedding?: string | null
           id?: number
+          prompt_id?: number | null
           response_text?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "prompt_responses_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "daily_prompts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_drop_date: { Args: never; Returns: string }
+      get_current_prompt: {
+        Args: never
+        Returns: {
+          category: string
+          drop_date: string
+          id: number
+          prompt_text: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
