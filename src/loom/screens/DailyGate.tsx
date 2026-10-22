@@ -3,20 +3,31 @@ import { ArrowUp, Menu } from "lucide-react";
 import { UserSpec } from "../types";
 import { supabase } from "@/integrations/supabase/client";
 
-const strategicPartyPrompts = [
-  "You're going to hell. What minor inconvenience is your eternal punishment?",
-  "If you were arrested with no explanation, what would your friends assume you did?",
-  "What is a universally beloved food/trend that is actually absolute garbage?",
-  "What is your most harmless, but entirely chaotic, 'red flag'?",
-  "If you had the aux at a party, what song is clearing the room immediately?",
-  "What is a deeply unserious hill you are willing to die on?",
-  "What is your 'social battery is dead' survival strategy?",
-];
+// Fallback shown only if the daily prompt can't be loaded.
+const FALLBACK_PROMPT = "What is a completely harmless hill you are fully prepared to die on?";
 
-function getDailyPrompt() {
-  const idx =
-    Math.floor(Date.now() / 86400000) % strategicPartyPrompts.length;
-  return strategicPartyPrompts[idx];
+type CurrentPrompt = { id: number | null; text: string; dropDate: string | null };
+
+function useCurrentPrompt() {
+  const [prompt, setPrompt] = useState<CurrentPrompt>({ id: null, text: "", dropDate: null });
+  useEffect(() => {
+    let cancelled = false;
+    (supabase as any)
+      .rpc("get_current_prompt")
+      .then(({ data, error }: { data: any[] | null; error: unknown }) => {
+        if (cancelled) return;
+        const row = !error && Array.isArray(data) ? data[0] : null;
+        setPrompt(
+          row
+            ? { id: row.id, text: row.prompt_text, dropDate: row.drop_date }
+            : { id: null, text: FALLBACK_PROMPT, dropDate: null },
+        );
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  return prompt;
 }
 
 export function DailyGate({
@@ -64,7 +75,8 @@ export function DailyGate({
     };
   }, [focused]);
   const recalibrate = passStreak >= 6;
-  const todaysPrompt = getDailyPrompt();
+  const currentPrompt = useCurrentPrompt();
+  const todaysPrompt = currentPrompt.text;
   const firstName = (
     displayName?.trim() || userSpec.name?.trim() || "there"
   ).split(" ")[0];
@@ -99,7 +111,12 @@ export function DailyGate({
       if (!existingResponse?.id) {
         const { error } = await (supabase as any)
           .from("prompt_responses")
-          .insert({ user_id: activeUserId, response_text: text });
+          .insert({
+            user_id: activeUserId,
+            response_text: text,
+            prompt_id: currentPrompt.id,
+            drop_date: currentPrompt.dropDate,
+          });
         if (error) throw error;
       }
       setAnswer("");
