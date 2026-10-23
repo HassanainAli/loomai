@@ -65,27 +65,105 @@ export type Database = {
         }
         Relationships: []
       }
+      match_settings: {
+        Row: {
+          baseline_weight: number
+          counterweight_target: number
+          daily_weight: number
+          height_bonus: number
+          id: number
+          intent_bonus: number
+          max_matches_per_user: number
+          repeat_cooldown_days: number
+        }
+        Insert: {
+          baseline_weight?: number
+          counterweight_target?: number
+          daily_weight?: number
+          height_bonus?: number
+          id?: number
+          intent_bonus?: number
+          max_matches_per_user?: number
+          repeat_cooldown_days?: number
+        }
+        Update: {
+          baseline_weight?: number
+          counterweight_target?: number
+          daily_weight?: number
+          height_bonus?: number
+          id?: number
+          intent_bonus?: number
+          max_matches_per_user?: number
+          repeat_cooldown_days?: number
+        }
+        Relationships: []
+      }
+      matches: {
+        Row: {
+          created_at: string
+          drop_date: string
+          id: string
+          matched_user_id: string
+          partner_status: string
+          score: number
+          similarity_score: number
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          drop_date: string
+          id?: string
+          matched_user_id: string
+          partner_status?: string
+          score: number
+          similarity_score: number
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          drop_date?: string
+          id?: string
+          matched_user_id?: string
+          partner_status?: string
+          score?: number
+          similarity_score?: number
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       matching_preferences: {
         Row: {
+          balance: string
           campus_lock: boolean
           created_at: string
           id: string
+          intention: string | null
           pause_matching: boolean
           updated_at: string
           user_id: string
         }
         Insert: {
+          balance?: string
           campus_lock?: boolean
           created_at?: string
           id?: string
+          intention?: string | null
           pause_matching?: boolean
           updated_at?: string
           user_id: string
         }
         Update: {
+          balance?: string
           campus_lock?: boolean
           created_at?: string
           id?: string
+          intention?: string | null
           pause_matching?: boolean
           updated_at?: string
           user_id?: string
@@ -94,29 +172,38 @@ export type Database = {
       }
       profiles: {
         Row: {
+          baseline_embedding: string | null
           campus_hub: string | null
           created_at: string
           display_name: string | null
           gender: string | null
+          height_in: number | null
           id: string
+          seed_prompts: Json | null
           target_preference: string | null
           updated_at: string
         }
         Insert: {
+          baseline_embedding?: string | null
           campus_hub?: string | null
           created_at?: string
           display_name?: string | null
           gender?: string | null
+          height_in?: number | null
           id: string
+          seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
         }
         Update: {
+          baseline_embedding?: string | null
           campus_hub?: string | null
           created_at?: string
           display_name?: string | null
           gender?: string | null
+          height_in?: number | null
           id?: string
+          seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
         }
@@ -124,6 +211,7 @@ export type Database = {
       }
       prompt_responses: {
         Row: {
+          answer_embedding: string | null
           created_at: string
           drop_date: string | null
           embedding: string | null
@@ -133,6 +221,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          answer_embedding?: string | null
           created_at?: string
           drop_date?: string | null
           embedding?: string | null
@@ -142,6 +231,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          answer_embedding?: string | null
           created_at?: string
           drop_date?: string | null
           embedding?: string | null
@@ -160,12 +250,39 @@ export type Database = {
           },
         ]
       }
+      user_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      balance_fit: {
+        Args: { balance: string; sim: number; target: number }
+        Returns: number
+      }
       current_drop_date: { Args: never; Returns: string }
+      gender_fits: { Args: { gender: string; pref: string }; Returns: boolean }
+      generate_nightly_matches: { Args: { p_drop: string }; Returns: number }
       get_current_prompt: {
         Args: never
         Returns: {
@@ -173,6 +290,27 @@ export type Database = {
           drop_date: string
           id: number
           prompt_text: string
+        }[]
+      }
+      get_my_matches: {
+        Args: never
+        Returns: {
+          balance: string
+          campus_hub: string
+          daily_answer: string
+          date_of_birth: string
+          display_name: string
+          drop_date: string
+          height_in: number
+          intention: string
+          match_id: string
+          matched_user_id: string
+          my_answer: string
+          partner_status: string
+          prompt_text: string
+          seed_prompts: Json
+          similarity_score: number
+          status: string
         }[]
       }
     }
