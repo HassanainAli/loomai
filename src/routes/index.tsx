@@ -13,7 +13,8 @@ import { Anticipation } from "@/loom/screens/Anticipation";
 import { Queue } from "@/loom/screens/Queue";
 import { Profile } from "@/loom/screens/Profile";
 import { Focus } from "@/loom/screens/Focus";
-import type { Match, Screen, UserSpec } from "@/loom/types";
+import type { Match, OnboardingAnswers, Screen, UserSpec } from "@/loom/types";
+import { supabase as sb } from "@/integrations/supabase/client";
 import { CURRENT_USER_SPEC, MATCHES } from "@/loom/types";
 import { GUEST_MODE_ENABLED, ReviewerBar } from "@/loom/guest/GuestMode"; // GUEST MODE
 
@@ -43,6 +44,13 @@ function Index() {
   const [passStreak, setPassStreak] = useState(5); // demo: one more pass triggers recalibration
   const [userSpec, setUserSpec] = useState<UserSpec>(CURRENT_USER_SPEC);
   const [guest, setGuest] = useState(false); // GUEST MODE
+  const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
+  const setMatchStatus = (m: Match | null, status: "greenlit" | "passed") => {
+    if (!m?.matchId || guest) return;
+    (sb as any).from("matches").update({ status }).eq("id", m.matchId).then(({ error }: any) => {
+      if (error) console.error("[matches] status update failed", error);
+    });
+  };
   const updateUserSpec = (patch: Partial<UserSpec>) =>
     setUserSpec((prev) => ({ ...prev, ...patch }));
 
@@ -126,25 +134,35 @@ function Index() {
       )}
       {screen === "onboard1" && (
         <Onboard1
-          onNext={() => setScreen("onboard2")}
+          onNext={(intention) => {
+            setOnboarding((o) => ({ ...o, intention }));
+            setScreen("onboard2");
+          }}
           onBack={() => setScreen("auth")}
         />
       )}
       {screen === "onboard2" && (
         <Onboard2
-          onNext={() => setScreen("onboard3")}
+          onNext={(seeds) => {
+            setOnboarding((o) => ({ ...o, seeds }));
+            setScreen("onboard3");
+          }}
           onBack={() => setScreen("onboard1")}
         />
       )}
       {screen === "onboard3" && (
         <Onboard3
-          onNext={() => setScreen("specSheet")}
+          onNext={(balance) => {
+            setOnboarding((o) => ({ ...o, balance }));
+            setScreen("specSheet");
+          }}
           onBack={() => setScreen("onboard2")}
         />
       )}
       {screen === "specSheet" && (
         <SpecSheet
           userId={userId}
+          onboarding={onboarding}
           onNext={(name?: string) => {
             if (name) setDisplayName(name);
             setScreen("dailyGate");
@@ -172,6 +190,8 @@ function Index() {
       )}
       {screen === "queue" && (
         <Queue
+          isGuest={guest /* GUEST MODE */}
+          onGoToPrompt={() => setScreen("dailyGate")}
           onOpen={(m) => {
             setActiveMatch(m);
             setScreen("profile");
@@ -185,10 +205,14 @@ function Index() {
           isGuest={guest /* GUEST MODE */}
           onBack={() => setScreen("queue")}
           onPass={() => {
+            setMatchStatus(activeMatch, "passed");
             setPassStreak((p) => p + 1);
             setScreen("queue");
           }}
-          onGreenLight={() => setScreen("focus")}
+          onGreenLight={() => {
+            setMatchStatus(activeMatch, "greenlit");
+            setScreen("focus");
+          }}
         />
       )}
       {screen === "focus" && activeMatch && (
