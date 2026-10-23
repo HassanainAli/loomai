@@ -6,11 +6,10 @@ export function Onboard1({
   onNext,
   onBack,
 }: {
-  onNext: () => void;
+  onNext: (intention: "committed" | "intentional") => void;
   onBack: () => void;
 }) {
   const [intention, setIntention] = useState<string | null>(null);
-  const [dealbreakers, setDealbreakers] = useState("");
 
   const options = [
     "Committed, long-term relationship",
@@ -65,19 +64,11 @@ export function Onboard1({
         })}
       </div>
 
-      <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-        Absolute dealbreakers
-      </label>
-      <textarea
-        value={dealbreakers}
-        onChange={(e) => setDealbreakers(e.target.value)}
-        placeholder="Smoking, bad communicators, doesn't read…"
-        rows={3}
-        className="w-full bg-secondary border border-border rounded-2xl px-5 py-4 text-sm focus:outline-none focus:border-foreground transition-colors resize-none"
-      />
-
       <div className="flex-1 min-h-8" />
-      <PrimaryButton onClick={onNext} disabled={!intention || !dealbreakers}>
+      <PrimaryButton
+        onClick={() => intention && onNext(intention === options[0] ? "committed" : "intentional")}
+        disabled={!intention}
+      >
         Next
       </PrimaryButton>
     </div>

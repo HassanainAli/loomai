@@ -7,7 +7,7 @@ export function Onboard3({
   onNext,
   onBack,
 }: {
-  onNext: () => void;
+  onNext: (balance: "mirror" | "counterweight") => void;
   onBack: () => void;
 }) {
   const [choice, setChoice] = useState<Balance>(null);
@@ -68,7 +68,7 @@ export function Onboard3({
       </div>
 
       <div className="flex-1" />
-      <PrimaryButton onClick={onNext} disabled={!choice}>
+      <PrimaryButton onClick={() => choice && onNext(choice)} disabled={!choice}>
         Next
       </PrimaryButton>
     </div>

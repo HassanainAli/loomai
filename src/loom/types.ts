@@ -27,6 +27,12 @@ export interface Match {
   pace: string;
 }
 
+export interface OnboardingAnswers {
+  intention: "committed" | "intentional" | null;
+  seeds: { q: string; a: string }[];
+  balance: "mirror" | "counterweight";
+}
+
 export interface UserSpec {
   name: string;
   gender: string;
