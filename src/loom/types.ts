@@ -25,6 +25,16 @@ export interface Match {
   conflictAnswer: string;
   sundayAnswer: string;
   pace: string;
+  matchId?: string;
+  similarity?: number;
+  promptText?: string;
+  myAnswer?: string;
+}
+
+export interface OnboardingAnswers {
+  intention: "committed" | "intentional" | null;
+  seeds: { q: string; a: string }[];
+  balance: "mirror" | "counterweight";
 }
 
 export interface UserSpec {
@@ -83,3 +93,68 @@ export const MATCHES: Match[] = [
     pace: "Early gym, deep work blocks, social evenings. Asleep by 11 sharp.",
   },
 ];
+// Parses 5'10", 5' 10, 5ft 10in, 70 or 70in into inches. Returns null if unreadable.
+export function parseHeightInches(raw: string): number | null {
+  const t = raw.trim().toLowerCase();
+  if (!t) return null;
+  const ft = t.match(/^(\d)\s*(?:'|ft|feet)\s*(\d{1,2})?\s*(?:"|in|inches)?$/);
+  let inches: number | null = null;
+  if (ft) inches = Number(ft[1]) * 12 + Number(ft[2] ?? 0);
+  else {
+    const only = t.match(/^(\d{2})\s*(?:"|in|inches)?$/);
+    if (only) inches = Number(only[1]);
+  }
+  if (inches === null || inches < 48 || inches > 96) return null;
+  return inches;
+}
+
+export function ageFromDob(dob: string | null | undefined, now = new Date()): number | null {
+  if (!dob || !/^\d{4}-\d{2}-\d{2}$/.test(dob)) return null;
+  const [y, m, d] = dob.split("-").map(Number);
+  let age = now.getFullYear() - y;
+  if (now.getMonth() + 1 < m || (now.getMonth() + 1 === m && now.getDate() < d)) age--;
+  return age;
+}
+
+export interface MatchRow {
+  match_id: string;
+  display_name: string | null;
+  campus_hub: string | null;
+  date_of_birth: string | null;
+  height_in: number | null;
+  intention: string | null;
+  seed_prompts: { q: string; a: string }[] | null;
+  daily_answer: string | null;
+  my_answer: string | null;
+  prompt_text: string | null;
+  similarity_score: number;
+}
+
+export function rowToMatch(r: MatchRow): Match {
+  const pct = Math.round(Math.max(0, Math.min(1, r.similarity_score)) * 100);
+  const seeds = Array.isArray(r.seed_prompts) ? r.seed_prompts : [];
+  const h = r.height_in ? `${Math.floor(r.height_in / 12)}'${r.height_in % 12}"` : "";
+  return {
+    id: r.match_id,
+    matchId: r.match_id,
+    name: r.display_name || "Loom student",
+    age: ageFromDob(r.date_of_birth) ?? 0,
+    major: r.campus_hub || "UW",
+    location: h || "UW student",
+    intention:
+      r.intention === "committed"
+        ? "Committed, long-term relationship"
+        : r.intention === "intentional"
+          ? "Intentional dating, open to seeing where it goes"
+          : "",
+    hobbies: [],
+    whyMatched: `${pct}% alignment on tonight's prompt.`,
+    dailyAnswer: r.daily_answer ?? "",
+    conflictAnswer: seeds[0]?.a ?? "",
+    sundayAnswer: seeds[1]?.a ?? "",
+    pace: seeds[2]?.a ?? "",
+    similarity: pct,
+    promptText: r.prompt_text ?? undefined,
+    myAnswer: r.my_answer ?? undefined,
+  };
+}

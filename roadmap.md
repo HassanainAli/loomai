@@ -1,7 +1,5 @@
-# Current task: Public legal pages
-
-- [x] Add standalone public Privacy and Terms pages with shared reading layout.
-- [x] Connect desktop navigation and mobile signup/sign-in legal links.
-- [x] Verify direct access, navigation and mobile/desktop presentation.
-
-Legal copy remains a draft placeholder; final policies and legal review are required before the campus pilot.
+# Current task: Match engine
+- [x] Save onboarding intent, seed answers, match style, height.
+- [x] Embed daily answers + baseline; nightly 8pm pairing with strict gender filter.
+- [x] Queue/profile show real matches; pass/green light saved; Loom+ locked spec.
+- [ ] Real end-to-end test with two student accounts (needs two real .edu signups).

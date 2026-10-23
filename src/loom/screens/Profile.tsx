@@ -39,6 +39,13 @@ export function Profile({
       setLoading(false);
       return;
     }
+    // Real matches: AI analysis is a future Loom+ feature (taped off).
+    if (match.matchId) {
+      setError(null);
+      setSpec(null);
+      setLoading(false);
+      return;
+    }
     try {
       const res: any = await generate({
         data: {
@@ -75,7 +82,7 @@ export function Profile({
         <div className="p-6 space-y-6">
           <div>
             <h2 className="text-4xl font-black tracking-tight">
-              {match.name}, {match.age}
+              {match.name}{match.age ? `, ${match.age}` : ""}
             </h2>
             <p className="text-sm text-muted-foreground font-medium mt-1">
               {match.major} · {match.location}
@@ -107,18 +114,36 @@ export function Profile({
             <p className="text-2xl font-black italic leading-snug tracking-tight">
               "{match.dailyAnswer}"
             </p>
+            {match.myAnswer && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
+                  Your answer
+                </p>
+                <p className="text-sm italic leading-relaxed">"{match.myAnswer}"</p>
+              </div>
+            )}
           </Section>
 
-          <Section label="Conflict style">
-            <p className="text-sm leading-relaxed">{match.conflictAnswer}</p>
-          </Section>
+          {match.conflictAnswer && (
+            <Section label="Conflict style">
+              <p className="text-sm leading-relaxed">{match.conflictAnswer}</p>
+            </Section>
+          )}
 
-          <Section label="Perfect Sunday">
-            <p className="text-sm leading-relaxed">{match.sundayAnswer}</p>
-          </Section>
+          {match.sundayAnswer && (
+            <Section label="Perfect Sunday">
+              <p className="text-sm leading-relaxed">{match.sundayAnswer}</p>
+            </Section>
+          )}
 
-          {/* Technical Specs Footer */}
-          <div className="pt-2">
+          {match.matchId && match.pace && (
+            <Section label="Hill to die on">
+              <p className="text-sm leading-relaxed">{match.pace}</p>
+            </Section>
+          )}
+
+          {/* Technical Specs Footer (sample matches only) */}
+          {!match.matchId && <div className="pt-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">
               Technical Specs
             </p>
@@ -136,7 +161,7 @@ export function Profile({
                 </span>
               ))}
             </div>
-          </div>
+          </div>}
 
           {/* View Alignment Spec CTA */}
           <button
@@ -204,6 +229,18 @@ export function Profile({
               <p className="text-sm text-rose-400 font-mono py-2">{error}</p>
             )}
 
+            {match.matchId && (
+              <div className="py-2">
+                <p className="text-lg font-black text-zinc-100 mb-1">AI Alignment Analysis</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  Unlock a deep persona breakdown and compatibility readout with Loom+. Coming soon.
+                </p>
+                {match.similarity !== undefined && (
+                  <p className="mt-4 text-3xl font-black text-[#FACC15]">{match.similarity}% aligned</p>
+                )}
+              </div>
+            )}
+
             {!loading && !error && spec && (
               <p className="text-base text-zinc-100 leading-relaxed font-medium">
                 {spec}
@@ -212,7 +249,7 @@ export function Profile({
 
             <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
               <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
-                Engine · Gemma 4 (31B)
+                {match.matchId ? "Loom+ · Locked" : "Engine · Gemma 4 (31B)"}
               </p>
               <p className="text-[9px] font-mono uppercase tracking-widest text-fuchsia-400">
                 {match.name}

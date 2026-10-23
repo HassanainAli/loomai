@@ -2,7 +2,7 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 
-const PROMPTS = [
+export const SEED_PROMPTS = [
   "When you disagree with someone close to you, how do you typically handle it?",
   "Describe your perfect, no-obligations Sunday from morning to night.",
   "What is a hill you are absolutely willing to die on?",
@@ -12,7 +12,7 @@ export function Onboard2({
   onNext,
   onBack,
 }: {
-  onNext: () => void;
+  onNext: (seeds: { q: string; a: string }[]) => void;
   onBack: () => void;
 }) {
   const [answers, setAnswers] = useState(["", "", ""]);
@@ -37,7 +37,7 @@ export function Onboard2({
       </p>
 
       <div className="space-y-6">
-        {PROMPTS.map((q, i) => (
+        {SEED_PROMPTS.map((q, i) => (
           <div key={i}>
             <label className="text-sm font-bold mb-2 block leading-snug">
               {q}
@@ -58,7 +58,10 @@ export function Onboard2({
       </div>
 
       <div className="h-8" />
-      <PrimaryButton onClick={onNext} disabled={!allFilled}>
+      <PrimaryButton
+        onClick={() => onNext(SEED_PROMPTS.map((q, i) => ({ q, a: answers[i].trim() })))}
+        disabled={!allFilled}
+      >
         Next
       </PrimaryButton>
     </div>

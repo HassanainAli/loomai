@@ -22,6 +22,20 @@
       "when": 1792708518234,
       "tag": "0002_daily_prompts",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792753332311,
+      "tag": "0003_match_engine",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792753498087,
+      "tag": "0004_match_engine_temp_table_fix",
+      "breakpoints": true
     }
   ]
 }

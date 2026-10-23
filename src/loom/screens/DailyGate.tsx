@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { ArrowUp, Menu } from "lucide-react";
 import { UserSpec } from "../types";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { embedDailyAnswer } from "@/lib/matching.functions";
 
 // Fallback shown only if the daily prompt can't be loaded.
 const FALLBACK_PROMPT = "What is a completely harmless hill you are fully prepared to die on?";
@@ -47,6 +49,7 @@ export function DailyGate({
   userId: string | null;
   displayName: string;
 }) {
+  const runEmbed = useServerFn(embedDailyAnswer);
   const [answer, setAnswer] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -118,6 +121,11 @@ export function DailyGate({
             drop_date: currentPrompt.dropDate,
           });
         if (error) throw error;
+      }
+      if (currentPrompt.dropDate) {
+        runEmbed({ data: { dropDate: currentPrompt.dropDate } }).catch((e) =>
+          console.error("[DailyGate] answer embedding failed", e),
+        );
       }
       setAnswer("");
       onSubmit();

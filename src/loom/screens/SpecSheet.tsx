@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Lock, Camera, Plus, ChevronDown, X } from "lucide-react";
 import { PrimaryButton } from "../Shell";
-import { UserSpec } from "../types";
+import { OnboardingAnswers, UserSpec, parseHeightInches } from "../types";
+import { useServerFn } from "@tanstack/react-start";
+import { embedBaseline } from "@/lib/matching.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export function SpecSheet({
@@ -10,16 +12,18 @@ export function SpecSheet({
   userSpec,
   onUpdateUserSpec,
   userId,
+  onboarding,
 }: {
   onNext: (displayName?: string) => void;
   onBack: () => void;
   userSpec: UserSpec;
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
   userId: string | null;
+  onboarding: OnboardingAnswers;
 }) {
+  const runEmbedBaseline = useServerFn(embedBaseline);
   const [height, setHeight] = useState("");
   const [recoveryPhone, setRecoveryPhone] = useState("");
-  const [proximity, setProximity] = useState(true);
   const [location, setLocation] = useState("");
   const [hobbies, setHobbies] = useState("");
   const [saving, setSaving] = useState(false);
@@ -91,6 +95,8 @@ export function SpecSheet({
               gender: userSpec.gender,
               campus_hub: userSpec.campus,
               target_preference: userSpec.seeking,
+              height_in: parseHeightInches(height),
+              ...(onboarding.seeds.length ? { seed_prompts: onboarding.seeds } : {}),
             },
           ],
           { onConflict: "id" },
@@ -109,8 +115,9 @@ export function SpecSheet({
         ? await (supabase as any)
             .from("matching_preferences")
             .update({
-              campus_lock: proximity,
               pause_matching: false,
+              balance: onboarding.balance,
+              ...(onboarding.intention ? { intention: onboarding.intention } : {}),
             })
             .eq("id", existingPreference.id)
             .eq("user_id", activeUserId)
@@ -118,11 +125,15 @@ export function SpecSheet({
             .from("matching_preferences")
             .insert({
               user_id: activeUserId,
-              campus_lock: proximity,
               pause_matching: false,
+              balance: onboarding.balance,
+              ...(onboarding.intention ? { intention: onboarding.intention } : {}),
             });
       if (mErr) throw mErr;
 
+      if (onboarding.seeds.length) {
+        runEmbedBaseline().catch((e) => console.error("[SpecSheet] baseline embedding failed", e));
+      }
       onNext(metaName ?? undefined);
     } catch (error) {
       console.error("[SpecSheet] onboarding submission failed — exact error:", error);
@@ -241,7 +252,7 @@ export function SpecSheet({
               <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
-              Required for system routing. All UW campuses share the same email domain.
+              Shown on your match profile. All UW campuses share one match pool.
             </p>
           </div>
         </div>
@@ -270,31 +281,6 @@ export function SpecSheet({
               placeholder='5&apos;10"'
               className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
             />
-          </div>
-          <div>
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <label className="text-[10px] uppercase tracking-wider text-zinc-500">
-                Campus Lock
-              </label>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={proximity}
-                onClick={() => setProximity((p) => !p)}
-                className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${
-                  proximity ? "bg-[#FACC15]" : "bg-zinc-800"
-                }`}
-              >
-                <span
-                  className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-black transition-transform ${
-                    proximity ? "translate-x-4" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </div>
-            <p className="text-[9px] text-zinc-500 leading-snug normal-case">
-              Engine will strictly isolate your match pool to your selected campus hub. Toggle off to allow cross-campus matches with other UW nodes.
-            </p>
           </div>
         </div>
 
