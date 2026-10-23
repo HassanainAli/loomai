@@ -49,6 +49,7 @@ export function DailyGate({
   userId: string | null;
   displayName: string;
 }) {
+  const runEmbed = useServerFn(embedDailyAnswer);
   const [answer, setAnswer] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -121,9 +122,11 @@ export function DailyGate({
           });
         if (error) throw error;
       }
-      runEmbed({ data: { dropDate: currentPrompt.dropDate } }).catch((e) =>
-        console.error("[DailyGate] answer embedding failed", e),
-      );
+      if (currentPrompt.dropDate) {
+        runEmbed({ data: { dropDate: currentPrompt.dropDate } }).catch((e) =>
+          console.error("[DailyGate] answer embedding failed", e),
+        );
+      }
       setAnswer("");
       onSubmit();
     } catch (err) {
