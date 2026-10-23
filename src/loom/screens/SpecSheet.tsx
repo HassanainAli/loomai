@@ -23,7 +23,6 @@ export function SpecSheet({
 }) {
   const runEmbedBaseline = useServerFn(embedBaseline);
   const [height, setHeight] = useState("");
-  const [recoveryPhone, setRecoveryPhone] = useState("");
   const [location, setLocation] = useState("");
   const [hobbies, setHobbies] = useState("");
   const [saving, setSaving] = useState(false);
@@ -284,35 +283,6 @@ export function SpecSheet({
           </div>
         </div>
 
-        <div className="mt-3 space-y-3">
-
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
-              Recovery Phone
-            </label>
-            <input
-              value={recoveryPhone}
-              onChange={(e) => {
-                const digits = e.target.value.replace(/\D/g, "").slice(0, 11);
-                const d = digits.startsWith("1") ? digits.slice(1) : digits;
-                if (d.length === 0) {
-                  setRecoveryPhone("");
-                  return;
-                }
-                let formatted = `(${d.slice(0, 3)}`;
-                if (d.length >= 3) formatted += `) ${d.slice(3, 6)}`;
-                if (d.length >= 6) formatted += `-${d.slice(6, 10)}`;
-                setRecoveryPhone(formatted);
-              }}
-              inputMode="tel"
-              placeholder="( - - - ) - - -   - - - -"
-              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-colors font-mono"
-            />
-            <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
-              Used strictly for secure account recovery tokens.
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Public Ledger */}
