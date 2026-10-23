@@ -36,6 +36,13 @@
       "when": 1792753498087,
       "tag": "0004_match_engine_temp_table_fix",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792755319376,
+      "tag": "0005_admin_roles_exclude_from_matching",
+      "breakpoints": true
     }
   ]
 }
