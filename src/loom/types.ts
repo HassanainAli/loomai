@@ -89,3 +89,17 @@ export const MATCHES: Match[] = [
     pace: "Early gym, deep work blocks, social evenings. Asleep by 11 sharp.",
   },
 ];
+// Parses 5'10", 5' 10, 5ft 10in, 70 or 70in into inches. Returns null if unreadable.
+export function parseHeightInches(raw: string): number | null {
+  const t = raw.trim().toLowerCase();
+  if (!t) return null;
+  const ft = t.match(/^(\d)\s*(?:'|ft|feet)\s*(\d{1,2})?\s*(?:"|in|inches)?$/);
+  let inches: number | null = null;
+  if (ft) inches = Number(ft[1]) * 12 + Number(ft[2] ?? 0);
+  else {
+    const only = t.match(/^(\d{2})\s*(?:"|in|inches)?$/);
+    if (only) inches = Number(only[1]);
+  }
+  if (inches === null || inches < 48 || inches > 96) return null;
+  return inches;
+}
