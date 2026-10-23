@@ -252,7 +252,7 @@ export function SpecSheet({
               <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             <p className="text-[9px] text-zinc-500 leading-snug normal-case mt-1.5">
-              Required for system routing. All UW campuses share the same email domain.
+              Shown on your match profile. All UW campuses share one match pool.
             </p>
           </div>
         </div>
