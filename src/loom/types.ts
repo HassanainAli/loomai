@@ -29,6 +29,26 @@ export interface Match {
   similarity?: number;
   promptText?: string;
   myAnswer?: string;
+  status?: MatchState;
+  threadId?: string;
+  unread?: number;
+}
+
+export type MatchState = "pending" | "waiting" | "mutual" | "passed" | "ended" | "expired";
+
+// Maps a raw match row status to what the Queue shows.
+export function matchState(status: string | null | undefined, threadId?: string | null): MatchState {
+  if (status === "mutual" && threadId) return "mutual";
+  if (status === "greenlit") return "waiting";
+  if (status === "passed" || status === "ended" || status === "expired") return status;
+  if (status === "mutual") return "ended";
+  return "pending";
+}
+
+export const MAX_MESSAGE_LENGTH = 1000;
+export function cleanMessage(raw: string): string | null {
+  const t = raw.trim();
+  return t.length >= 1 && t.length <= MAX_MESSAGE_LENGTH ? t : null;
 }
 
 export interface OnboardingAnswers {
@@ -128,6 +148,9 @@ export interface MatchRow {
   my_answer: string | null;
   prompt_text: string | null;
   similarity_score: number;
+  status?: string | null;
+  thread_id?: string | null;
+  unread_count?: number | null;
 }
 
 export function rowToMatch(r: MatchRow): Match {
@@ -156,5 +179,8 @@ export function rowToMatch(r: MatchRow): Match {
     similarity: pct,
     promptText: r.prompt_text ?? undefined,
     myAnswer: r.my_answer ?? undefined,
+    status: matchState(r.status, r.thread_id),
+    threadId: r.thread_id ?? undefined,
+    unread: r.unread_count ?? 0,
   };
 }
