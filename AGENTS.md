@@ -9,3 +9,6 @@
 - Idle threads (48h since `last_activity_at`) are ended by `auto_end_stale_threads()` via hourly pg_cron at :00, before the :01 drop job, so freed students rejoin that night's drop.
 - Match actions go through the `respond_to_match` RPC (returns ok/expired/invalid) so drop rollovers are handled gracefully; green lights are final (enforced in `guard_match_status`) so undo can't be used to probe whether the partner said yes — backing out happens via `end_connection`.
 - Drops only run for campuses whose onboarded non-admin count meets `match_settings.min_campus_participants`; the queue shows progress via `get_campus_status`.
+- Exit/recalibrate feedback lives in `match_history` (`source` column) and is applied inside `generate_nightly_matches` via `match_settings` feedback weights with a decay window; per-match score components are stored on `matches` for diagnostics.
+- Loom+ access is the `loom_plus_members` table (admin-write only), read through `get_match_diagnostics`; never a user-editable profile column.
+- Demo shortcuts (skip to drop, sample data) render only in guest mode; signed-in landing is chosen by `landingScreen` in `src/loom/flow.ts`.
