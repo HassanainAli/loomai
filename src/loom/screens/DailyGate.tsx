@@ -43,7 +43,7 @@ export function DailyGate({
 }: {
   passStreak: number;
   onSubmit: () => void;
-  onRecalibrate: () => void;
+  onRecalibrate: (reason: string) => void;
   userSpec: UserSpec;
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
   userId: string | null;
@@ -165,7 +165,7 @@ export function DailyGate({
           {reasons.map((r) => (
             <button
               key={r}
-              onClick={onRecalibrate}
+              onClick={() => onRecalibrate(r)}
               className="w-full text-left p-5 rounded-2xl border-2 border-border bg-card font-semibold text-sm hover:border-foreground transition-colors"
             >
               {r}

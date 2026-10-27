@@ -17,6 +17,7 @@ import type { Match, OnboardingAnswers, Screen, UserSpec } from "@/loom/types";
 import { supabase as sb } from "@/integrations/supabase/client";
 import { CURRENT_USER_SPEC, MATCHES } from "@/loom/types";
 import { GUEST_MODE_ENABLED, ReviewerBar } from "@/loom/guest/GuestMode"; // GUEST MODE
+import { landingScreen } from "@/loom/flow";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -41,7 +42,7 @@ function Index() {
   const [userId, setUserId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
-  const [passStreak, setPassStreak] = useState(5); // demo: one more pass triggers recalibration
+  const [passStreak, setPassStreak] = useState(0); // guest mode starts at 5 so recalibration is one pass away
   const [userSpec, setUserSpec] = useState<UserSpec>(CURRENT_USER_SPEC);
   const [guest, setGuest] = useState(false); // GUEST MODE
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
@@ -90,7 +91,21 @@ function Index() {
           campus: profile.campus_hub ?? "",
           seeking: profile.target_preference ?? "",
         }));
-        setScreen("dailyGate");
+        const [{ data: ds }, { data: ms }] = await Promise.all([
+          (supabase as any).rpc("get_drop_state"),
+          (supabase as any).rpc("get_my_matches"),
+        ]);
+        if (cancelled) return;
+        const state = ds?.[0];
+        setScreen(
+          landingScreen({
+            inActiveChat: !!state?.in_active_chat,
+            hasOpenMatches: ((ms ?? []) as any[]).some((r) =>
+              ["pending", "greenlit", "mutual"].includes(r.status),
+            ),
+            answeredToday: !!state?.answered_today,
+          }),
+        );
       } else {
         // Pre-fill the display_name from the auto-created profile row if present,
         // but keep the user inside onboarding until SpecSheet saves the rest.
@@ -140,7 +155,7 @@ function Index() {
       {screen === "auth" && (
         <Auth
           onNext={() => setScreen("onboard1")}
-          onGuest={GUEST_MODE_ENABLED ? () => { setGuest(true); setScreen("onboard1"); } : undefined}
+          onGuest={GUEST_MODE_ENABLED ? () => { setGuest(true); setPassStreak(5); setScreen("onboard1"); } : undefined}
         />
       )}
       {screen === "onboard1" && (
@@ -189,15 +204,20 @@ function Index() {
           displayName={displayName}
           passStreak={passStreak}
           onSubmit={() => setScreen("anticipation")}
-          onRecalibrate={() => {
+          onRecalibrate={(reason) => {
             setPassStreak(0);
+            if (!guest) {
+              (sb as any).rpc("log_recalibration", { p_reason: reason }).then(({ error }: any) => {
+                if (error) console.error("[recalibrate] save failed", error);
+              });
+            }
           }}
           userSpec={userSpec}
           onUpdateUserSpec={updateUserSpec}
         />
       )}
       {screen === "anticipation" && (
-        <Anticipation onDrop={() => setScreen("queue")} />
+        <Anticipation isGuest={guest} onDrop={() => setScreen("queue")} />
       )}
       {screen === "queue" && (
         <Queue
