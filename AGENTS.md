@@ -7,3 +7,5 @@
 - Focus Mode chat access is enforced in the database by `match_threads` membership (RLS + `end_connection` RPC); a thread is created only by the matches trigger when both rows are greenlit, and users with an active thread are excluded from `generate_nightly_matches`.
 - A student can have only one active Focus Mode thread: the first mutual green light closes their other open matches (status `closed`) in the `sync_match_partner_status` trigger; this keeps chats 1:1 without app-side checks.
 - Idle threads (48h since `last_activity_at`) are ended by `auto_end_stale_threads()` via hourly pg_cron at :00, before the :01 drop job, so freed students rejoin that night's drop.
+- Match actions go through the `respond_to_match` RPC (returns ok/expired/invalid) so drop rollovers are handled gracefully; a green light can be undone back to pending until it turns mutual.
+- Drops only run for campuses whose onboarded non-admin count meets `match_settings.min_campus_participants`; the queue shows progress via `get_campus_status`.

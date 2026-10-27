@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MATCHES, Match, MatchRow, rowToMatch, DropState, emptyQueueMessage } from "../types";
+import { MATCHES, Match, MatchRow, rowToMatch, DropState, emptyQueueMessage, CampusStatus, campusProgressLabel } from "../types";
 import { supabase } from "@/integrations/supabase/client";
 
 export function Queue({
@@ -14,6 +14,7 @@ export function Queue({
   const [matches, setMatches] = useState<Match[] | null>(isGuest ? MATCHES : null);
   const [error, setError] = useState<string | null>(null);
   const [dropState, setDropState] = useState<DropState | null>(null);
+  const [campus, setCampus] = useState<CampusStatus | null>(null);
 
   useEffect(() => {
     if (isGuest) return; // GUEST MODE: sample matches
@@ -31,6 +32,9 @@ export function Queue({
     });
     sb.rpc("get_drop_state").then(({ data }: any) => {
       if (!cancelled && data?.[0]) setDropState(data[0] as DropState);
+    });
+    sb.rpc("get_campus_status").then(({ data }: any) => {
+      if (!cancelled && data?.[0]) setCampus(data[0] as CampusStatus);
     });
     return () => {
       cancelled = true;
@@ -53,7 +57,20 @@ export function Queue({
       {!error && matches === null && (
         <p className="text-sm text-muted-foreground">Loading…</p>
       )}
-      {!error && matches?.length === 0 && (
+      {!error && matches?.length === 0 && campus && !campus.unlocked && (
+        <div className="bg-card border-2 border-border rounded-3xl p-6">
+          <h3 className="text-xl font-black tracking-tight mb-2">Almost there.</h3>
+          <p className="text-sm text-muted-foreground mb-4">{campusProgressLabel(campus)}</p>
+          <div className="h-2 rounded-full bg-muted overflow-hidden">
+            <div
+              className="h-full bg-primary"
+              style={{ width: `${Math.min(100, (campus.participants / Math.max(1, campus.threshold)) * 100)}%` }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-4">8 PM drops start automatically once your campus unlocks.</p>
+        </div>
+      )}
+      {!error && matches?.length === 0 && !(campus && !campus.unlocked) && (
         <div className="bg-card border-2 border-border rounded-3xl p-6 text-center">
           <h3 className="text-xl font-black tracking-tight mb-2">No matches yet.</h3>
           <p className="text-sm text-muted-foreground mb-5">
