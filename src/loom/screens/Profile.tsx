@@ -3,6 +3,7 @@ import { X, Check, ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { Match, CURRENT_USER_SPEC, UserSpec } from "../types";
 import { generateAlignmentSpec } from "@/lib/alignment.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export function Profile({
   match,
@@ -29,6 +30,7 @@ export function Profile({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [spec, setSpec] = useState<string | null>(null);
+  const [diag, setDiag] = useState<{ unlocked: boolean; daily_sim: number | null; base_sim: number | null; style_fit: number | null } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const handleViewAlignment = async () => {
@@ -43,8 +45,10 @@ export function Profile({
       setLoading(false);
       return;
     }
-    // Real matches: AI analysis is a future Loom+ feature (taped off).
+    // Real matches: score breakdown, full detail unlocked only for Loom+.
     if (match.matchId) {
+      const { data } = await (supabase as any).rpc("get_match_diagnostics", { p_match: match.matchId });
+      setDiag(data?.[0] ?? null);
       setError(null);
       setSpec(null);
       setLoading(false);
@@ -247,12 +251,31 @@ export function Profile({
 
             {match.matchId && (
               <div className="py-2">
-                <p className="text-lg font-black text-zinc-100 mb-1">AI Alignment Analysis</p>
-                <p className="text-sm text-zinc-400 leading-relaxed">
-                  Unlock a deep persona breakdown and compatibility readout with Loom+. Coming soon.
-                </p>
+                <p className="text-lg font-black text-zinc-100 mb-1">Why you matched</p>
                 {match.similarity !== undefined && (
-                  <p className="mt-4 text-3xl font-black text-[#FACC15]">{match.similarity}% aligned</p>
+                  <p className="mt-1 mb-4 text-3xl font-black text-[#FACC15]">{match.similarity}% aligned</p>
+                )}
+                <div className={`space-y-3 ${diag?.unlocked ? "" : "blur-sm select-none"}`} aria-hidden={!diag?.unlocked}>
+                  {[
+                    ["Prompt overlap", diag?.unlocked ? diag.daily_sim : 0.72],
+                    ["Values", diag?.unlocked ? diag.base_sim : 0.64],
+                    ["Style", diag?.unlocked ? diag.style_fit : 0.81],
+                  ].map(([label, v]) => (
+                    <div key={label as string}>
+                      <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                        <span>{label}</span>
+                        <span>{v == null ? "—" : `${Math.round(Number(v) * 100)}%`}</span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-white/10">
+                        <div className="h-full rounded-full bg-[#FF2BD6]" style={{ width: `${Math.max(0, Math.min(100, Number(v ?? 0) * 100))}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {!diag?.unlocked && (
+                  <p className="mt-4 text-sm text-zinc-400 leading-relaxed">
+                    The full breakdown is part of Loom+. Coming soon.
+                  </p>
                 )}
               </div>
             )}
