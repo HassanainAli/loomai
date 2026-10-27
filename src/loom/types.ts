@@ -53,8 +53,6 @@ export interface DropState {
 // Picks the empty match-list message.
 export function emptyQueueMessage(s: DropState | null): string {
   if (s?.in_active_chat) return "You're in Focus Mode, so you're out of new drops for now.";
-  if (s && !s.answered_today && s.had_match_last_drop === false && s.answered_today === false)
-    return "Answer today's prompt before 8 PM to enter tonight's drop.";
   if (s?.answered_today) return "You're in tonight's drop. Check back at 8 PM.";
   if (s && !s.had_match_last_drop) return "No match this time. Answer today's prompt to try again tonight.";
   return "Answer today's prompt before 8 PM to enter tonight's drop.";
