@@ -57,6 +57,13 @@
       "when": 1793091723442,
       "tag": "0007_skip_partner_sync_on_bulk_expire",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793091737742,
+      "tag": "0008_nightly_uses_expire_helper",
+      "breakpoints": true
     }
   ]
 }
