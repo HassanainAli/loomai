@@ -41,6 +41,21 @@ export type Database = {
         }
         Relationships: []
       }
+      loom_plus_members: {
+        Row: {
+          granted_at: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       match_history: {
         Row: {
           created_at: string
@@ -48,6 +63,7 @@ export type Database = {
           matched_user_id: string | null
           open_feedback: string | null
           separation_category: string
+          source: string
           thread_id: string | null
           user_id: string
         }
@@ -57,6 +73,7 @@ export type Database = {
           matched_user_id?: string | null
           open_feedback?: string | null
           separation_category: string
+          source?: string
           thread_id?: string | null
           user_id: string
         }
@@ -66,6 +83,7 @@ export type Database = {
           matched_user_id?: string | null
           open_feedback?: string | null
           separation_category?: string
+          source?: string
           thread_id?: string | null
           user_id?: string
         }
@@ -111,6 +129,9 @@ export type Database = {
           baseline_weight: number
           counterweight_target: number
           daily_weight: number
+          feedback_decay_days: number
+          feedback_focus_boost: number
+          feedback_penalty_weight: number
           height_bonus: number
           id: number
           intent_bonus: number
@@ -122,6 +143,9 @@ export type Database = {
           baseline_weight?: number
           counterweight_target?: number
           daily_weight?: number
+          feedback_decay_days?: number
+          feedback_focus_boost?: number
+          feedback_penalty_weight?: number
           height_bonus?: number
           id?: number
           intent_bonus?: number
@@ -133,6 +157,9 @@ export type Database = {
           baseline_weight?: number
           counterweight_target?: number
           daily_weight?: number
+          feedback_decay_days?: number
+          feedback_focus_boost?: number
+          feedback_penalty_weight?: number
           height_bonus?: number
           id?: number
           intent_bonus?: number
@@ -180,38 +207,47 @@ export type Database = {
       }
       matches: {
         Row: {
+          base_sim: number | null
           created_at: string
           drop_date: string
+          feedback_penalty: number | null
           id: string
           matched_user_id: string
           partner_status: string
           score: number
           similarity_score: number
           status: string
+          style_fit: number | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          base_sim?: number | null
           created_at?: string
           drop_date: string
+          feedback_penalty?: number | null
           id?: string
           matched_user_id: string
           partner_status?: string
           score: number
           similarity_score: number
           status?: string
+          style_fit?: number | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          base_sim?: number | null
           created_at?: string
           drop_date?: string
+          feedback_penalty?: number | null
           id?: string
           matched_user_id?: string
           partner_status?: string
           score?: number
           similarity_score?: number
           status?: string
+          style_fit?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -418,6 +454,16 @@ export type Database = {
           in_active_chat: boolean
         }[]
       }
+      get_match_diagnostics: {
+        Args: { p_match: string }
+        Returns: {
+          base_sim: number
+          daily_sim: number
+          score: number
+          style_fit: number
+          unlocked: boolean
+        }[]
+      }
       get_my_matches: {
         Args: never
         Returns: {
@@ -452,6 +498,7 @@ export type Database = {
         Args: { _thread: string; _user: string }
         Returns: boolean
       }
+      log_recalibration: { Args: { p_reason: string }; Returns: undefined }
       mark_thread_read: { Args: { p_thread: string }; Returns: undefined }
       respond_to_match: {
         Args: { p_action: string; p_match: string }

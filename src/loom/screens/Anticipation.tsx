@@ -1,40 +1,40 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Lock } from "lucide-react";
+import { secondsUntilPacific8pm, showSkipToDrop } from "../flow";
 
-function getSecondsUntil8PM() {
-  const now = new Date();
-  const target = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    20,
-    0,
-    0,
-    0,
-  );
-  const diff = Math.floor((target.getTime() - now.getTime()) / 1000);
-  return Math.max(0, diff);
-}
-
-export function Anticipation({ onDrop }: { onDrop: () => void }) {
-  const [seconds, setSeconds] = useState(getSecondsUntil8PM);
+export function Anticipation({ onDrop, isGuest = false }: { onDrop: () => void; isGuest?: boolean }) {
+  const [seconds, setSeconds] = useState<number | null>(null);
+  const fired = useRef(false);
 
   useEffect(() => {
-    const id = setInterval(() => setSeconds(getSecondsUntil8PM()), 1000);
+    const tick = () => {
+      const next = secondsUntilPacific8pm();
+      setSeconds((prev) => {
+        // The countdown wraps to ~24h right after 8 PM: that's the drop moment.
+        if (!isGuest && !fired.current && prev !== null && next > prev) {
+          fired.current = true;
+          setTimeout(onDrop, 3000); // give the nightly drop a moment to finish
+        }
+        return next;
+      });
+    };
+    tick();
+    const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [isGuest, onDrop]);
 
-  const h = String(Math.floor(seconds / 3600)).padStart(2, "0");
-  const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, "0");
-  const s = String(seconds % 60).padStart(2, "0");
+  const sec = seconds ?? 0;
+  const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+  const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+  const s = String(sec % 60).padStart(2, "0");
 
   return (
     <div className="flex flex-col h-full p-8 pt-14 overflow-y-auto">
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-        Drop at 8:00 PM
+        Drop at 8:00 PM Pacific
       </p>
       <div className="text-6xl font-black tracking-tighter tabular-nums leading-none">
-        {h}:{m}:{s}
+        {seconds === null ? "--:--:--" : `${h}:${m}:${s}`}
       </div>
       <p className="text-sm text-muted-foreground mt-4 max-w-[14rem] leading-relaxed">
         Your daily prompt is locked. The engine is analyzing the campus pool.
@@ -57,12 +57,14 @@ export function Anticipation({ onDrop }: { onDrop: () => void }) {
         ))}
       </div>
 
-      <button
-        onClick={onDrop}
-        className="text-xs uppercase tracking-widest text-muted-foreground font-bold py-3"
-      >
-        ⏭ Skip to drop (demo)
-      </button>
+      {showSkipToDrop(isGuest) && (
+        <button
+          onClick={onDrop}
+          className="text-xs uppercase tracking-widest text-muted-foreground font-bold py-3"
+        >
+          ⏭ Skip to drop (demo)
+        </button>
+      )}
     </div>
   );
 }
