@@ -5,3 +5,5 @@
 - Embeddings are created server-side in `src/lib/embeddings.server.ts` with one fixed model/dimension (OpenAI REST first, AI gateway fallback) so every stored vector stays comparable and the code stays portable.
 - Roles live only in `public.user_roles` (checked via `has_role`); accounts with the `admin` role are excluded from the eligible pool inside `generate_nightly_matches`, so staff never match regardless of user-editable settings.
 - Focus Mode chat access is enforced in the database by `match_threads` membership (RLS + `end_connection` RPC); a thread is created only by the matches trigger when both rows are greenlit, and users with an active thread are excluded from `generate_nightly_matches`.
+- A student can have only one active Focus Mode thread: the first mutual green light closes their other open matches (status `closed`) in the `sync_match_partner_status` trigger; this keeps chats 1:1 without app-side checks.
+- Idle threads (48h since `last_activity_at`) are ended by `auto_end_stale_threads()` via hourly pg_cron at :00, before the :01 drop job, so freed students rejoin that night's drop.
