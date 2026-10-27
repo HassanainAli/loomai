@@ -46,7 +46,7 @@ function Index() {
   const [guest, setGuest] = useState(false); // GUEST MODE
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
   const [profileNotice, setProfileNotice] = useState<string | null>(null);
-  const setMatchStatus = async (m: Match | null, action: "greenlit" | "passed" | "undo") => {
+  const setMatchStatus = async (m: Match | null, action: "greenlit" | "passed") => {
     if (!m?.matchId || guest) return null;
     const { data: result, error } = await (sb as any).rpc("respond_to_match", { p_match: m.matchId, p_action: action });
     if (error || result === "invalid") {
@@ -217,10 +217,6 @@ function Index() {
           hideActions={activeMatch.status === "waiting"}
           notice={profileNotice}
           onBack={() => { setProfileNotice(null); setScreen("queue"); }}
-          onUndo={guest ? undefined : async () => {
-            const row = await setMatchStatus(activeMatch, "undo");
-            if (row && !row.expired) setActiveMatch({ ...activeMatch, status: "pending" });
-          }}
           onPass={async () => {
             const row = await setMatchStatus(activeMatch, "passed");
             if (!row && !guest) return;
