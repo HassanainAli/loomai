@@ -17,3 +17,15 @@ describe("onboarding parsing", () => {
     expect(m.similarity).toBe(73);
   });
 });
+
+import { matchState, cleanMessage } from "./types";
+describe("match lifecycle states", () => {
+  it("one-sided green light shows waiting", () => expect(matchState("greenlit")).toBe("waiting"));
+  it("mutual with an open chat shows mutual", () => expect(matchState("mutual", "t1")).toBe("mutual"));
+  it("mutual without an open chat counts as ended", () => expect(matchState("mutual", null)).toBe("ended"));
+});
+describe("message length rule", () => {
+  it("rejects empty", () => expect(cleanMessage("   ")).toBeNull());
+  it("accepts 1000 chars", () => expect(cleanMessage("a".repeat(1000))).toHaveLength(1000));
+  it("rejects 1001 chars", () => expect(cleanMessage("a".repeat(1001))).toBeNull());
+});

@@ -1,56 +1,121 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X, ArrowUp } from "lucide-react";
-import { Match } from "../types";
+import { Match, MAX_MESSAGE_LENGTH, cleanMessage } from "../types";
 import { Profile } from "./Profile";
 import { supabase } from "@/integrations/supabase/client";
 
 interface Msg {
+  id: string;
   from: "me" | "them";
   text: string;
 }
 
-// Local blacklist of user-id pairs that should never be matched again.
-const blacklistedPairs: Array<[string, string]> = [];
-const ejectTelemetry: Array<{ matchId: string; reason: string; note: string }> = [];
-const CURRENT_USER_ID = "me";
+interface Row {
+  id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+}
+
+// GUEST MODE: sample conversation shown without a real match.
+const GUEST_MESSAGES: Msg[] = [
+  { id: "g1", from: "them", text: "Okay, brunch is a scam — I respect the take." },
+  { id: "g2", from: "me", text: "Thank you. Finally someone gets it." },
+  { id: "g3", from: "them", text: "What do you actually like to cook on a Sunday?" },
+];
 
 export function Focus({
   match,
   onEject,
   userId,
+  isGuest = false,
 }: {
   match: Match;
   onEject: () => void;
   userId: string | null;
+  isGuest?: boolean;
 }) {
-  const [messages, setMessages] = useState<Msg[]>([
-    { from: "them", text: `Okay, brunch is a scam — I respect the take.` },
-    { from: "me", text: "Thank you. Finally someone gets it." },
-    {
-      from: "them",
-      text: "What do you actually like to cook on a Sunday?",
-    },
-  ]);
+  const threadId = match.threadId;
+  const live = !isGuest && !!threadId && !!userId;
+  const [messages, setMessages] = useState<Msg[]>(live ? [] : GUEST_MESSAGES);
   const [draft, setDraft] = useState("");
   const [showProfile, setShowProfile] = useState(false);
   const [ejecting, setEjecting] = useState(false);
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [ejectNote, setEjectNote] = useState("");
-  const [matchStatus, setMatchStatus] = useState<"active" | "expired">("active");
+  const [ended, setEnded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  const toMsg = (r: Row): Msg => ({
+    id: r.id,
+    from: r.sender_id === userId ? "me" : "them",
+    text: r.body,
+  });
+
+  useEffect(() => {
+    if (!live) return;
+    let cancelled = false;
+    const sb = supabase as any;
+
+    sb.from("match_messages")
+      .select("id, sender_id, body, created_at")
+      .eq("thread_id", threadId)
+      .order("created_at", { ascending: true })
+      .then(({ data }: { data: Row[] | null }) => {
+        if (!cancelled && data) setMessages(data.map(toMsg));
+      });
+    sb.from("match_threads")
+      .select("status")
+      .eq("id", threadId)
+      .maybeSingle()
+      .then(({ data }: any) => {
+        if (!cancelled && data?.status === "ended") setEnded(true);
+      });
+    sb.rpc("mark_thread_read", { p_thread: threadId });
+
+    const channel = supabase
+      .channel(`thread-${threadId}-${Math.random().toString(36).slice(2)}`)
+      .on(
+        "postgres_changes" as any,
+        { event: "INSERT", schema: "public", table: "match_messages", filter: `thread_id=eq.${threadId}` },
+        (payload: any) => {
+          const r = payload.new as Row;
+          setMessages((prev) => (prev.some((m) => m.id === r.id) ? prev : [...prev, toMsg(r)]));
+          if (r.sender_id !== userId) sb.rpc("mark_thread_read", { p_thread: threadId });
+        },
+      )
+      .on(
+        "postgres_changes" as any,
+        { event: "UPDATE", schema: "public", table: "match_threads", filter: `id=eq.${threadId}` },
+        (payload: any) => {
+          if (payload.new?.status === "ended") setEnded(true);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      cancelled = true;
+      supabase.removeChannel(channel);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [live, threadId, userId]);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ block: "end" });
+  }, [messages.length]);
 
   async function handleEject(reason: string, note: string) {
-    setMatchStatus("expired");
-    ejectTelemetry.push({ matchId: match.id, reason, note });
-    blacklistedPairs.push([CURRENT_USER_ID, match.id]);
-    if (userId) {
-      const { error } = await (supabase as any)
-        .from("match_history")
-        .insert({
-          user_id: userId,
-          separation_category: reason,
-          open_feedback: note || null,
-        });
-      if (error) console.error("[match_history] insert failed", error);
+    if (live) {
+      const { error } = await (supabase as any).rpc("end_connection", {
+        p_thread: threadId,
+        p_reason: reason,
+        p_note: note,
+      });
+      if (error) {
+        setError("Couldn't end the connection. Try again.");
+        return;
+      }
     }
     setEjecting(false);
     setSelectedReason(null);
@@ -58,16 +123,31 @@ export function Focus({
     onEject();
   }
 
-  function send() {
-    if (!draft.trim() || matchStatus === "expired") return;
-    setMessages([...messages, { from: "me", text: draft.trim() }]);
+  async function send() {
+    const text = cleanMessage(draft);
+    if (!text || ended) return;
     setDraft("");
+    setError(null);
+    if (!live) {
+      setMessages((m) => [...m, { id: `l${Date.now()}`, from: "me", text }]);
+      return;
+    }
+    const { data, error } = await (supabase as any)
+      .from("match_messages")
+      .insert({ thread_id: threadId, sender_id: userId, body: text })
+      .select("id, sender_id, body, created_at")
+      .single();
+    if (error) {
+      setDraft(text);
+      setError(/ended/i.test(error.message) ? "This connection has ended." : "Message didn't send. Try again.");
+      if (/ended/i.test(error.message)) setEnded(true);
+      return;
+    }
+    setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, toMsg(data)]));
   }
 
   if (showProfile) {
-    return (
-      <Profile match={match} hideActions onBack={() => setShowProfile(false)} />
-    );
+    return <Profile match={match} hideActions onBack={() => setShowProfile(false)} />;
   }
 
   return (
@@ -85,51 +165,65 @@ export function Focus({
             </button>
           </div>
         </div>
-        <button
-          onClick={() => setEjecting(true)}
-          className="text-xs font-bold border border-border rounded-full px-3 py-1.5 hover:bg-secondary transition-colors"
-        >
-          End Connection
-        </button>
+        {ended ? (
+          <button
+            onClick={onEject}
+            className="text-xs font-bold border border-border rounded-full px-3 py-1.5 hover:bg-secondary transition-colors"
+          >
+            Back to matches
+          </button>
+        ) : (
+          <button
+            onClick={() => setEjecting(true)}
+            className="text-xs font-bold border border-border rounded-full px-3 py-1.5 hover:bg-secondary transition-colors"
+          >
+            End Connection
+          </button>
+        )}
       </div>
 
       <div className="px-4 py-2 bg-primary/20 border-b border-border">
         <p className="text-[10px] font-black uppercase tracking-widest text-center">
-          Focus Mode · Daily matching paused
+          {ended ? "This connection has ended" : "Focus Mode · Daily matching paused"}
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}
-          >
+        {messages.length === 0 && !ended && (
+          <p className="text-sm text-muted-foreground text-center mt-8">
+            You both said yes. Say hi.
+          </p>
+        )}
+        {messages.map((m) => (
+          <div key={m.id} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm border border-white ${
+              className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm border border-border break-words ${
                 m.from === "me"
                   ? "bg-foreground text-background rounded-br-md"
-                  : "bg-black text-white rounded-bl-md"
+                  : "bg-card text-card-foreground rounded-bl-md"
               }`}
             >
               {m.text}
             </div>
           </div>
         ))}
+        <div ref={bottomRef} />
       </div>
 
+      {error && <p className="px-4 pb-1 text-xs text-destructive">{error}</p>}
       <div className="border-t border-border p-3 flex gap-2">
         <input
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
-          placeholder={matchStatus === "expired" ? "Connection ended" : "Message…"}
-          disabled={matchStatus === "expired"}
-          className="flex-1 bg-secondary border border-border rounded-full px-5 py-3 text-sm focus:outline-none focus:border-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+          maxLength={MAX_MESSAGE_LENGTH}
+          placeholder={ended ? "Connection ended" : "Message…"}
+          disabled={ended}
+          className="flex-1 bg-secondary border border-border rounded-full px-5 py-3 text-base focus:outline-none focus:border-foreground disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <button
           onClick={send}
-          disabled={matchStatus === "expired"}
+          disabled={ended}
           className="bg-primary text-primary-foreground font-bold px-5 rounded-full text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Send
@@ -140,33 +234,29 @@ export function Focus({
         <div className="absolute inset-0 bg-foreground/60 flex items-end sm:items-center justify-center z-50">
           <div className="bg-background w-full sm:w-[90%] sm:rounded-3xl rounded-t-3xl p-6">
             <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-black tracking-tight">
-                End this connection?
-              </h3>
-              <button onClick={() => setEjecting(false)}>
+              <h3 className="text-xl font-black tracking-tight">End this connection?</h3>
+              <button onClick={() => setEjecting(false)} aria-label="Close">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <p className="text-sm text-muted-foreground mb-5">
-              Calibrating engine. Please log the primary vector mismatch reason
-              below. This session data will be permanently cleared.
+              The chat closes for both of you and you won't be matched again. Tell us why so the
+              engine gets better.
             </p>
             <div className="space-y-2">
-              {["No spark", "Ghosted", "Met someone offline", "Other"].map(
-                (r) => (
-                  <button
-                    key={r}
-                    onClick={() => setSelectedReason(r)}
-                    className={`w-full text-left p-4 rounded-2xl border-2 font-sans text-sm transition-colors ${
-                      selectedReason === r
-                        ? "border-foreground bg-secondary"
-                        : "border-border hover:border-foreground"
-                    }`}
-                  >
-                    {r}
-                  </button>
-                ),
-              )}
+              {["No spark", "Ghosted", "Met someone offline", "Report user", "Other"].map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setSelectedReason(r)}
+                  className={`w-full text-left p-4 rounded-2xl border-2 font-sans text-sm transition-colors ${
+                    selectedReason === r
+                      ? "border-foreground bg-secondary"
+                      : "border-border hover:border-foreground"
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
             </div>
             {selectedReason && (
               <div className="mt-4 relative flex items-center w-full bg-secondary border border-border rounded-full pl-5 pr-1.5 py-1.5 animate-in fade-in slide-in-from-top-1 duration-200">
@@ -175,15 +265,13 @@ export function Focus({
                   value={ejectNote}
                   onChange={(e) => setEjectNote(e.target.value)}
                   maxLength={500}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && handleEject(selectedReason, ejectNote.trim())
-                  }
+                  onKeyDown={(e) => e.key === "Enter" && handleEject(selectedReason, ejectNote.trim())}
                   placeholder="Anything specific the system should note? (Optional)"
-                  className="flex-1 bg-transparent text-sm text-white font-sans placeholder:text-muted-foreground focus:outline-none"
+                  className="flex-1 bg-transparent text-base text-foreground font-sans placeholder:text-muted-foreground focus:outline-none"
                 />
                 <button
                   onClick={() => handleEject(selectedReason, ejectNote.trim())}
-                  className="w-9 h-9 rounded-full bg-yellow-400 text-black flex items-center justify-center hover:bg-yellow-300 transition-colors shrink-0"
+                  className="w-9 h-9 rounded-full bg-accent text-accent-foreground flex items-center justify-center hover:opacity-90 transition-opacity shrink-0"
                   aria-label="Submit"
                 >
                   <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
