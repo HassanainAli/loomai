@@ -115,6 +115,7 @@ export type Database = {
           id: number
           intent_bonus: number
           max_matches_per_user: number
+          min_campus_participants: number
           repeat_cooldown_days: number
         }
         Insert: {
@@ -125,6 +126,7 @@ export type Database = {
           id?: number
           intent_bonus?: number
           max_matches_per_user?: number
+          min_campus_participants?: number
           repeat_cooldown_days?: number
         }
         Update: {
@@ -135,6 +137,7 @@ export type Database = {
           id?: number
           intent_bonus?: number
           max_matches_per_user?: number
+          min_campus_participants?: number
           repeat_cooldown_days?: number
         }
         Relationships: []
@@ -376,6 +379,7 @@ export type Database = {
         Args: { balance: string; sim: number; target: number }
         Returns: number
       }
+      campus_participant_count: { Args: { p_campus: string }; Returns: number }
       current_drop_date: { Args: never; Returns: string }
       end_connection: {
         Args: { p_note: string; p_reason: string; p_thread: string }
@@ -387,6 +391,15 @@ export type Database = {
       generate_nightly_matches_wrapped: {
         Args: { p_drop: string }
         Returns: number
+      }
+      get_campus_status: {
+        Args: never
+        Returns: {
+          campus: string
+          participants: number
+          threshold: number
+          unlocked: boolean
+        }[]
       }
       get_current_prompt: {
         Args: never
@@ -440,6 +453,10 @@ export type Database = {
         Returns: boolean
       }
       mark_thread_read: { Args: { p_thread: string }; Returns: undefined }
+      respond_to_match: {
+        Args: { p_action: string; p_match: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

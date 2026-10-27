@@ -10,6 +10,8 @@ export function Profile({
   onGreenLight,
   onBack,
   hideActions = false,
+  onUndo,
+  notice,
   userSpec = CURRENT_USER_SPEC,
   isGuest = false, // GUEST MODE
 }: {
@@ -18,6 +20,8 @@ export function Profile({
   onGreenLight?: () => void;
   onBack: () => void;
   hideActions?: boolean;
+  onUndo?: () => void;
+  notice?: string | null;
   userSpec?: UserSpec;
   isGuest?: boolean; // GUEST MODE
 }) {
@@ -174,6 +178,24 @@ export function Profile({
         </div>
       </div>
 
+      {notice && (
+        <p role="alert" className="absolute bottom-28 left-5 right-5 text-center text-sm text-destructive">
+          {notice}
+        </p>
+      )}
+      {hideActions && onUndo && (
+        <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5">
+          <p className="text-xs text-muted-foreground text-center mb-3">
+            Green light sent. You can take it back until they respond or the 8 PM drop.
+          </p>
+          <button
+            onClick={onUndo}
+            className="w-full bg-card border-2 border-border rounded-2xl py-4 text-sm font-bold hover:border-foreground transition-colors"
+          >
+            Undo green light
+          </button>
+        </div>
+      )}
       {!hideActions && (
         <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5 flex gap-4">
           <button
