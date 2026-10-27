@@ -29,3 +29,14 @@ describe("message length rule", () => {
   it("accepts 1000 chars", () => expect(cleanMessage("a".repeat(1000))).toHaveLength(1000));
   it("rejects 1001 chars", () => expect(cleanMessage("a".repeat(1001))).toBeNull());
 });
+
+import { emptyQueueMessage } from "./types";
+describe("edge case rules", () => {
+  it("closed matches stay closed", () => expect(matchState("closed")).toBe("closed"));
+  it("active chat explains the pause", () =>
+    expect(emptyQueueMessage({ answered_today: false, had_match_last_drop: true, in_active_chat: true })).toMatch(/Focus Mode/));
+  it("no answer today asks for the prompt", () =>
+    expect(emptyQueueMessage({ answered_today: false, had_match_last_drop: true, in_active_chat: false })).toMatch(/before 8 PM/));
+  it("no match last drop says so", () =>
+    expect(emptyQueueMessage({ answered_today: false, had_match_last_drop: false, in_active_chat: false })).toMatch(/No match this time/));
+});

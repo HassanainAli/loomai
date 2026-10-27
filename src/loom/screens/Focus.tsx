@@ -8,6 +8,7 @@ interface Msg {
   id: string;
   from: "me" | "them";
   text: string;
+  failed?: boolean;
 }
 
 interface Row {
@@ -44,6 +45,7 @@ export function Focus({
   const [selectedReason, setSelectedReason] = useState<string | null>(null);
   const [ejectNote, setEjectNote] = useState("");
   const [ended, setEnded] = useState(false);
+  const [autoEnded, setAutoEnded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -66,11 +68,14 @@ export function Focus({
         if (!cancelled && data) setMessages(data.map(toMsg));
       });
     sb.from("match_threads")
-      .select("status")
+      .select("status, ended_by")
       .eq("id", threadId)
       .maybeSingle()
       .then(({ data }: any) => {
-        if (!cancelled && data?.status === "ended") setEnded(true);
+        if (!cancelled && data?.status === "ended") {
+          setEnded(true);
+          if (!data.ended_by) setAutoEnded(true);
+        }
       });
     sb.rpc("mark_thread_read", { p_thread: threadId });
 
@@ -89,7 +94,10 @@ export function Focus({
         "postgres_changes" as any,
         { event: "UPDATE", schema: "public", table: "match_threads", filter: `id=eq.${threadId}` },
         (payload: any) => {
-          if (payload.new?.status === "ended") setEnded(true);
+          if (payload.new?.status === "ended") {
+            setEnded(true);
+            if (!payload.new.ended_by) setAutoEnded(true);
+          }
         },
       )
       .subscribe();
@@ -123,27 +131,40 @@ export function Focus({
     onEject();
   }
 
-  async function send() {
-    const text = cleanMessage(draft);
-    if (!text || ended) return;
-    setDraft("");
-    setError(null);
-    if (!live) {
-      setMessages((m) => [...m, { id: `l${Date.now()}`, from: "me", text }]);
-      return;
-    }
+  async function deliver(text: string, tempId: string) {
     const { data, error } = await (supabase as any)
       .from("match_messages")
       .insert({ thread_id: threadId, sender_id: userId, body: text })
       .select("id, sender_id, body, created_at")
       .single();
     if (error) {
-      setDraft(text);
-      setError(/ended/i.test(error.message) ? "This connection has ended." : "Message didn't send. Try again.");
-      if (/ended/i.test(error.message)) setEnded(true);
+      if (/ended/i.test(error.message)) {
+        setEnded(true);
+        setError("This connection has ended.");
+      }
+      setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, failed: true } : m)));
       return;
     }
-    setMessages((prev) => (prev.some((m) => m.id === data.id) ? prev : [...prev, toMsg(data)]));
+    setMessages((prev) => {
+      const without = prev.filter((m) => m.id !== tempId);
+      return without.some((m) => m.id === data.id) ? without : [...without, toMsg(data)];
+    });
+  }
+
+  async function send() {
+    const text = cleanMessage(draft);
+    if (!text || ended) return;
+    setDraft("");
+    setError(null);
+    const tempId = `l${Date.now()}`;
+    setMessages((m) => [...m, { id: tempId, from: "me", text }]);
+    if (live) await deliver(text, tempId);
+  }
+
+  function retry(m: Msg) {
+    if (ended) return;
+    setMessages((prev) => prev.map((x) => (x.id === m.id ? { ...x, failed: false } : x)));
+    deliver(m.text, m.id);
   }
 
   if (showProfile) {
@@ -184,7 +205,7 @@ export function Focus({
 
       <div className="px-4 py-2 bg-primary/20 border-b border-border">
         <p className="text-[10px] font-black uppercase tracking-widest text-center">
-          {ended ? "This connection has ended" : "Focus Mode · Daily matching paused"}
+          {autoEnded ? "This connection ended after 48 hours of quiet" : ended ? "This connection has ended" : "Focus Mode · Daily matching paused"}
         </p>
       </div>
 
@@ -205,6 +226,11 @@ export function Focus({
             >
               {m.text}
             </div>
+            {m.failed && (
+              <button onClick={() => retry(m)} className="self-end ml-2 text-[11px] text-destructive underline underline-offset-2">
+                Didn't send - tap to retry
+              </button>
+            )}
           </div>
         ))}
         <div ref={bottomRef} />

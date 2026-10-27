@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MATCHES, Match, MatchRow, rowToMatch } from "../types";
+import { MATCHES, Match, MatchRow, rowToMatch, DropState, emptyQueueMessage } from "../types";
 import { supabase } from "@/integrations/supabase/client";
 
 export function Queue({
@@ -13,14 +13,24 @@ export function Queue({
 }) {
   const [matches, setMatches] = useState<Match[] | null>(isGuest ? MATCHES : null);
   const [error, setError] = useState<string | null>(null);
+  const [dropState, setDropState] = useState<DropState | null>(null);
 
   useEffect(() => {
     if (isGuest) return; // GUEST MODE: sample matches
     let cancelled = false;
-    (supabase as any).rpc("get_my_matches").then(({ data, error }: any) => {
+    const sb = supabase as any;
+    sb.rpc("get_my_matches").then(({ data, error }: any) => {
       if (cancelled) return;
       if (error) setError("Couldn't load your matches. Try again.");
-      else setMatches(((data ?? []) as MatchRow[]).map(rowToMatch));
+      else
+        setMatches(
+          ((data ?? []) as MatchRow[])
+            .map(rowToMatch)
+            .filter((m) => m.status === "pending" || m.status === "waiting" || m.status === "mutual"),
+        );
+    });
+    sb.rpc("get_drop_state").then(({ data }: any) => {
+      if (!cancelled && data?.[0]) setDropState(data[0] as DropState);
     });
     return () => {
       cancelled = true;
@@ -47,9 +57,9 @@ export function Queue({
         <div className="bg-card border-2 border-border rounded-3xl p-6 text-center">
           <h3 className="text-xl font-black tracking-tight mb-2">No matches yet.</h3>
           <p className="text-sm text-muted-foreground mb-5">
-            Answer today's prompt before 8 PM to enter tonight's drop.
+            {emptyQueueMessage(dropState)}
           </p>
-          {onGoToPrompt && (
+          {onGoToPrompt && !dropState?.answered_today && !dropState?.in_active_chat && (
             <button
               onClick={onGoToPrompt}
               className="w-full bg-foreground text-background font-bold text-sm py-3 rounded-xl hover:opacity-90 transition-opacity"
