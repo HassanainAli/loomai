@@ -45,11 +45,15 @@ function Index() {
   const [userSpec, setUserSpec] = useState<UserSpec>(CURRENT_USER_SPEC);
   const [guest, setGuest] = useState(false); // GUEST MODE
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
-  const setMatchStatus = (m: Match | null, status: "greenlit" | "passed") => {
-    if (!m?.matchId || guest) return;
-    (sb as any).from("matches").update({ status }).eq("id", m.matchId).then(({ error }: any) => {
-      if (error) console.error("[matches] status update failed", error);
-    });
+  const setMatchStatus = async (m: Match | null, status: "greenlit" | "passed") => {
+    if (!m?.matchId || guest) return null;
+    const { error } = await (sb as any).from("matches").update({ status }).eq("id", m.matchId);
+    if (error) {
+      console.error("[matches] status update failed", error);
+      return null;
+    }
+    const { data } = await (sb as any).rpc("get_my_matches");
+    return ((data ?? []) as any[]).find((r) => r.match_id === m.matchId) ?? null;
   };
   const updateUserSpec = (patch: Partial<UserSpec>) =>
     setUserSpec((prev) => ({ ...prev, ...patch }));
@@ -194,7 +198,7 @@ function Index() {
           onGoToPrompt={() => setScreen("dailyGate")}
           onOpen={(m) => {
             setActiveMatch(m);
-            setScreen("profile");
+            setScreen(m.status === "mutual" ? "focus" : "profile");
           }}
         />
       )}
@@ -203,25 +207,33 @@ function Index() {
           match={activeMatch}
           userSpec={userSpec}
           isGuest={guest /* GUEST MODE */}
+          hideActions={activeMatch.status === "waiting"}
           onBack={() => setScreen("queue")}
           onPass={() => {
             setMatchStatus(activeMatch, "passed");
             setPassStreak((p) => p + 1);
             setScreen("queue");
           }}
-          onGreenLight={() => {
-            setMatchStatus(activeMatch, "greenlit");
-            setScreen("focus");
+          onGreenLight={async () => {
+            if (guest) return setScreen("focus"); // GUEST MODE
+            const row = await setMatchStatus(activeMatch, "greenlit");
+            if (row?.status === "mutual" && row.thread_id) {
+              setActiveMatch({ ...activeMatch, status: "mutual", threadId: row.thread_id });
+              setScreen("focus");
+            } else {
+              setScreen("queue");
+            }
           }}
         />
       )}
       {screen === "focus" && activeMatch && (
         <Focus
           userId={userId}
+          isGuest={guest /* GUEST MODE */}
           match={activeMatch}
           onEject={() => {
             setActiveMatch(null);
-            setScreen("dailyGate");
+            setScreen("queue");
           }}
         />
       )}
