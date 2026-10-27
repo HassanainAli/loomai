@@ -215,16 +215,23 @@ function Index() {
           userSpec={userSpec}
           isGuest={guest /* GUEST MODE */}
           hideActions={activeMatch.status === "waiting"}
-          onBack={() => setScreen("queue")}
-          onPass={() => {
-            setMatchStatus(activeMatch, "passed");
+          notice={profileNotice}
+          onBack={() => { setProfileNotice(null); setScreen("queue"); }}
+          onUndo={guest ? undefined : async () => {
+            const row = await setMatchStatus(activeMatch, "undo");
+            if (row && !row.expired) setActiveMatch({ ...activeMatch, status: "pending" });
+          }}
+          onPass={async () => {
+            const row = await setMatchStatus(activeMatch, "passed");
+            if (!row && !guest) return;
             setPassStreak((p) => p + 1);
             setScreen("queue");
           }}
           onGreenLight={async () => {
             if (guest) return setScreen("focus"); // GUEST MODE
             const row = await setMatchStatus(activeMatch, "greenlit");
-            if (row?.status === "mutual" && row.thread_id) {
+            if (!row || row.expired) return;
+            if (row.status === "mutual" && row.thread_id) {
               setActiveMatch({ ...activeMatch, status: "mutual", threadId: row.thread_id });
               setScreen("focus");
             } else {
