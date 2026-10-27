@@ -43,6 +43,13 @@
       "when": 1792755319376,
       "tag": "0005_admin_roles_exclude_from_matching",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793091700093,
+      "tag": "0006_mutual_matches_focus_chat",
+      "breakpoints": true
     }
   ]
 }
