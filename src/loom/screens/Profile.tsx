@@ -183,17 +183,11 @@ export function Profile({
           {notice}
         </p>
       )}
-      {hideActions && onUndo && (
+      {hideActions && (
         <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5">
-          <p className="text-xs text-muted-foreground text-center mb-3">
-            Green light sent. You can take it back until they respond or the 8 PM drop.
+          <p className="text-xs text-muted-foreground text-center">
+            Green light locked in. If it's mutual, you'll chat in Focus Mode.
           </p>
-          <button
-            onClick={onUndo}
-            className="w-full bg-card border-2 border-border rounded-2xl py-4 text-sm font-bold hover:border-foreground transition-colors"
-          >
-            Undo green light
-          </button>
         </div>
       )}
       {!hideActions && (

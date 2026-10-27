@@ -85,6 +85,13 @@
       "when": 1793094888415,
       "tag": "0011_undo_greenlight_drop_expiry_campus_threshold",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793095851399,
+      "tag": "0012_lock_in_greenlight",
+      "breakpoints": true
     }
   ]
 }
