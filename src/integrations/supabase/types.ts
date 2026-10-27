@@ -45,25 +45,66 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          matched_user_id: string | null
           open_feedback: string | null
           separation_category: string
+          thread_id: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
+          matched_user_id?: string | null
           open_feedback?: string | null
           separation_category: string
+          thread_id?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: string
+          matched_user_id?: string | null
           open_feedback?: string | null
           separation_category?: string
+          thread_id?: string | null
           user_id?: string
         }
         Relationships: []
+      }
+      match_messages: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+          thread_id: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+          thread_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "match_threads"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       match_settings: {
         Row: {
@@ -95,6 +136,39 @@ export type Database = {
           intent_bonus?: number
           max_matches_per_user?: number
           repeat_cooldown_days?: number
+        }
+        Relationships: []
+      }
+      match_threads: {
+        Row: {
+          created_at: string
+          drop_date: string
+          ended_at: string | null
+          ended_by: string | null
+          id: string
+          status: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          created_at?: string
+          drop_date: string
+          ended_at?: string | null
+          ended_by?: string | null
+          id?: string
+          status?: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          created_at?: string
+          drop_date?: string
+          ended_at?: string | null
+          ended_by?: string | null
+          id?: string
+          status?: string
+          user_a?: string
+          user_b?: string
         }
         Relationships: []
       }
@@ -299,6 +373,11 @@ export type Database = {
         Returns: number
       }
       current_drop_date: { Args: never; Returns: string }
+      end_connection: {
+        Args: { p_note: string; p_reason: string; p_thread: string }
+        Returns: undefined
+      }
+      expire_old_matches: { Args: { p_drop: string }; Returns: undefined }
       gender_fits: { Args: { gender: string; pref: string }; Returns: boolean }
       generate_nightly_matches: { Args: { p_drop: string }; Returns: number }
       get_current_prompt: {
@@ -329,6 +408,8 @@ export type Database = {
           seed_prompts: Json
           similarity_score: number
           status: string
+          thread_id: string
+          unread_count: number
         }[]
       }
       has_role: {
@@ -338,6 +419,11 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_thread_member: {
+        Args: { _thread: string; _user: string }
+        Returns: boolean
+      }
+      mark_thread_read: { Args: { p_thread: string }; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

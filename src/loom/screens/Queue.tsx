@@ -64,7 +64,14 @@ export function Queue({
         {matches?.map((m) => (
           <div key={m.id} className="bg-card border-2 border-border rounded-3xl p-5">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-neutral-300 to-neutral-500" />
+              <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-neutral-300 to-neutral-500">
+                {!!m.unread && (
+                  <span
+                    aria-label="New messages"
+                    className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-primary ring-2 ring-card"
+                  />
+                )}
+              </div>
               <div>
                 <h3 className="text-xl font-black tracking-tight">{m.name}</h3>
                 <p className="text-xs text-muted-foreground font-medium">
@@ -72,13 +79,23 @@ export function Queue({
                   {m.major}
                   {m.similarity !== undefined ? ` · ${m.similarity}% aligned` : ""}
                 </p>
+                {m.status === "waiting" && (
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1">
+                    Waiting on them
+                  </p>
+                )}
+                {m.status === "mutual" && (
+                  <p className="text-[10px] font-black uppercase tracking-widest text-primary mt-1">
+                    It's a match
+                  </p>
+                )}
               </div>
             </div>
             <button
               onClick={() => onOpen(m)}
               className="w-full bg-foreground text-background font-bold text-sm py-3 rounded-xl hover:opacity-90 transition-opacity"
             >
-              View Full Profile
+              {m.status === "mutual" ? "Open chat" : "View Full Profile"}
             </button>
           </div>
         ))}

@@ -43,6 +43,34 @@
       "when": 1792755319376,
       "tag": "0005_admin_roles_exclude_from_matching",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793091700093,
+      "tag": "0006_mutual_matches_focus_chat",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793091723442,
+      "tag": "0007_skip_partner_sync_on_bulk_expire",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793091737742,
+      "tag": "0008_nightly_uses_expire_helper",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793091849008,
+      "tag": "0009_widen_match_status_checks",
+      "breakpoints": true
     }
   ]
 }
