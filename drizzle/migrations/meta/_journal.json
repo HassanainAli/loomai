@@ -71,6 +71,13 @@
       "when": 1793091849008,
       "tag": "0009_widen_match_status_checks",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793094246337,
+      "tag": "0010_edge_cases_one_chat_idle_close",
+      "breakpoints": true
     }
   ]
 }

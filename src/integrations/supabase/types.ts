@@ -146,6 +146,7 @@ export type Database = {
           ended_at: string | null
           ended_by: string | null
           id: string
+          last_activity_at: string
           status: string
           user_a: string
           user_b: string
@@ -156,6 +157,7 @@ export type Database = {
           ended_at?: string | null
           ended_by?: string | null
           id?: string
+          last_activity_at?: string
           status?: string
           user_a: string
           user_b: string
@@ -166,6 +168,7 @@ export type Database = {
           ended_at?: string | null
           ended_by?: string | null
           id?: string
+          last_activity_at?: string
           status?: string
           user_a?: string
           user_b?: string
@@ -368,6 +371,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      auto_end_stale_threads: { Args: never; Returns: number }
       balance_fit: {
         Args: { balance: string; sim: number; target: number }
         Returns: number
@@ -380,6 +384,10 @@ export type Database = {
       expire_old_matches: { Args: { p_drop: string }; Returns: undefined }
       gender_fits: { Args: { gender: string; pref: string }; Returns: boolean }
       generate_nightly_matches: { Args: { p_drop: string }; Returns: number }
+      generate_nightly_matches_wrapped: {
+        Args: { p_drop: string }
+        Returns: number
+      }
       get_current_prompt: {
         Args: never
         Returns: {
@@ -387,6 +395,14 @@ export type Database = {
           drop_date: string
           id: number
           prompt_text: string
+        }[]
+      }
+      get_drop_state: {
+        Args: never
+        Returns: {
+          answered_today: boolean
+          had_match_last_drop: boolean
+          in_active_chat: boolean
         }[]
       }
       get_my_matches: {
