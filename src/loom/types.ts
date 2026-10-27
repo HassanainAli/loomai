@@ -197,3 +197,9 @@ export function rowToMatch(r: MatchRow): Match {
     unread: r.unread_count ?? 0,
   };
 }
+
+export type CampusStatus = { campus: string | null; participants: number; threshold: number; unlocked: boolean };
+export function campusProgressLabel(s: CampusStatus): string {
+  const name = s.campus ?? "your campus";
+  return `Unlocking ${name}: ${Math.min(s.participants, s.threshold)} / ${s.threshold} students verified for the first drop.`;
+}

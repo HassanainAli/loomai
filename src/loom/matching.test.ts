@@ -40,3 +40,11 @@ describe("edge case rules", () => {
   it("no match last drop says so", () =>
     expect(emptyQueueMessage({ answered_today: false, had_match_last_drop: false, in_active_chat: false })).toMatch(/No match this time/));
 });
+
+import { campusProgressLabel } from "./types";
+describe("campus threshold", () => {
+  it("shows progress toward 20", () => {
+    expect(campusProgressLabel({ campus: "UW", participants: 14, threshold: 20, unlocked: false }))
+      .toBe("Unlocking UW: 14 / 20 students verified for the first drop.");
+  });
+});
