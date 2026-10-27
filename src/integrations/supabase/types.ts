@@ -377,6 +377,7 @@ export type Database = {
         Args: { p_note: string; p_reason: string; p_thread: string }
         Returns: undefined
       }
+      expire_old_matches: { Args: { p_drop: string }; Returns: undefined }
       gender_fits: { Args: { gender: string; pref: string }; Returns: boolean }
       generate_nightly_matches: { Args: { p_drop: string }; Returns: number }
       get_current_prompt: {

@@ -50,6 +50,13 @@
       "when": 1793091700093,
       "tag": "0006_mutual_matches_focus_chat",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793091723442,
+      "tag": "0007_skip_partner_sync_on_bulk_expire",
+      "breakpoints": true
     }
   ]
 }
