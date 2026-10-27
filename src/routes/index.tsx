@@ -45,13 +45,20 @@ function Index() {
   const [userSpec, setUserSpec] = useState<UserSpec>(CURRENT_USER_SPEC);
   const [guest, setGuest] = useState(false); // GUEST MODE
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
-  const setMatchStatus = async (m: Match | null, status: "greenlit" | "passed") => {
+  const [profileNotice, setProfileNotice] = useState<string | null>(null);
+  const setMatchStatus = async (m: Match | null, action: "greenlit" | "passed" | "undo") => {
     if (!m?.matchId || guest) return null;
-    const { error } = await (sb as any).from("matches").update({ status }).eq("id", m.matchId);
-    if (error) {
-      console.error("[matches] status update failed", error);
+    const { data: result, error } = await (sb as any).rpc("respond_to_match", { p_match: m.matchId, p_action: action });
+    if (error || result === "invalid") {
+      console.error("[matches] action failed", error ?? result);
+      setProfileNotice("That didn't go through. Try again.");
       return null;
     }
+    if (result === "expired") {
+      setProfileNotice("Tonight's drop already rolled over. Check out the new prompt!");
+      return { expired: true } as any;
+    }
+    setProfileNotice(null);
     const { data } = await (sb as any).rpc("get_my_matches");
     return ((data ?? []) as any[]).find((r) => r.match_id === m.matchId) ?? null;
   };
