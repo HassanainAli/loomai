@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { seedTesters, wipeTesters } from "@/lib/admin-testers.functions";
 import { validCampusMinimum } from "@/loom/dev/testers";
+import { ADMIN_ACTIONS, type AdminActionKey } from "@/loom/dev/adminActions";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -64,8 +65,9 @@ function AdminPage() {
     supabase.auth.getSession().then(({ data }) => (data.session ? load() : setState("denied")));
   }, [load]);
 
-  const act = async (label: string, fn: () => Promise<string>, confirmText?: string) => {
-    if (confirmText && !window.confirm(confirmText)) return;
+  const [pending, setPending] = useState<{ key: AdminActionKey; label: string; fn: () => Promise<string> } | null>(null);
+
+  const run = async (label: string, fn: () => Promise<string>) => {
     setBusy(true);
     setMsg(null);
     try {
@@ -77,6 +79,7 @@ function AdminPage() {
       setBusy(false);
     }
   };
+  const act = (label: string, fn: () => Promise<string>, key: AdminActionKey) => setPending({ key, label, fn });
   const rpc = async (name: string, args?: object) => {
     const { data, error } = await (supabase as any).rpc(name, args);
     if (error) throw new Error(error.message);
@@ -106,13 +109,13 @@ function AdminPage() {
             <p className="text-lg">{stats.engine_paused ? <span className="text-red-400">Paused</span> : <span className="text-cyan-300">Running</span>} · drop {stats.drop_date}</p>
             <button disabled={busy} className={`${btn} ${stats.engine_paused ? "border-cyan-400 text-cyan-300" : "border-red-500 text-red-300"}`}
               onClick={() => act("Engine switch", async () => { await rpc("admin_set_engine_paused", { p_paused: !stats.engine_paused }); return stats.engine_paused ? "Matching resumed." : "Matching paused."; },
-                stats.engine_paused ? "Resume nightly matching?" : "Pause all nightly matching?")}>
+                stats.engine_paused ? "resume" : "pause")}>
               {stats.engine_paused ? "Resume" : "Pause"}
             </button>
           </div>
           <div className="flex items-center gap-3 mt-4">
             <button disabled={busy} className={`${btn} border-[#FF2BD6] text-[#FF2BD6]`}
-              onClick={() => act("Run drop", async () => `Drop ran: ${await rpc("admin_run_drop_now")} matches created.`, "Run tonight's drop right now?")}>
+              onClick={() => act("Run drop", async () => `Drop ran: ${await rpc("admin_run_drop_now")} matches created.`, "drop")}>
               Run drop now
             </button>
             {stats.last_run && (
@@ -130,7 +133,7 @@ function AdminPage() {
               onClick={() => {
                 const n = Number(minInput);
                 if (!validCampusMinimum(n)) return setMsg({ ok: false, text: "Campus minimum must be a whole number from 1 to 500." });
-                act("Campus minimum", async () => { await rpc("admin_set_campus_minimum", { p_min: n }); return `Campus minimum set to ${n}.`; });
+                act("Campus minimum", async () => { await rpc("admin_set_campus_minimum", { p_min: n }); return `Campus minimum set to ${n}.`; }, "campusMin");
               }}>Save</button>
           </div>
           <ul className="mt-3 text-sm space-y-1">
@@ -154,11 +157,11 @@ function AdminPage() {
           <h2 className="text-sm text-zinc-400 mb-2">Test students</h2>
           <div className="flex gap-3">
             <button disabled={busy} className={`${btn} border-cyan-400 text-cyan-300`}
-              onClick={() => act("Seed", async () => { const r = await seed(); return `Ready: ${r.accounts.map((a) => a.email).join(", ")} · password ${r.password}`; }, "Create or refresh loomtest-1 and loomtest-2?")}>
+              onClick={() => act("Seed", async () => { const r = await seed(); return `Ready: ${r.accounts.map((a) => a.email).join(", ")} · password ${r.password}`; }, "seed")}>
               Seed 2 testers
             </button>
             <button disabled={busy} className={`${btn} border-red-500 text-red-300`}
-              onClick={() => act("Wipe", async () => `Removed ${(await wipe()).removed} test accounts.`, "Delete all loomtest accounts and their data?")}>
+              onClick={() => act("Wipe", async () => `Removed ${(await wipe()).removed} test accounts.`, "wipe")}>
               Wipe test data
             </button>
           </div>
@@ -173,13 +176,36 @@ function AdminPage() {
               <button key={String(on)} disabled={busy} className={`${btn} ${on ? "border-[#FF2BD6] text-[#FF2BD6]" : "border-zinc-600 text-zinc-300"}`}
                 onClick={() => {
                   if (!/^[^\s@]+@[^\s@]+\.edu$/i.test(plusEmail.trim())) return setMsg({ ok: false, text: "Enter a valid .edu email." });
-                  act("Loom+", async () => (await rpc("admin_set_loom_plus", { p_email: plusEmail.trim(), p_on: on })) === "ok" ? `Loom+ ${on ? "granted" : "removed"}.` : "No account with that email.");
+                  act("Loom+", async () => (await rpc("admin_set_loom_plus", { p_email: plusEmail.trim(), p_on: on })) === "ok" ? `Loom+ ${on ? "granted" : "removed"}.` : "No account with that email.", "loomPlus");
                 }}>{on ? "Grant" : "Revoke"}</button>
             ))}
           </div>
           {stats.loom_plus.length > 0 && <p className="text-xs text-zinc-400 mt-2">Members: {stats.loom_plus.join(", ")}</p>}
         </section>
       </div>
+      {pending && (() => {
+        const info = ADMIN_ACTIONS[pending.key];
+        return (
+          <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={info.title}>
+            <div className={`${card} max-w-md w-full space-y-4`}>
+              <h3 className="text-lg font-bold">{info.title}</h3>
+              <div>
+                <p className="text-xs text-zinc-400 mb-1">What happens</p>
+                <p className="text-sm">{info.action}</p>
+              </div>
+              <div className={`rounded-lg border p-3 ${info.externalCalls > 0 ? "border-[#FACC15]/60" : "border-cyan-400/40"}`}>
+                <p className="text-xs text-zinc-400 mb-1">Cost</p>
+                <p className={`text-sm ${info.externalCalls > 0 ? "text-[#FACC15]" : "text-cyan-200"}`}>{info.cost}</p>
+              </div>
+              <div className="flex justify-end gap-3">
+                <button className={`${btn} border-zinc-600 text-zinc-300`} onClick={() => setPending(null)}>Cancel</button>
+                <button className={`${btn} ${info.destructive ? "border-red-500 text-red-300" : "border-[#FF2BD6] text-[#FF2BD6]"}`}
+                  onClick={() => { const p = pending; setPending(null); run(p.label, p.fn); }}>{info.confirm}</button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
