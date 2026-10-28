@@ -12,3 +12,5 @@
 - Exit/recalibrate feedback lives in `match_history` (`source` column) and is applied inside `generate_nightly_matches` via `match_settings` feedback weights with a decay window; per-match score components are stored on `matches` for diagnostics.
 - Loom+ access is the `loom_plus_members` table (admin-write only), read through `get_match_diagnostics`; never a user-editable profile column.
 - Demo shortcuts (skip to drop, sample data) render only in guest mode; signed-in landing is chosen by `landingScreen` in `src/loom/flow.ts`.
+
+- God Mode (`/admin`): every admin action is a security-definer RPC starting with `require_admin()` and writing `admin_actions`; drops run through `run_drop` (pause switch + `match_drop_runs` log). Test-account seed/wipe lives only in `src/lib/admin-testers.functions.ts` + `src/loom/dev/` and touches only `is_test_account` rows with `loomtest-N@uw.edu` emails, so it can be deleted before launch.

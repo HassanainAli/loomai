@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Shell } from "@/loom/Shell";
@@ -47,6 +47,11 @@ function Index() {
   const [guest, setGuest] = useState(false); // GUEST MODE
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
   const [profileNotice, setProfileNotice] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    if (!userId) return setIsAdmin(false);
+    (sb as any).rpc("has_role", { _user_id: userId, _role: "admin" }).then(({ data }: any) => setIsAdmin(data === true));
+  }, [userId]);
   const setMatchStatus = async (m: Match | null, action: "greenlit" | "passed") => {
     if (!m?.matchId || guest) return null;
     const { data: result, error } = await (sb as any).rpc("respond_to_match", { p_match: m.matchId, p_action: action });
@@ -149,6 +154,9 @@ function Index() {
 
   const app = (
     <>
+      {isAdmin && !guest && (
+        <Link to="/admin" className="absolute top-2 right-2 z-50 text-[10px] font-mono px-2 py-1 rounded border border-fuchsia-500/60 text-fuchsia-300 bg-black/80">God mode</Link>
+      )}
       {guest && (
         <ReviewerBar screen={screen} onJump={guestJump} onExit={() => { setGuest(false); setScreen("auth"); }} />
       )}
