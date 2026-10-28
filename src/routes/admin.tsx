@@ -64,8 +64,9 @@ function AdminPage() {
     supabase.auth.getSession().then(({ data }) => (data.session ? load() : setState("denied")));
   }, [load]);
 
-  const act = async (label: string, fn: () => Promise<string>, confirmText?: string) => {
-    if (confirmText && !window.confirm(confirmText)) return;
+  const [pending, setPending] = useState<{ key: AdminActionKey; label: string; fn: () => Promise<string> } | null>(null);
+
+  const run = async (label: string, fn: () => Promise<string>) => {
     setBusy(true);
     setMsg(null);
     try {
@@ -77,6 +78,7 @@ function AdminPage() {
       setBusy(false);
     }
   };
+  const act = (label: string, fn: () => Promise<string>, key: AdminActionKey) => setPending({ key, label, fn });
   const rpc = async (name: string, args?: object) => {
     const { data, error } = await (supabase as any).rpc(name, args);
     if (error) throw new Error(error.message);
