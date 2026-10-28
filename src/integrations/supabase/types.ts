@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action: string
+          admin_id: string
+          created_at: string
+          details: Json
+          id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          created_at?: string
+          details?: Json
+          id?: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          created_at?: string
+          details?: Json
+          id?: string
+        }
+        Relationships: []
+      }
       daily_prompts: {
         Row: {
           category: string
@@ -53,6 +77,33 @@ export type Database = {
         Update: {
           granted_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      match_drop_runs: {
+        Row: {
+          drop_date: string
+          id: string
+          outcome: string
+          pairs_created: number | null
+          started_at: string
+          triggered_by: string
+        }
+        Insert: {
+          drop_date: string
+          id?: string
+          outcome: string
+          pairs_created?: number | null
+          started_at?: string
+          triggered_by: string
+        }
+        Update: {
+          drop_date?: string
+          id?: string
+          outcome?: string
+          pairs_created?: number | null
+          started_at?: string
+          triggered_by?: string
         }
         Relationships: []
       }
@@ -129,6 +180,7 @@ export type Database = {
           baseline_weight: number
           counterweight_target: number
           daily_weight: number
+          engine_paused: boolean
           feedback_decay_days: number
           feedback_focus_boost: number
           feedback_penalty_weight: number
@@ -143,6 +195,7 @@ export type Database = {
           baseline_weight?: number
           counterweight_target?: number
           daily_weight?: number
+          engine_paused?: boolean
           feedback_decay_days?: number
           feedback_focus_boost?: number
           feedback_penalty_weight?: number
@@ -157,6 +210,7 @@ export type Database = {
           baseline_weight?: number
           counterweight_target?: number
           daily_weight?: number
+          engine_paused?: boolean
           feedback_decay_days?: number
           feedback_focus_boost?: number
           feedback_penalty_weight?: number
@@ -295,6 +349,7 @@ export type Database = {
           gender: string | null
           height_in: number | null
           id: string
+          is_test_account: boolean
           seed_prompts: Json | null
           target_preference: string | null
           updated_at: string
@@ -307,6 +362,7 @@ export type Database = {
           gender?: string | null
           height_in?: number | null
           id: string
+          is_test_account?: boolean
           seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
@@ -319,6 +375,7 @@ export type Database = {
           gender?: string | null
           height_in?: number | null
           id?: string
+          is_test_account?: boolean
           seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
@@ -410,6 +467,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_get_stats: { Args: never; Returns: Json }
+      admin_log_action: {
+        Args: { p_action: string; p_details: Json }
+        Returns: undefined
+      }
+      admin_run_drop_now: { Args: never; Returns: number }
+      admin_set_campus_minimum: { Args: { p_min: number }; Returns: undefined }
+      admin_set_engine_paused: {
+        Args: { p_paused: boolean }
+        Returns: undefined
+      }
+      admin_set_loom_plus: {
+        Args: { p_email: string; p_on: boolean }
+        Returns: string
+      }
       auto_end_stale_threads: { Args: never; Returns: number }
       balance_fit: {
         Args: { balance: string; sim: number; target: number }
@@ -500,10 +572,12 @@ export type Database = {
       }
       log_recalibration: { Args: { p_reason: string }; Returns: undefined }
       mark_thread_read: { Args: { p_thread: string }; Returns: undefined }
+      require_admin: { Args: never; Returns: undefined }
       respond_to_match: {
         Args: { p_action: string; p_match: string }
         Returns: string
       }
+      run_drop: { Args: { p_drop: string; p_trigger: string }; Returns: number }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
