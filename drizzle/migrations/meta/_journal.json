@@ -106,6 +106,13 @@
       "when": 1793150929058,
       "tag": "0014_god_mode_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1793151031655,
+      "tag": "0015_security_sweep_revoke_anon",
+      "breakpoints": true
     }
   ]
 }
