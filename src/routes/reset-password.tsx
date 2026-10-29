@@ -29,12 +29,42 @@ function ResetPassword() {
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
 
+  const [linkError, setLinkError] = useState("");
+
   useEffect(() => {
+    let settled = false;
+    const ok = () => { settled = true; setReady(true); };
+    const fail = (msg: string) => { if (!settled) { settled = true; setLinkError(msg); } };
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY" || session) setReady(true);
+      if (event === "PASSWORD_RECOVERY" || session) ok();
     });
-    supabase.auth.getSession().then(({ data }) => data.session && setReady(true));
-    return () => data.subscription.unsubscribe();
+
+    (async () => {
+      const url = new URL(window.location.href);
+      const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
+      const errDesc = url.searchParams.get("error_description") || hash.get("error_description");
+      if (errDesc) return fail("This reset link is invalid or has expired.");
+
+      const code = url.searchParams.get("code");
+      const tokenHash = url.searchParams.get("token_hash");
+      try {
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code);
+          if (error) return fail("This reset link is invalid or has expired.");
+        } else if (tokenHash) {
+          const { error } = await supabase.auth.verifyOtp({ type: "recovery", token_hash: tokenHash });
+          if (error) return fail("This reset link is invalid or has expired.");
+        }
+        window.history.replaceState(null, "", "/reset-password");
+        const { data: s } = await supabase.auth.getSession();
+        if (s.session) ok();
+      } catch {
+        fail("This reset link is invalid or has expired.");
+      }
+    })();
+
+    const t = setTimeout(() => fail("We couldn't verify this link. It may have expired or already been used."), 8000);
+    return () => { clearTimeout(t); data.subscription.unsubscribe(); };
   }, []);
 
   async function submit(e: React.FormEvent) {
@@ -60,10 +90,16 @@ function ResetPassword() {
             <p className="mt-2 text-sm text-white/60">Sign in with your new password.</p>
             <button onClick={() => navigate({ to: "/" })} className="bg-primary text-primary-foreground mt-8 w-full py-3 rounded-full text-sm font-bold">Back to sign in</button>
           </>
+        ) : !ready && linkError ? (
+          <>
+            <h1 className="text-2xl font-bold">Link not valid</h1>
+            <p className="mt-2 text-sm text-white/60">{linkError} Request a new reset email from the sign-in screen.</p>
+            <button onClick={() => navigate({ to: "/" })} className="bg-primary text-primary-foreground mt-8 w-full py-3 rounded-full text-sm font-bold">Back to sign in</button>
+          </>
         ) : !ready ? (
           <>
             <h1 className="text-2xl font-bold">Checking your link…</h1>
-            <p className="mt-2 text-sm text-white/60">If this takes too long, request a new reset email from the sign-in screen.</p>
+            <p className="mt-2 text-sm text-white/60">This only takes a moment.</p>
           </>
         ) : (
           <form onSubmit={submit} className="space-y-3 text-left">
