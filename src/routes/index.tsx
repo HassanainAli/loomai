@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Shell } from "@/loom/Shell";
 import { DesktopLanding } from "@/loom/DesktopLanding";
@@ -15,7 +15,7 @@ import { Profile } from "@/loom/screens/Profile";
 import { Focus } from "@/loom/screens/Focus";
 import type { Match, OnboardingAnswers, Screen, UserSpec } from "@/loom/types";
 import { supabase as sb } from "@/integrations/supabase/client";
-import { CURRENT_USER_SPEC, MATCHES } from "@/loom/types";
+import { CURRENT_USER_SPEC, MATCHES, rowToMatch, type MatchRow } from "@/loom/types";
 import { GUEST_MODE_ENABLED, ReviewerBar } from "@/loom/guest/GuestMode"; // GUEST MODE
 import { landingScreen } from "@/loom/flow";
 
@@ -48,6 +48,8 @@ function Index() {
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
   const [profileNotice, setProfileNotice] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const lastUid = useRef<string | null | undefined>(undefined);
+  const loadForRef = useRef<((uid: string) => Promise<void>) | null>(null);
   useEffect(() => {
     if (!userId) return setIsAdmin(false);
     (sb as any).rpc("has_role", { _user_id: userId, _role: "admin" }).then(({ data }: any) => setIsAdmin(data === true));
@@ -277,7 +279,9 @@ function Index() {
           match={activeMatch}
           onEject={() => {
             setActiveMatch(null);
-            setScreen("queue");
+            // After a connection ends, go back to the daily rhythm (prompt or countdown).
+            if (!guest && userId && loadForRef.current) loadForRef.current(userId);
+            else setScreen("queue");
           }}
         />
       )}

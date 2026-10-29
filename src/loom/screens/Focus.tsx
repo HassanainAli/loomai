@@ -173,7 +173,7 @@ export function Focus({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="border-b border-border p-4 flex items-center justify-between bg-background">
+      <div className="border-b border-border px-4 pt-12 pb-3 flex items-center justify-between bg-background">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neutral-300 to-neutral-500" />
           <div>

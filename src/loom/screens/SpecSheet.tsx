@@ -152,7 +152,7 @@ export function SpecSheet({
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      <div className="px-8 pt-8 pb-6">
+      <div className="px-8 pt-12 pb-6">
         <button
           onClick={onBack}
           className="-ml-2 mb-4 p-2 w-9 text-foreground/70 hover:text-foreground transition-colors"

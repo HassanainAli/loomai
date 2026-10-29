@@ -73,7 +73,7 @@ export function Profile({
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto pb-32">
-        <div className="bg-[#FACC15] text-black p-5 flex items-start gap-3">
+        <div className="bg-[#FACC15] text-black px-5 pt-12 pb-4 flex items-start gap-3">
           <button onClick={onBack} className="shrink-0 mt-0.5">
             <ArrowLeft className="w-5 h-5" />
           </button>
