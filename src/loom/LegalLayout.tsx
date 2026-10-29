@@ -3,12 +3,16 @@ import { Link } from "@tanstack/react-router";
 
 const MONO = { fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace' };
 
+/** Single contact address used across legal pages — replace with a real monitored inbox. */
+export const LEGAL_CONTACT = "legal@getloom.app";
+export const LEGAL_EFFECTIVE = "Effective Oct 2026 · v1.0 campus pilot";
+
 function LegalNav() {
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/70 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-8">
         <Link to="/" className="text-white text-lg font-black tracking-tighter lowercase">
-          loom<span className="text-[#FF00FF]">.</span>
+          loom<span className="text-[#FACC15]">.</span>
         </Link>
         <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-white/70" style={MONO}>
           <Link to="/" className="hover:text-white transition-colors">Home</Link>
@@ -73,12 +77,9 @@ export function LegalLayout({ title, children }: { title: string; children: Reac
         </div>
         <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/70" style={MONO}>
           <span className="h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_10px_#FF00FF]" />
-          Draft · Not yet finalized
+          {LEGAL_EFFECTIVE}
         </div>
         <h1 className="mt-6 text-5xl font-black leading-[1.02] tracking-[-0.04em] text-[#FAFAFA] md:text-6xl">{title}</h1>
-        <p className="mt-6 border-l border-white/20 pl-4 text-sm leading-relaxed text-zinc-400">
-          This page contains placeholder legal copy. It is not a finalized agreement or policy and requires legal review before the campus pilot.
-        </p>
         <div className="mt-16 space-y-14">{children}</div>
       </main>
       <LegalFooter />
