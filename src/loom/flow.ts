@@ -8,7 +8,7 @@ export type LandingInput = {
 
 /** Where a signed-in, onboarded student lands based on today's drop state. */
 export function landingScreen(s: LandingInput): Screen {
-  if (s.inActiveChat) return "queue"; // queue opens the active chat card
+  if (s.inActiveChat) return "focus"; // matched: Loom is just the chat
   if (s.hasOpenMatches) return "queue";
   if (s.answeredToday) return "anticipation";
   return "dailyGate";

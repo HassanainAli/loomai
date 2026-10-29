@@ -4,7 +4,7 @@ import { landingScreen, secondsUntilPacific8pm, showSkipToDrop } from "./flow";
 const base = { inActiveChat: false, hasOpenMatches: false, answeredToday: false };
 
 describe("landingScreen", () => {
-  it("active chat goes to queue", () => expect(landingScreen({ ...base, inActiveChat: true })).toBe("queue"));
+  it("active chat opens the chat directly", () => expect(landingScreen({ ...base, inActiveChat: true, hasOpenMatches: true })).toBe("focus"));
   it("open matches go to queue", () => expect(landingScreen({ ...base, hasOpenMatches: true, answeredToday: true })).toBe("queue"));
   it("answered today goes to countdown", () => expect(landingScreen({ ...base, answeredToday: true })).toBe("anticipation"));
   it("otherwise daily prompt", () => expect(landingScreen(base)).toBe("dailyGate"));
