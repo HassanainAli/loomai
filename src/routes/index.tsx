@@ -102,15 +102,15 @@ function Index() {
         ]);
         if (cancelled) return;
         const state = ds?.[0];
-        setScreen(
-          landingScreen({
-            inActiveChat: !!state?.in_active_chat,
-            hasOpenMatches: ((ms ?? []) as any[]).some((r) =>
-              ["pending", "greenlit", "mutual"].includes(r.status),
-            ),
-            answeredToday: !!state?.answered_today,
-          }),
-        );
+        const rows = (ms ?? []) as MatchRow[];
+        const chat = rows.find((r) => r.status === "mutual" && r.thread_id);
+        const next = landingScreen({
+          inActiveChat: !!state?.in_active_chat && !!chat,
+          hasOpenMatches: rows.some((r) => ["pending", "greenlit", "mutual"].includes(r.status as string)),
+          answeredToday: !!state?.answered_today,
+        });
+        if (next === "focus" && chat) setActiveMatch(rowToMatch(chat));
+        setScreen(next);
       } else {
         // Pre-fill the display_name from the auto-created profile row if present,
         // but keep the user inside onboarding until SpecSheet saves the rest.
@@ -120,17 +120,23 @@ function Index() {
         setScreen("onboard1");
       }
     }
+    loadForRef.current = loadFor;
 
     supabase.auth.getSession().then(({ data }) => {
       const uid = data.session?.user?.id ?? null;
       if (cancelled) return;
+      lastUid.current = uid;
       setUserId(uid);
       if (uid) loadFor(uid);
       else setScreen("auth");
     });
 
+    // Only re-route when the signed-in account actually changes. Token refreshes
+    // (e.g. when you tab back in) must not yank the user out of their screen.
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
       const uid = session?.user?.id ?? null;
+      if (uid === lastUid.current) return;
+      lastUid.current = uid;
       setUserId(uid);
       if (uid) {
         loadFor(uid);
