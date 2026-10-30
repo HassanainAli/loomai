@@ -177,7 +177,7 @@ export function Focus({
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neutral-300 to-neutral-500" />
           <div>
-            <p className="font-black text-base leading-tight">{match.name}</p>
+            <h2 className="font-black text-base leading-tight">{match.name}</h2>
             <button
               onClick={() => setShowProfile(true)}
               className="text-xs text-muted-foreground underline underline-offset-2"

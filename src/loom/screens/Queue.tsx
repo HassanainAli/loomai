@@ -46,7 +46,7 @@ export function Queue({
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
         8:00 PM Drop
       </p>
-      <h2 className="text-3xl font-black tracking-tight mb-1">
+      <h2 className="text-3xl font-black tracking-[-0.015em] mb-1">
         Your Curated Matches.
       </h2>
       <p className="text-sm text-muted-foreground mb-8">

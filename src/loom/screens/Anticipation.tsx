@@ -33,7 +33,7 @@ export function Anticipation({ onDrop, isGuest = false }: { onDrop: () => void; 
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
         Drop at 8:00 PM Pacific
       </p>
-      <div className="text-6xl font-black tracking-tighter tabular-nums leading-none">
+      <div className="text-6xl font-black tracking-tight tabular-nums leading-none">
         {seconds === null ? "--:--:--" : `${h}:${m}:${s}`}
       </div>
       <p className="text-sm text-muted-foreground mt-4 max-w-[14rem] leading-relaxed">

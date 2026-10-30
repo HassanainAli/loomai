@@ -154,7 +154,7 @@ export function DailyGate({
     ];
     return (
       <div className="flex flex-col h-full p-8 pt-16">
-        <h2 className="text-3xl font-black tracking-tight mb-3">
+        <h2 className="text-3xl font-black tracking-[-0.015em] mb-3">
           Let's recalibrate.
         </h2>
         <p className="text-sm text-muted-foreground mb-10 leading-relaxed">
