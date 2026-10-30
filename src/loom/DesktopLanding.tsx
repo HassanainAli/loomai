@@ -126,7 +126,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
               <span className="h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_10px_#FF00FF]" />
               Closed-Loop // .edu only
             </div>
-            <h1 className="mt-8 text-5xl font-black leading-[1.02] tracking-[-0.04em] text-white md:text-6xl lg:text-7xl">
+            <h1 className="mt-8 text-5xl font-black leading-[1.02] tracking-[-0.03em] text-white md:text-6xl lg:text-7xl">
               Two matches.
               <br />
               <span className="text-white">No endless</span>{" "}
@@ -182,7 +182,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
             <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">
               // System Logic
             </div>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.03em] text-white md:text-5xl">
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.02em] text-white md:text-5xl">
               The architecture, in three blocks.
             </h2>
           </div>
