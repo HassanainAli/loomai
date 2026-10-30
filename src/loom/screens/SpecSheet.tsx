@@ -190,7 +190,7 @@ export function SpecSheet({
               <select
                 value={userSpec.gender}
                 onChange={(e) => onUpdateUserSpec({ gender: e.target.value })}
-                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono ${
+                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${
                   userSpec.gender ? "" : "opacity-50"
                 }`}
               >
@@ -213,7 +213,7 @@ export function SpecSheet({
               <select
                 value={userSpec.seeking}
                 onChange={(e) => onUpdateUserSpec({ seeking: e.target.value })}
-                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono ${
+                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${
                   userSpec.seeking ? "" : "opacity-50"
                 }`}
               >
@@ -237,7 +237,7 @@ export function SpecSheet({
                 required
                 value={userSpec.campus}
                 onChange={(e) => onUpdateUserSpec({ campus: e.target.value })}
-                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all font-mono ${
+                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${
                   userSpec.campus ? "" : "opacity-50"
                 }`}
               >
