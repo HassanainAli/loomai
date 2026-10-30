@@ -1,3 +1,4 @@
+import { Wordmark } from "./Wordmark";
 import { ReactNode } from "react";
 
 export function Shell({ children }: { children: ReactNode }) {
@@ -18,15 +19,8 @@ export function Brand({
   style?: React.CSSProperties;
 }) {
   return (
-    <h1
-      className={`font-black tracking-tighter lowercase text-white ${className}`}
-      style={{
-        fontFamily: "Inter, sans-serif",
-        letterSpacing: "-0.05em",
-        ...style,
-      }}
-    >
-      loom<span className="font-black text-primary">.</span>
+    <h1 style={style}>
+      <Wordmark className={className} />
     </h1>
   );
 }
