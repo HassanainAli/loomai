@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { seedTesters, wipeTesters } from "@/lib/admin-testers.functions";
 import { validCampusMinimum } from "@/loom/dev/testers";
 import { ADMIN_ACTIONS, type AdminActionKey } from "@/loom/dev/adminActions";
+import { Wordmark } from "@/loom/Wordmark";
 
 export const Route = createFileRoute("/admin")({
   ssr: false,
@@ -96,7 +97,7 @@ function AdminPage() {
     <div className="min-h-screen bg-black text-zinc-100 font-mono px-4 py-8">
       <div className="max-w-3xl mx-auto space-y-5">
         <header className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">loom<span className="text-[#FACC15]">.</span> <span className="text-[#FF2BD6]">god mode</span></h1>
+          <h1 className="text-2xl font-bold"><Wordmark /> <span className="text-[#FF2BD6]">god mode</span></h1>
           <Link to="/" className="text-xs text-cyan-300 underline">Back to app</Link>
         </header>
         {msg && (

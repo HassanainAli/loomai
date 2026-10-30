@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { Wordmark } from "./Wordmark";
 
-const MONO = { fontFamily: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace' };
 
 function useReveal() {
   const ref = useRef<HTMLDivElement | null>(null);
@@ -29,18 +29,15 @@ function Nav({ onCta }: { onCta: () => void }) {
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/70 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4">
-        <a href="/" className="text-white text-lg font-black tracking-tighter lowercase">
-          loom<span className="text-[#FF00FF]">.</span>
-        </a>
-        <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-white/70" style={MONO}>
+        <a href="/" aria-label="loom home"><Wordmark className="text-lg" /></a>
+        <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-white/70 font-mono">
           <a href="#logic" className="hover:text-white transition-colors">The Logic</a>
           <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
           <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
         </div>
         <button
           onClick={onCta}
-          className="nn-cta-ghost rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em]"
-          style={MONO}
+          className="nn-cta-ghost rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em] font-mono"
         >
           Get Access
         </button>
@@ -77,14 +74,14 @@ function BentoCard({
       data-delay={String(index)}
     >
       <div>
-        <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-[#FF00FF]" style={MONO}>
+        <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_12px_#FF00FF]" />
           {label}
         </div>
         <h3 className="mt-6 text-2xl font-bold text-white tracking-tight leading-tight">{title}</h3>
         <p className="mt-4 text-sm leading-relaxed text-white/60">{body}</p>
       </div>
-      <div className="mt-10 flex items-baseline justify-between border-t border-white/10 pt-4 text-[10px] uppercase tracking-[0.22em]" style={MONO}>
+      <div className="mt-10 flex items-baseline justify-between border-t border-white/10 pt-4 text-[10px] uppercase tracking-[0.22em] font-mono">
         <span className="text-white/40">{`0${index}`} / 03</span>
         <span className="text-white/80">{metric}</span>
       </div>
@@ -124,13 +121,12 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
           {/* Left */}
           <div>
             <div
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/70"
-              style={MONO}
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/70 font-mono"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_10px_#FF00FF]" />
               Closed-Loop // .edu only
             </div>
-            <h1 className="mt-8 text-5xl font-black leading-[1.02] tracking-[-0.04em] text-white md:text-6xl lg:text-7xl">
+            <h1 className="mt-8 text-5xl font-black leading-[1.02] tracking-[-0.03em] text-white md:text-6xl lg:text-7xl">
               Two matches.
               <br />
               <span className="text-white">No endless</span>{" "}
@@ -138,37 +134,35 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60">
               A closed-loop network for verified university students. Catch the drop every night at{" "}
-              <span className="text-white" style={MONO}>8pm</span>.
+              <span className="text-white font-mono">8pm</span>.
             </p>
             <div className="mt-10 flex items-center gap-4">
               <button
                 onClick={enterPortal}
-                className="nn-cta rounded-full px-7 py-4 text-sm uppercase tracking-[0.2em]"
-                style={MONO}
+                className="nn-cta rounded-full px-7 py-4 text-sm uppercase tracking-[0.2em] font-mono"
               >
                 Enter the Portal →
               </button>
               <a
                 href="#logic"
-                className="text-xs uppercase tracking-[0.22em] text-white/50 hover:text-white transition-colors"
-                style={MONO}
+                className="text-xs uppercase tracking-[0.22em] text-white/50 hover:text-white transition-colors font-mono"
               >
                 Read the logic
               </a>
             </div>
 
             {/* signal row */}
-            <div className="mt-16 grid max-w-md grid-cols-3 gap-6 border-t border-white/10 pt-8 text-[10px] uppercase tracking-[0.22em] text-white/40" style={MONO}>
+            <div className="mt-16 grid max-w-md grid-cols-3 gap-6 border-t border-white/10 pt-8 text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
               <div>
-                <div className="text-white text-lg font-bold tracking-tight" style={MONO}>2</div>
+                <div className="text-white text-lg font-bold tracking-tight font-mono">2</div>
                 <div className="mt-1">Matches / drop</div>
               </div>
               <div>
-                <div className="text-white text-lg font-bold tracking-tight" style={MONO}>24h</div>
+                <div className="text-white text-lg font-bold tracking-tight font-mono">24h</div>
                 <div className="mt-1">Decay window</div>
               </div>
               <div>
-                <div className="text-white text-lg font-bold tracking-tight" style={MONO}>0</div>
+                <div className="text-white text-lg font-bold tracking-tight font-mono">0</div>
                 <div className="mt-1">Swipes</div>
               </div>
             </div>
@@ -185,10 +179,10 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
       <section id="logic" className="relative border-t border-white/10 bg-black">
         <div className="mx-auto max-w-7xl px-8 py-24">
           <div className="nn-reveal mb-16 max-w-2xl" data-delay="1">
-            <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF]" style={MONO}>
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">
               // System Logic
             </div>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.03em] text-white md:text-5xl">
+            <h2 className="mt-4 text-4xl font-black tracking-[-0.02em] text-white md:text-5xl">
               The architecture, in three blocks.
             </h2>
           </div>
@@ -223,10 +217,10 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
         <div className="mx-auto max-w-7xl px-8 py-16">
           <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
             <div id="safety" className="nn-reveal" data-delay="1">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF]" style={MONO}>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">
                 // System Integrity
               </div>
-              <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60" style={MONO}>
+              <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60">
                 No verified student status, no active dating profile.
                 Accounts that fail .edu verification are not allowed into the
                 matching pool, and their session activity is discarded. For
@@ -236,20 +230,20 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
               </p>
             </div>
             <div className="nn-reveal" data-delay="2">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-white/40" style={MONO}>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
                 Network
               </div>
-              <ul className="mt-4 space-y-2 text-sm text-white/70" style={MONO}>
+              <ul className="mt-4 space-y-2 text-sm text-white/70 font-mono">
                 <li><a href="#logic" className="hover:text-white">The Logic</a></li>
                 <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
                 <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
               </ul>
             </div>
             <div className="nn-reveal" data-delay="3">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-white/40" style={MONO}>
+              <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
                 Status
               </div>
-              <ul className="mt-4 space-y-2 text-sm text-white/70" style={MONO}>
+              <ul className="mt-4 space-y-2 text-sm text-white/70 font-mono">
                 <li className="flex items-center gap-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_10px_#FF00FF]" />
                   Engine online
@@ -261,7 +255,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
               </ul>
             </div>
           </div>
-          <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-[10px] uppercase tracking-[0.22em] text-white/40" style={MONO}>
+          <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
             <span>loom // closed-loop</span>
             <span>© {new Date().getFullYear()}</span>
           </div>
