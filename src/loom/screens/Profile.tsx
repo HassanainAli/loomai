@@ -89,7 +89,7 @@ export function Profile({
 
         <div className="p-6 space-y-6">
           <div>
-            <h2 className="text-4xl font-black tracking-tight">
+            <h2 className="text-4xl font-black tracking-[-0.015em]">
               {match.name}{match.age ? `, ${match.age}` : ""}
             </h2>
             <p className="text-sm text-muted-foreground font-medium mt-1">

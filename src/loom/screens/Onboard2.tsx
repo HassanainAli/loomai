@@ -30,7 +30,7 @@ export function Onboard2({
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
         Step 2 of 4
       </p>
-      <h2 className="text-3xl font-black tracking-tight mb-2">Seed the AI.</h2>
+      <h2 className="text-3xl font-black tracking-[-0.015em] mb-2">Seed the AI.</h2>
       <p className="text-sm text-muted-foreground mb-8">
         These answers train your match engine. Be honest — no one else sees them
         until you match.
