@@ -162,9 +162,6 @@ function Index() {
 
   const app = (
     <>
-      {isAdmin && !guest && (
-        <Link to="/admin" className="absolute top-2 right-2 z-50 text-[10px] font-mono px-2 py-1 rounded border border-fuchsia-500/60 text-fuchsia-300 bg-black/80">God mode</Link>
-      )}
       {guest && (
         <ReviewerBar screen={screen} onJump={guestJump} onExit={() => { setGuest(false); setScreen("auth"); }} />
       )}
