@@ -292,7 +292,7 @@ export function Focus({
                   onChange={(e) => setEjectNote(e.target.value)}
                   maxLength={500}
                   onKeyDown={(e) => e.key === "Enter" && handleEject(selectedReason, ejectNote.trim())}
-                  placeholder="Anything specific the system should note? (Optional)"
+                  placeholder="Tell us more"
                   className="flex-1 bg-transparent text-base text-foreground font-sans placeholder:text-muted-foreground focus:outline-none"
                 />
                 <button
