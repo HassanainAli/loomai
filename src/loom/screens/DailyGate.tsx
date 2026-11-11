@@ -58,7 +58,8 @@ export function DailyGate({
   const [vv, setVv] = useState<{ h: number; top: number } | null>(null);
   useEffect(() => {
     const v = window.visualViewport;
-    if (!focused || !v) {
+    const isPhone = window.matchMedia("(pointer: coarse) and (max-width: 1023px)").matches;
+    if (!focused || !v || !isPhone) {
       setVv(null);
       document.body.classList.remove("kb-open");
       return;
@@ -223,7 +224,11 @@ export function DailyGate({
           <textarea
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            onFocus={() => setFocused(true)}
+            onFocus={(e) => {
+              // Desktop phone mockup has no on-screen keyboard: keep the normal layout.
+              if (e.currentTarget.closest(".nn-phone-screen")) return;
+              setFocused(true);
+            }}
             onBlur={() => setFocused(false)}
             rows={1}
             maxLength={2000}
