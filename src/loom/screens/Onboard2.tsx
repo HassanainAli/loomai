@@ -32,11 +32,11 @@ export function Onboard2({
       </p>
       <h2 className="text-3xl font-black tracking-[-0.015em] mb-2">Seed the AI.</h2>
       <p className="text-sm text-muted-foreground mb-8">
-        These answers train your match engine. Be honest — no one else sees them
+        These answers train your match engine. Be honest, no one else sees them
         until you match.
       </p>
 
-      <div className="space-y-6">
+      <div className="space-y-6 shrink-0">
         {SEED_PROMPTS.map((q, i) => (
           <div key={i}>
             <label className="text-sm font-bold mb-2 block leading-snug">
@@ -57,13 +57,14 @@ export function Onboard2({
         ))}
       </div>
 
-      <div className="h-8" />
-      <PrimaryButton
-        onClick={() => onNext(SEED_PROMPTS.map((q, i) => ({ q, a: answers[i].trim() })))}
-        disabled={!allFilled}
-      >
-        Next
-      </PrimaryButton>
+      <div className="mt-8 pb-10 shrink-0">
+        <PrimaryButton
+          onClick={() => onNext(SEED_PROMPTS.map((q, i) => ({ q, a: answers[i].trim() })))}
+          disabled={!allFilled}
+        >
+          Next
+        </PrimaryButton>
+      </div>
     </div>
   );
 }
