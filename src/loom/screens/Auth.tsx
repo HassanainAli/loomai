@@ -302,13 +302,6 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
         </div>
       )}
 
-      <p className="px-8 pb-6 text-center text-[10px] leading-relaxed text-white/35 max-w-sm mx-auto">
-        Loom is a closed-loop network. A verified university email is required to join the pool.
-        <span className="mt-2 flex justify-center gap-4 text-xs text-muted-foreground">
-          <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">Privacy Policy</Link>
-          <Link to="/terms" className="underline underline-offset-4 hover:text-foreground">Terms of Service</Link>
-        </span>
-      </p>
     </div>
   );
 }
