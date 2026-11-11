@@ -1,3 +1,4 @@
+import { GreenLightSent } from "@/loom/GreenLightSent";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,6 +48,7 @@ function Index() {
   const [guest, setGuest] = useState(false); // GUEST MODE
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
   const [profileNotice, setProfileNotice] = useState<string | null>(null);
+  const [glSent, setGlSent] = useState<null | (() => void)>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const lastUid = useRef<string | null | undefined>(undefined);
   const loadForRef = useRef<((uid: string) => Promise<void>) | null>(null);
@@ -257,17 +259,20 @@ function Index() {
             setScreen("queue");
           }}
           onGreenLight={async () => {
-            if (guest) return setScreen("focus"); // GUEST MODE
+            if (guest) return setGlSent(() => () => setScreen("focus")); // GUEST MODE
             const row = await setMatchStatus(activeMatch, "greenlit");
             if (!row || row.expired) return;
             if (row.status === "mutual" && row.thread_id) {
               setActiveMatch({ ...activeMatch, status: "mutual", threadId: row.thread_id });
               setScreen("focus");
             } else {
-              setScreen("queue");
+              setGlSent(() => () => setScreen("queue"));
             }
           }}
         />
+      )}
+      {glSent && (
+        <GreenLightSent onDone={() => { const next = glSent; setGlSent(null); next(); }} />
       )}
       {screen === "focus" && activeMatch && (
         <Focus

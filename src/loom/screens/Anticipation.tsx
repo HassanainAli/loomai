@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Lock } from "lucide-react";
+import { Nebula } from "../Nebula";
 import { secondsUntilPacific8pm, showSkipToDrop } from "../flow";
 
 export function Anticipation({ onDrop, isGuest = false }: { onDrop: () => void; isGuest?: boolean }) {
@@ -29,18 +30,19 @@ export function Anticipation({ onDrop, isGuest = false }: { onDrop: () => void; 
   const s = String(sec % 60).padStart(2, "0");
 
   return (
-    <div className="flex flex-col h-full p-8 pt-14 overflow-y-auto">
-      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+    <div className="relative flex flex-col h-full p-8 pt-14 overflow-y-auto">
+      <Nebula />
+      <p className="relative text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
         Drop at 8:00 PM Pacific
       </p>
-      <div className="text-6xl font-black tracking-tight tabular-nums leading-none">
+      <div className="relative text-6xl font-black tracking-tight tabular-nums leading-none">
         {seconds === null ? "--:--:--" : `${h}:${m}:${s}`}
       </div>
-      <p className="text-sm text-muted-foreground mt-4 max-w-[14rem] leading-relaxed">
+      <p className="relative text-sm text-muted-foreground mt-4 max-w-[14rem] leading-relaxed">
         Your daily prompt is locked. The engine is analyzing the campus pool.
       </p>
 
-      <div className="flex-1 flex flex-col justify-center gap-4 my-8">
+      <div className="relative flex-1 flex flex-col justify-center gap-4 my-8">
         {[0, 1].map((i) => (
           <div
             key={i}
@@ -60,7 +62,7 @@ export function Anticipation({ onDrop, isGuest = false }: { onDrop: () => void; 
       {showSkipToDrop(isGuest) && (
         <button
           onClick={onDrop}
-          className="text-xs uppercase tracking-widest text-muted-foreground font-bold py-3"
+          className="relative text-xs uppercase tracking-widest text-muted-foreground font-bold py-3"
         >
           ⏭ Skip to drop (demo)
         </button>
