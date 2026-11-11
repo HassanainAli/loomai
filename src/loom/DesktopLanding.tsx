@@ -120,13 +120,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
         <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-8 py-10 min-h-[calc(100vh-5rem)] lg:grid-cols-[1.1fr_1fr]">
           {/* Left */}
           <div>
-            <div
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/70 font-mono"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_10px_#FF00FF]" />
-              Closed-Loop // .edu only
-            </div>
-            <h1 className="mt-8 text-5xl font-black leading-[1.02] tracking-[-0.03em] text-white md:text-6xl lg:text-7xl">
+            <h1 className="text-5xl font-black leading-[1.02] tracking-[-0.03em] text-white md:text-6xl lg:text-7xl">
               Two matches.
               <br />
               <span className="text-white">No endless</span>{" "}
