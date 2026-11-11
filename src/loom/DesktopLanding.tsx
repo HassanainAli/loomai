@@ -117,7 +117,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
               "radial-gradient(circle at 75% 30%, rgba(255,0,255,0.25) 0%, transparent 55%), radial-gradient(circle at 10% 90%, rgba(255,0,255,0.12) 0%, transparent 50%)",
           }}
         />
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-8 py-24 lg:grid-cols-[1.1fr_1fr]">
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-8 py-10 min-h-[calc(100vh-5rem)] lg:grid-cols-[1.1fr_1fr]">
           {/* Left */}
           <div>
             <div

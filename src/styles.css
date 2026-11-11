@@ -255,6 +255,12 @@
   transition: transform 400ms ease;
 }
 .nn-phone:hover { transform: perspective(1800px) rotateY(-4deg) rotateX(1deg); }
+@media (max-height: 900px) {
+  .nn-phone { zoom: 0.86; }
+}
+@media (max-height: 780px) {
+  .nn-phone { zoom: 0.76; }
+}
 
 .nn-phone-screen {
   position: relative;

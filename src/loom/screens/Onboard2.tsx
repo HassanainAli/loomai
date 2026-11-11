@@ -19,7 +19,8 @@ export function Onboard2({
   const allFilled = answers.every((a) => a.trim().length > 10);
 
   return (
-    <div className="flex flex-col h-full p-8 pt-12 overflow-y-auto">
+    <div className="flex flex-col h-full">
+      <div className="flex-1 min-h-0 overflow-y-auto p-8 pt-12 pb-4">
       <button
         onClick={onBack}
         className="-ml-2 mb-4 p-2 w-9 text-foreground/70 hover:text-foreground transition-colors"
@@ -56,8 +57,9 @@ export function Onboard2({
           </div>
         ))}
       </div>
+      </div>
 
-      <div className="mt-8 pb-10 shrink-0">
+      <div className="shrink-0 px-8 pt-3 pb-8 border-t border-border bg-background/80 backdrop-blur-sm">
         <PrimaryButton
           onClick={() => onNext(SEED_PROMPTS.map((q, i) => ({ q, a: answers[i].trim() })))}
           disabled={!allFilled}
