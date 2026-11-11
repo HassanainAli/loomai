@@ -49,6 +49,7 @@ function Index() {
   const [onboarding, setOnboarding] = useState<OnboardingAnswers>({ intention: null, seeds: [], balance: "mirror" });
   const [profileNotice, setProfileNotice] = useState<string | null>(null);
   const [glSent, setGlSent] = useState<null | (() => void)>(null);
+  const [guestMatches, setGuestMatches] = useState<Match[]>(MATCHES); // GUEST MODE
   const [isAdmin, setIsAdmin] = useState(false);
   const lastUid = useRef<string | null | undefined>(undefined);
   const loadForRef = useRef<((uid: string) => Promise<void>) | null>(null);
@@ -165,7 +166,7 @@ function Index() {
   const app = (
     <>
       {guest && (
-        <ReviewerBar screen={screen} onJump={guestJump} onExit={() => { setGuest(false); setScreen("auth"); }} />
+        <ReviewerBar screen={screen} onJump={guestJump} onExit={() => { setGuest(false); setGuestMatches(MATCHES); setScreen("auth"); }} />
       )}
       {screen === "auth" && (
         <Auth
@@ -237,6 +238,7 @@ function Index() {
       {screen === "queue" && (
         <Queue
           isGuest={guest /* GUEST MODE */}
+          guestMatches={guestMatches}
           onGoToPrompt={() => setScreen("dailyGate")}
           onOpen={(m) => {
             setActiveMatch(m);
@@ -259,7 +261,11 @@ function Index() {
             setScreen("queue");
           }}
           onGreenLight={async () => {
-            if (guest) return setGlSent(() => () => setScreen("focus")); // GUEST MODE
+            if (guest) { // GUEST MODE: lock this match to waiting, back to queue
+              const id = activeMatch.id;
+              setGuestMatches((ms) => ms.map((m) => (m.id === id ? { ...m, status: "waiting" } : m)));
+              return setGlSent(() => () => setScreen("queue"));
+            }
             const row = await setMatchStatus(activeMatch, "greenlit");
             if (!row || row.expired) return;
             if (row.status === "mutual" && row.thread_id) {

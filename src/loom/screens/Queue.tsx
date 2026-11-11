@@ -6,12 +6,14 @@ export function Queue({
   onOpen,
   isGuest = false,
   onGoToPrompt,
+  guestMatches,
 }: {
+  guestMatches?: Match[];
   onOpen: (m: Match) => void;
   isGuest?: boolean;
   onGoToPrompt?: () => void;
 }) {
-  const [matches, setMatches] = useState<Match[] | null>(isGuest ? MATCHES : null);
+  const [matches, setMatches] = useState<Match[] | null>(isGuest ? (guestMatches ?? MATCHES) : null);
   const [error, setError] = useState<string | null>(null);
   const [dropState, setDropState] = useState<DropState | null>(null);
   const [campus, setCampus] = useState<CampusStatus | null>(null);

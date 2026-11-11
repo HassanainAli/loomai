@@ -110,7 +110,7 @@ export const MATCHES: Match[] = [
   {
     id: "m2",
     name: "Eli",
-    status: "waiting", // GUEST MODE: previews the one-sided green light state
+    status: "pending",
     age: 22,
     major: "Computer Science",
     location: "0.8 mi away",
