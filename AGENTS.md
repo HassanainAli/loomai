@@ -16,3 +16,5 @@
 - God Mode (`/admin`): every admin action is a security-definer RPC starting with `require_admin()` and writing `admin_actions`; drops run through `run_drop` (pause switch + `match_drop_runs` log). Test-account seed/wipe lives only in `src/lib/admin-testers.functions.ts` + `src/loom/dev/` and touches only `is_test_account` rows with `loomtest-N@uw.edu` emails, so it can be deleted before launch.
 
 - The `loom.` wordmark is rendered only via `src/loom/Wordmark.tsx`; font families come from `--font-sans`/`--font-mono` tokens in styles.css (no inline fontFamily) so branding stays consistent.
+- App emails use the managed email service through the server-only template helper, not application queues or generic browser send endpoints, because this project's sending and delivery tracking are platform-managed.
+- Keep `/lovable/*` email routes outside login redirects and request guards; each handler authenticates its own caller so managed previews remain reachable.
