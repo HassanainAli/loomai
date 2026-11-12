@@ -18,11 +18,13 @@ export default defineConfig(({ mode }) => {
 
   return {
     resolve: {
-      alias: {
-        "entities/lib/decode.js": path.resolve(projectRoot, "node_modules/entities/lib/decode.js"),
-        "entities/lib/encode.js": path.resolve(projectRoot, "node_modules/entities/lib/encode.js"),
-        entities: path.resolve(projectRoot, "node_modules/entities"),
-      },
+      // Pin legacy imports without rewriting modern subpaths such as
+      // entities/decode, which must use htmlparser2's compatible dependency.
+      alias: [
+        { find: /^entities\/lib\/decode\.js$/, replacement: path.resolve(projectRoot, "node_modules/entities/lib/decode.js") },
+        { find: /^entities\/lib\/encode\.js$/, replacement: path.resolve(projectRoot, "node_modules/entities/lib/encode.js") },
+        { find: /^entities$/, replacement: path.resolve(projectRoot, "node_modules/entities/lib/esm/index.js") },
+      ],
     },
   };
 });
