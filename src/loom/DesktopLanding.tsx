@@ -199,7 +199,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
               index={3}
               label="The Drop"
               title="Two matches. One day to choose."
-              body="Every night at 8:00 PM, two people drop into your queue. Give a green light or let them pass."
+              body="Every night at 8:00 PM, two matches drop into your queue. Greenlight or pass before the clock resets."
               metric="T-minus 24:00:00"
             />
           </div>
