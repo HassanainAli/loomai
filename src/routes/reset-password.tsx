@@ -86,7 +86,7 @@ function ResetPassword() {
     const em = email.trim().toLowerCase();
     const token = code.replace(/\D/g, "");
     if (!em.endsWith(".edu")) return setError("Enter the university .edu email you signed up with.");
-    if (token.length < 6) return setError("Enter the full code from your email.");
+    if (token.length < 8) return setError("Enter the full code from your email.");
     setBusy(true);
     const { error: err } = await supabase.auth.verifyOtp({ email: em, token, type: "recovery" });
     setBusy(false);
@@ -141,8 +141,8 @@ function ResetPassword() {
             <p className="text-sm text-white/60 text-center">We emailed you a code. It may take a minute to arrive.</p>
             <input type="email" className={inputCls} placeholder="name@university.edu" autoComplete="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(""); }} />
             <input
-              className={`${inputCls} font-mono tracking-[0.4em] text-center text-xl`}
-              placeholder="000000"
+              className={`${inputCls} font-mono tracking-[0.25em] text-center text-xl`}
+              placeholder="00000000"
               inputMode="numeric"
               autoComplete="one-time-code"
               maxLength={8}
@@ -151,7 +151,7 @@ function ResetPassword() {
             />
             {info && <p className="text-xs pt-1 text-white/70">{info}</p>}
             {error && <p className="text-xs pt-1 text-red-400">{error}</p>}
-            <button type="submit" disabled={busy || !email || code.length < 6} className={cta}>
+            <button type="submit" disabled={busy || !email || code.length < 8} className={cta}>
               {busy ? "Checking" : "Continue"}
             </button>
             <p className="pt-4 text-center">

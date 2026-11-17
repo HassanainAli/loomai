@@ -15,6 +15,6 @@ export function updatePasswordError(message: string | undefined): string {
   const m = (message ?? "").toLowerCase();
   if (m.includes("different from the old")) return "New password can't match your previous password.";
   if (m.includes("session") || m.includes("jwt") || m.includes("expired")) return "Your reset session expired. Request a new code to continue.";
-  if (m.includes("weak") || m.includes("pwned") || m.includes("leaked")) return "That password is too common. Try a different one.";
+  if (m.includes("weak") || m.includes("pwned") || m.includes("leaked")) return "That password is too common, and it can't match your previous password either. Choose a fresh, unique one.";
   return "Couldn't update your password. Try again or request a new code.";
 }
