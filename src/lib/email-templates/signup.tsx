@@ -32,6 +32,7 @@ export const SignupEmail = ({
     <Preview>Confirm your email for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Text style={brand}>loom<span style={dot}>.</span></Text>
         <Heading style={h1}>Confirm your email</Heading>
         <Text style={text}>
           Thanks for signing up for{' '}
@@ -60,36 +61,22 @@ export const SignupEmail = ({
 
 export default SignupEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
-const h1 = {
-  fontSize: '22px',
-  fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
-}
-const text = {
-  fontSize: '14px',
-  color: '#55575d',
-  lineHeight: '1.5',
-  margin: '0 0 25px',
-}
-const link = { color: 'inherit', textDecoration: 'underline' }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Inter, Arial, sans-serif', padding: '24px 0' }
+const container = { backgroundColor: '#050505', borderRadius: '16px', padding: '32px 28px', maxWidth: '480px', margin: '0 auto', border: '1px solid #FF2BD6' }
+const brand = { fontSize: '28px', fontWeight: 900 as const, color: '#ffffff', margin: '0 0 24px' }
+const dot = { color: '#FACC15' }
+const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#ffffff', margin: '0 0 16px' }
+const text = { fontSize: '14px', color: '#c9c9cf', lineHeight: '1.5', margin: '0 0 20px' }
+const link = { color: '#FF2BD6', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#000000',
-  color: '#ffffff',
+  backgroundColor: '#FACC15',
+  color: '#050505',
+  fontWeight: 'bold' as const,
   fontSize: '14px',
-  border: '1px solid #000000',
+  border: '1px solid #FACC15',
   borderRadius: '8px',
   padding: '12px 20px',
   textDecoration: 'none',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
-// Rendered as a text child, which React may HTML-escape: keep this CSS free of >, &, and quotes.
-const darkModeCss = `
-  @media (prefers-color-scheme: dark) {
-    .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-  }
-  [data-ogsc] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-  [data-ogsb] .dm-btn { background-color: #ffffff !important; color: #000000 !important; }
-`
+const footer = { fontSize: '12px', color: '#8a8a92', margin: '30px 0 0' }
+const darkModeCss = ``

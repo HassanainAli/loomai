@@ -30,7 +30,7 @@ export const RecoveryEmail = ({ siteName, token }: RecoveryEmailProps) => (
         </Text>
         <Text style={codeStyle}>{token}</Text>
         <Text style={footer}>
-          This code expires soon. If you didn't ask to reset your password, you
+          This code expires in 15 minutes. Never share it with anyone, Loom will never ask for it. If you didn't ask to reset your password, you
           can ignore this email. Your password won't change.
         </Text>
       </Container>
@@ -40,18 +40,22 @@ export const RecoveryEmail = ({ siteName, token }: RecoveryEmailProps) => (
 
 export default RecoveryEmail
 
-const main = { backgroundColor: '#ffffff', fontFamily: 'Inter, Arial, sans-serif' }
-const container = { padding: '24px 28px' }
-const brand = { fontSize: '28px', fontWeight: 900 as const, color: '#000000', margin: '0 0 24px' }
+const main = { backgroundColor: '#ffffff', fontFamily: 'Inter, Arial, sans-serif', padding: '24px 0' }
+const container = { backgroundColor: '#050505', borderRadius: '16px', padding: '32px 28px', maxWidth: '480px', margin: '0 auto', border: '1px solid #FF2BD6' }
+const brand = { fontSize: '28px', fontWeight: 900 as const, color: '#ffffff', margin: '0 0 24px' }
 const dot = { color: '#FACC15' }
-const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#000000', margin: '0 0 16px' }
-const text = { fontSize: '14px', color: '#55575d', lineHeight: '1.5', margin: '0 0 20px' }
+const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#ffffff', margin: '0 0 16px' }
+const text = { fontSize: '14px', color: '#c9c9cf', lineHeight: '1.5', margin: '0 0 20px' }
 const codeStyle = {
   fontFamily: "'JetBrains Mono', Courier, monospace",
   fontSize: '32px',
   fontWeight: 'bold' as const,
   letterSpacing: '8px',
   color: '#FF2BD6',
+  backgroundColor: '#140812',
+  borderRadius: '10px',
+  padding: '16px 0',
+  textAlign: 'center' as const,
   margin: '0 0 28px',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '28px 0 0' }
+const footer = { fontSize: '12px', color: '#8a8a92', margin: '28px 0 0' }
