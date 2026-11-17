@@ -101,8 +101,8 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
     setError("");
     setBusy(true);
     const { error: err } = await supabase.auth.signInWithPassword({ email: e, password });
-    setBusy(false);
     if (err) {
+      setBusy(false);
       console.error("[Auth] signin error:", err);
       return setError(
         /confirm/i.test(err.message)
@@ -110,7 +110,9 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
           : "Incorrect email or password.",
       );
     }
-    onNext();
+    // Returning users: stay on this screen (busy) while the session listener
+    // loads the profile and routes straight to the right screen. Calling
+    // onNext() here flashed onboarding before routing resolved.
   }
 
   async function forgot() {

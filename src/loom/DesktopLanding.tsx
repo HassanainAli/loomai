@@ -198,8 +198,8 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
             <BentoCard
               index={3}
               label="The Drop"
-              title="8pm drop. 24-hour decay."
-              body="Two matches drop at 8:00 PM. Greenlight within 24 hours or the queue clears. The scarcity is the feature."
+              title="One drop a night. Make a call."
+              body="Two matches drop at 8:00 PM. Greenlight within 24 hours or they move on. Fewer choices, more intention."
               metric="T-minus 24:00:00"
             />
           </div>
