@@ -4,12 +4,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { Brand } from "@/loom/Shell";
 
 export const Route = createFileRoute("/reset-password")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    email: typeof s.email === "string" ? s.email : undefined,
+  }),
   head: () => ({
     meta: [
-      { title: "Reset password — loom." },
-      { name: "description", content: "Choose a new password for your Loom account." },
-      { property: "og:title", content: "Reset password — loom." },
-      { property: "og:description", content: "Choose a new password for your Loom account." },
+      { title: "Reset password | loom." },
+      { name: "description", content: "Enter your reset code and choose a new password for your Loom account." },
+      { property: "og:title", content: "Reset password | loom." },
+      { property: "og:description", content: "Enter your reset code and choose a new password for your Loom account." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -19,64 +22,86 @@ export const Route = createFileRoute("/reset-password")({
 
 const inputCls =
   "w-full bg-transparent border-0 border-b border-white/30 text-base text-white placeholder:text-white/25 px-0 py-3 focus:outline-none focus:border-white";
+const cta = "bg-primary text-primary-foreground !mt-8 w-full py-3 rounded-full text-sm font-bold disabled:opacity-40";
+
+type Step = "checking" | "code" | "password" | "done";
 
 function ResetPassword() {
   const navigate = useNavigate();
-  const [ready, setReady] = useState(false);
+  const search = Route.useSearch();
+  const [step, setStep] = useState<Step>("checking");
+  const [email, setEmail] = useState(search.email ?? "");
+  const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(false);
 
-  const [linkError, setLinkError] = useState("");
-
+  // Older emails used links; still honor them if one arrives. Otherwise show code entry.
   useEffect(() => {
-    let settled = false;
-    const ok = () => { settled = true; setReady(true); };
-    const fail = (msg: string) => { if (!settled) { settled = true; setLinkError(msg); } };
-    const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "PASSWORD_RECOVERY" || session) ok();
-    });
-
     (async () => {
       const url = new URL(window.location.href);
       const hash = new URLSearchParams(url.hash.replace(/^#/, ""));
-      const errDesc = url.searchParams.get("error_description") || hash.get("error_description");
-      if (errDesc) return fail("This reset link is invalid or has expired.");
-
-      const code = url.searchParams.get("code");
+      const linkCode = url.searchParams.get("code");
       const tokenHash = url.searchParams.get("token_hash");
+      const hasHashToken = hash.get("type") === "recovery" && hash.get("access_token");
       try {
-        if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code);
-          if (error) return fail("This reset link is invalid or has expired.");
+        if (linkCode) {
+          const { error } = await supabase.auth.exchangeCodeForSession(linkCode);
+          if (!error) return setStep("password");
         } else if (tokenHash) {
           const { error } = await supabase.auth.verifyOtp({ type: "recovery", token_hash: tokenHash });
-          if (error) return fail("This reset link is invalid or has expired.");
+          if (!error) return setStep("password");
+        } else if (hasHashToken) {
+          await new Promise((r) => setTimeout(r, 300));
+          const { data } = await supabase.auth.getSession();
+          if (data.session) return setStep("password");
         }
-        window.history.replaceState(null, "", "/reset-password");
-        const { data: s } = await supabase.auth.getSession();
-        if (s.session) ok();
       } catch {
-        fail("This reset link is invalid or has expired.");
+        /* fall through to code entry */
       }
+      if (linkCode || tokenHash || hasHashToken) setInfo("That link expired. Enter the code from your newest email instead.");
+      if (url.search || url.hash) window.history.replaceState(null, "", search.email ? `/reset-password?email=${encodeURIComponent(search.email)}` : "/reset-password");
+      setStep("code");
     })();
-
-    const t = setTimeout(() => fail("We couldn't verify this link. It may have expired or already been used."), 8000);
-    return () => { clearTimeout(t); data.subscription.unsubscribe(); };
   }, []);
 
-  async function submit(e: React.FormEvent) {
+  async function verify(e: React.FormEvent) {
+    e.preventDefault();
+    const em = email.trim().toLowerCase();
+    const token = code.replace(/\D/g, "");
+    if (!em.endsWith(".edu")) return setError("Enter the university .edu email you signed up with.");
+    if (token.length < 6) return setError("Enter the full code from your email.");
+    setBusy(true);
+    const { error: err } = await supabase.auth.verifyOtp({ email: em, token, type: "recovery" });
+    setBusy(false);
+    if (err) return setError("That code is wrong or expired. Check your newest email or send a new code.");
+    setError("");
+    setStep("password");
+  }
+
+  async function resend() {
+    const em = email.trim().toLowerCase();
+    if (!em.endsWith(".edu")) return setError("Enter your university .edu email first.");
+    setError("");
+    const { error: err } = await supabase.auth.resetPasswordForEmail(em, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    setInfo(err ? "" : "New code sent. Use the most recent one.");
+    if (err) setError("Couldn't send a new code. Try again in a minute.");
+  }
+
+  async function save(e: React.FormEvent) {
     e.preventDefault();
     if (password.length < 6) return setError("Password must be at least 6 characters.");
     if (password !== confirm) return setError("Passwords don't match.");
     setBusy(true);
     const { error: err } = await supabase.auth.updateUser({ password });
     setBusy(false);
-    if (err) return setError("Couldn't update your password. Request a new reset link.");
-    setDone(true);
+    if (err) return setError("Couldn't update your password. Request a new code.");
     await supabase.auth.signOut();
+    setStep("done");
   }
 
   return (
@@ -84,33 +109,51 @@ function ResetPassword() {
       <div className="flex-1" />
       <div className="w-full max-w-xs text-center">
         <div className="text-4xl font-bold mb-8"><Brand /></div>
-        {done ? (
-          <>
-            <h1 className="text-2xl font-bold">Password updated</h1>
-            <p className="mt-2 text-sm text-white/60">Sign in with your new password.</p>
-            <button onClick={() => navigate({ to: "/" })} className="bg-primary text-primary-foreground mt-8 w-full py-3 rounded-full text-sm font-bold">Back to sign in</button>
-          </>
-        ) : !ready && linkError ? (
-          <>
-            <h1 className="text-2xl font-bold">Link not valid</h1>
-            <p className="mt-2 text-sm text-white/60">{linkError} Request a new reset email from the sign-in screen.</p>
-            <button onClick={() => navigate({ to: "/" })} className="bg-primary text-primary-foreground mt-8 w-full py-3 rounded-full text-sm font-bold">Back to sign in</button>
-          </>
-        ) : !ready ? (
-          <>
-            <h1 className="text-2xl font-bold">Checking your link…</h1>
-            <p className="mt-2 text-sm text-white/60">This only takes a moment.</p>
-          </>
-        ) : (
-          <form onSubmit={submit} className="space-y-3 text-left">
+        {step === "checking" && <h1 className="text-2xl font-bold">One moment…</h1>}
+
+        {step === "code" && (
+          <form onSubmit={verify} className="space-y-3 text-left">
+            <h1 className="text-2xl font-bold text-center">Enter your reset code</h1>
+            <p className="text-sm text-white/60 text-center">We emailed you a code. It may take a minute to arrive.</p>
+            <input type="email" className={inputCls} placeholder="name@university.edu" autoComplete="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(""); }} />
+            <input
+              className={`${inputCls} font-mono tracking-[0.4em] text-center text-xl`}
+              placeholder="000000"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              maxLength={8}
+              value={code}
+              onChange={(e) => { setCode(e.target.value.replace(/\D/g, "")); setError(""); }}
+            />
+            {info && <p className="text-xs pt-1 text-white/70">{info}</p>}
+            {error && <p className="text-xs pt-1 text-red-400">{error}</p>}
+            <button type="submit" disabled={busy || !email || code.length < 6} className={cta}>
+              {busy ? "Checking" : "Continue"}
+            </button>
+            <p className="pt-4 text-center">
+              <button type="button" onClick={resend} className="text-sm text-white/50 underline underline-offset-4">Send a new code</button>
+            </p>
+          </form>
+        )}
+
+        {step === "password" && (
+          <form onSubmit={save} className="space-y-3 text-left">
             <h1 className="text-2xl font-bold text-center">Choose a new password</h1>
             <input type="password" className={inputCls} placeholder="New password" autoComplete="new-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
             <input type="password" className={inputCls} placeholder="Confirm new password" autoComplete="new-password" value={confirm} onChange={(e) => { setConfirm(e.target.value); setError(""); }} />
             {error && <p className="text-xs pt-1 text-red-400">{error}</p>}
-            <button type="submit" disabled={busy || !password || !confirm} className="bg-primary text-primary-foreground !mt-8 w-full py-3 rounded-full text-sm font-bold disabled:opacity-40">
+            <button type="submit" disabled={busy || !password || !confirm} className={cta}>
               {busy ? "Saving" : "Update password"}
             </button>
           </form>
+        )}
+
+        {step === "done" && (
+          <>
+            <h1 className="text-2xl font-bold">Password updated</h1>
+            <p className="mt-2 text-sm text-white/60">Sign in with your new password.</p>
+            <button onClick={() => navigate({ to: "/" })} className={cta}>Back to sign in</button>
+          </>
         )}
       </div>
       <div className="flex-[1.5]" />

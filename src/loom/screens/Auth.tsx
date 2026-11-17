@@ -1,6 +1,6 @@
 import { GuestEntryLink } from "../guest/GuestMode"; // GUEST MODE
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { Brand } from "../Shell";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -51,6 +51,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const navigate = useNavigate();
 
   const mismatch = mode === "signup" && confirm.length > 0 && confirm !== password;
 
@@ -125,6 +126,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
     });
     if (err) return setError("Couldn't send the reset email. Try again in a minute.");
     setResetSent(true);
+    navigate({ to: "/reset-password", search: { email: e } });
   }
 
   async function resend() {
@@ -254,7 +256,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
                 />
               )}
               {mismatch && <p className="text-xs pt-1 text-red-400">Passwords don't match.</p>}
-              {resetSent && <p className="text-xs pt-1 text-white/70">If an account exists, a reset link is on its way to {email.trim().toLowerCase()}.</p>}
+              {resetSent && <p className="text-xs pt-1 text-white/70">If an account exists, a reset code is on its way to {email.trim().toLowerCase()}.</p>}
               {error && <p className="text-xs pt-1 text-red-400 font-medium whitespace-pre-line">{error}</p>}
 
               {mode === "signup" && (
