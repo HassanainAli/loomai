@@ -146,8 +146,9 @@ function ResetPassword() {
             <h1 className="text-2xl font-bold text-center">Enter your reset code</h1>
             {email ? (
               <p className="text-sm text-white/60 text-center">
-                We emailed an 8-digit code to <span className="text-white font-semibold whitespace-nowrap">{email}</span>. It may take a minute to arrive.{" "}
-                <button type="button" onClick={() => { sessionStorage.removeItem("loom-reset-email"); navigate({ to: "/" }); }} className="underline underline-offset-4 text-white/70">Wrong email?</button>
+                We emailed an 8-digit code to:
+                <span className="block text-white font-semibold whitespace-nowrap">{email}</span>
+                <span className="block">It may take a minute to arrive.</span>
               </p>
             ) : (
               <>
@@ -170,6 +171,9 @@ function ResetPassword() {
               {busy ? "Checking" : "Continue"}
             </button>
             <p className="pt-4 text-center">
+              {email && (
+                <button type="button" onClick={() => { sessionStorage.removeItem("loom-reset-email"); navigate({ to: "/" }); }} className="block mx-auto mb-3 text-sm text-white/70 underline underline-offset-4">Wrong email?</button>
+              )}
               <button type="button" onClick={resend} disabled={cooldown > 0} className="text-sm text-white/50 underline underline-offset-4 disabled:no-underline disabled:opacity-60">{cooldown > 0 ? `Send a new code in ${cooldown}s` : "Send a new code"}</button>
             </p>
           </form>
