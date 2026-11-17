@@ -145,9 +145,9 @@ function ResetPassword() {
           <form onSubmit={verify} className="space-y-3 text-left">
             <h1 className="text-2xl font-bold text-center">Enter your reset code</h1>
             {email ? (
-              <p className="text-sm text-white/60 text-center">
+              <p className="text-sm leading-relaxed text-white/60 text-center pt-1">
                 We emailed an 8-digit code to:
-                <span className="block text-white font-semibold whitespace-nowrap">{email}</span>
+                <span className="block my-1.5 text-white font-semibold whitespace-nowrap">{email}</span>
                 <span className="block">It may take a minute to arrive.</span>
               </p>
             ) : (
@@ -157,7 +157,7 @@ function ResetPassword() {
               </>
             )}
             <input
-              className={`${inputCls} font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
+              className={`${inputCls} !mt-8 font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
               placeholder="00000000"
               inputMode="numeric"
               autoComplete="one-time-code"
@@ -170,9 +170,9 @@ function ResetPassword() {
             <button type="submit" disabled={busy || !email || code.length < 8} className={cta}>
               {busy ? "Checking" : "Continue"}
             </button>
-            <p className="pt-4 text-center">
+            <p className="pt-6 text-center">
               {email && (
-                <button type="button" onClick={() => { sessionStorage.removeItem("loom-reset-email"); navigate({ to: "/" }); }} className="block mx-auto mb-3 text-sm text-white/70 underline underline-offset-4">Wrong email?</button>
+                <button type="button" onClick={() => { sessionStorage.removeItem("loom-reset-email"); navigate({ to: "/" }); }} className="block mx-auto mb-4 text-sm text-white/70 underline underline-offset-4">Wrong email?</button>
               )}
               <button type="button" onClick={resend} disabled={cooldown > 0} className="text-sm text-white/50 underline underline-offset-4 disabled:no-underline disabled:opacity-60">{cooldown > 0 ? `Send a new code in ${cooldown}s` : "Send a new code"}</button>
             </p>
