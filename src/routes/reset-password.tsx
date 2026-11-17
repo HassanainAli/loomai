@@ -24,7 +24,7 @@ export const Route = createFileRoute("/reset-password")({
 
 const inputCls =
   "w-full bg-transparent border-0 border-b border-white/30 text-base text-white placeholder:text-white/25 px-0 py-3 focus:outline-none focus:border-white";
-const cta = "bg-primary text-primary-foreground !mt-8 w-full py-3 rounded-full text-sm font-bold disabled:opacity-40";
+const cta = "bg-primary text-primary-foreground w-full py-3 rounded-full text-sm font-bold disabled:opacity-40";
 
 type Step = "checking" | "code" | "password" | "done";
 
@@ -157,7 +157,7 @@ function ResetPassword() {
               </>
             )}
             <input
-              className={`${inputCls} !mt-4 !pt-1 font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
+              className={`${inputCls} !mt-5 !pt-1 font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
               placeholder="00000000"
               inputMode="numeric"
               autoComplete="one-time-code"
@@ -167,7 +167,7 @@ function ResetPassword() {
             />
             {info && <p className="text-xs pt-1 text-white/70">{info}</p>}
             {error && <p className="text-xs pt-1 text-red-400">{error}</p>}
-            <button type="submit" disabled={busy || !email || code.length < 8} className={`${cta} !mt-6`}>
+            <button type="submit" disabled={busy || !email || code.length < 8} className={`${cta} !mt-5`}>
               {busy ? "Checking" : "Continue"}
             </button>
             <p className="pt-6 text-center">
@@ -192,7 +192,7 @@ function ResetPassword() {
             </ul>
             {confirm.length > 0 && confirm !== password && <p className="text-xs pt-1 text-red-400">Passwords don't match.</p>}
             {error && <p className="text-xs pt-1 text-red-400">{error}</p>}
-            <button type="submit" disabled={busy || passwordProblems(password).length > 0 || password !== confirm} className={cta}>
+            <button type="submit" disabled={busy || passwordProblems(password).length > 0 || password !== confirm} className={`${cta} !mt-6`}>
               {busy ? "Saving" : "Update password"}
             </button>
             <p className="pt-4 text-center">
@@ -205,7 +205,7 @@ function ResetPassword() {
           <>
             <h1 className="text-2xl font-bold">Password updated</h1>
             <p className="mt-2 text-sm text-white/60">Sign in with your new password.</p>
-            <button onClick={() => navigate({ to: "/" })} className={cta}>Back to sign in</button>
+            <button onClick={() => navigate({ to: "/" })} className={`${cta} !mt-8`}>Back to sign in</button>
           </>
         )}
       </div>
