@@ -1,7 +1,8 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Brand } from "@/loom/Shell";
+import { Brand, Shell } from "@/loom/Shell";
+import { DesktopLanding } from "@/loom/DesktopLanding";
 import { PASSWORD_RULES, passwordProblems, updatePasswordError, RESEND_COOLDOWN_SECONDS } from "@/loom/passwordRules";
 
 export const Route = createFileRoute("/reset-password")({
@@ -133,10 +134,10 @@ function ResetPassword() {
     setStep("done");
   }
 
-  return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center px-8">
+  const body = (
+    <div className="h-full min-h-0 overflow-y-auto bg-black text-white flex flex-col items-center px-6 pt-[max(env(safe-area-inset-top),2rem)]">
       <div className="flex-1" />
-      <div className="w-full max-w-xs text-center">
+      <div className="w-full max-w-sm text-center">
         <div className="text-4xl font-bold mb-8"><Brand /></div>
         {step === "checking" && <h1 className="text-2xl font-bold">One moment…</h1>}
 
@@ -145,7 +146,7 @@ function ResetPassword() {
             <h1 className="text-2xl font-bold text-center">Enter your reset code</h1>
             {email ? (
               <p className="text-sm text-white/60 text-center">
-                We emailed an 8-digit code to <span className="text-white font-semibold break-all">{email}</span>. It may take a minute to arrive.{" "}
+                We emailed an 8-digit code to <span className="text-white font-semibold whitespace-nowrap">{email}</span>. It may take a minute to arrive.{" "}
                 <button type="button" onClick={() => { sessionStorage.removeItem("loom-reset-email"); navigate({ to: "/" }); }} className="underline underline-offset-4 text-white/70">Wrong email?</button>
               </p>
             ) : (
@@ -206,5 +207,14 @@ function ResetPassword() {
       </div>
       <div className="flex-[1.5]" />
     </div>
+  );
+
+  return (
+    <>
+      <div className="lg:hidden"><Shell>{body}</Shell></div>
+      <div className="hidden lg:block">
+        <DesktopLanding phoneContent={<div className="absolute inset-0 flex flex-col">{body}</div>} />
+      </div>
+    </>
   );
 }
