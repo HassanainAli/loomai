@@ -1,4 +1,5 @@
 import { GuestEntryLink } from "../guest/GuestMode"; // GUEST MODE
+import { PASSWORD_RULES, passwordProblems, RESEND_COOLDOWN_SECONDS } from "@/loom/passwordRules";
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Brand } from "../Shell";
@@ -69,7 +70,8 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
       if (!iso) problems.push("Please enter a valid date of birth (MM / DD / YYYY).");
       else if (ageFrom(iso) < 18) problems.push("You must be 18 or older to join Loom.");
       if (!e.endsWith(".edu")) problems.push("Please use your university .edu email, not a personal one.");
-      if (password.length < 6) problems.push("Password must be at least 6 characters.");
+      const pw = passwordProblems(password);
+      if (pw.length) problems.push(`Password needs: ${pw.join(", ").toLowerCase()}.`);
       if (password !== confirm) problems.push("Passwords don't match.");
       if (problems.length) return setError(problems.join("\n"));
       setError("");
@@ -118,13 +120,17 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
 
   async function forgot() {
     const e = email.trim().toLowerCase();
+    const until = Number(localStorage.getItem("loom-reset-cooldown") || 0);
+    if (until > Date.now() && e.endsWith(".edu")) return navigate({ to: "/reset-password", search: { email: e } });
     setResetSent(false);
     if (!e.endsWith(".edu")) return setError("Enter your university .edu email above, then tap Forgot password.");
     setError("");
     const { error: err } = await supabase.auth.resetPasswordForEmail(e, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
+    if (err && /rate|limit|seconds/i.test(err.message)) return setError("Please wait a moment before requesting another code.");
     if (err) return setError("Couldn't send the reset email. Try again in a minute.");
+    localStorage.setItem("loom-reset-cooldown", String(Date.now() + RESEND_COOLDOWN_SECONDS * 1000));
     setResetSent(true);
     navigate({ to: "/reset-password", search: { email: e } });
   }
@@ -254,6 +260,13 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
                   autoComplete="new-password"
                   className={inputCls}
                 />
+              )}
+              {mode === "signup" && password.length > 0 && (
+                <ul className="pt-1 space-y-1 text-xs">
+                  {PASSWORD_RULES.map((r) => (
+                    <li key={r.id} className={r.test(password) ? "text-white/80" : "text-white/40"}>{r.test(password) ? "✓" : "·"} {r.label}</li>
+                  ))}
+                </ul>
               )}
               {mismatch && <p className="text-xs pt-1 text-red-400">Passwords don't match.</p>}
               {resetSent && <p className="text-xs pt-1 text-white/70">If an account exists, a reset code is on its way to {email.trim().toLowerCase()}.</p>}
