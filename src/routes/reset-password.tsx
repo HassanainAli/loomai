@@ -157,7 +157,7 @@ function ResetPassword() {
               </>
             )}
             <input
-              className={`${inputCls} !mt-8 font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
+              className={`${inputCls} !mt-6 font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
               placeholder="00000000"
               inputMode="numeric"
               autoComplete="one-time-code"
@@ -167,7 +167,7 @@ function ResetPassword() {
             />
             {info && <p className="text-xs pt-1 text-white/70">{info}</p>}
             {error && <p className="text-xs pt-1 text-red-400">{error}</p>}
-            <button type="submit" disabled={busy || !email || code.length < 8} className={cta}>
+            <button type="submit" disabled={busy || !email || code.length < 8} className={`${cta} !mt-6`}>
               {busy ? "Checking" : "Continue"}
             </button>
             <p className="pt-6 text-center">
