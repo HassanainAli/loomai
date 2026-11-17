@@ -157,7 +157,7 @@ function ResetPassword() {
               </>
             )}
             <input
-              className={`${inputCls} !mt-6 font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
+              className={`${inputCls} !mt-4 !pt-1 font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
               placeholder="00000000"
               inputMode="numeric"
               autoComplete="one-time-code"
