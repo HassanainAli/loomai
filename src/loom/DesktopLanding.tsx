@@ -153,7 +153,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
               </div>
               <div>
                 <div className="text-white text-lg font-bold tracking-tight font-mono">24h</div>
-                <div className="mt-1">Decay window</div>
+                <div className="mt-1">Then it resets</div>
               </div>
               <div>
                 <div className="text-white text-lg font-bold tracking-tight font-mono">0</div>
