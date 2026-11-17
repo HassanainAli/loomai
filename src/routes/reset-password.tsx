@@ -5,7 +5,7 @@ import { Brand } from "@/loom/Shell";
 import { PASSWORD_RULES, passwordProblems, updatePasswordError, RESEND_COOLDOWN_SECONDS } from "@/loom/passwordRules";
 
 export const Route = createFileRoute("/reset-password")({
-  validateSearch: (s: Record<string, unknown>) => ({
+  validateSearch: (s: Record<string, unknown>): { email?: string } => ({
     email: typeof s.email === "string" ? s.email : undefined,
   }),
   head: () => ({
@@ -31,7 +31,7 @@ function ResetPassword() {
   const navigate = useNavigate();
   const search = Route.useSearch();
   const [step, setStep] = useState<Step>("checking");
-  const [email, setEmail] = useState(search.email ?? "");
+  const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -41,6 +41,11 @@ function ResetPassword() {
   const [cooldown, setCooldown] = useState(0);
 
   // Cooldown survives reloads (stored per browser) so codes can't be spammed.
+  // Email is handed over in session storage so it never shows in the address bar.
+  useEffect(() => {
+    const saved = search.email || sessionStorage.getItem("loom-reset-email");
+    if (saved) setEmail(saved);
+  }, []);
   useEffect(() => {
     const until = Number(localStorage.getItem("loom-reset-cooldown") || 0);
     const left = Math.ceil((until - Date.now()) / 1000);
@@ -76,7 +81,7 @@ function ResetPassword() {
         /* fall through to code entry */
       }
       if (linkCode || tokenHash || hasHashToken) setInfo("That link expired. Enter the code from your newest email instead.");
-      if (url.search || url.hash) window.history.replaceState(null, "", search.email ? `/reset-password?email=${encodeURIComponent(search.email)}` : "/reset-password");
+      if (url.search || url.hash) window.history.replaceState(null, "", "/reset-password");
       setStep("code");
     })();
   }, []);

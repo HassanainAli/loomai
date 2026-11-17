@@ -121,7 +121,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
   async function forgot() {
     const e = email.trim().toLowerCase();
     const until = Number(localStorage.getItem("loom-reset-cooldown") || 0);
-    if (until > Date.now() && e.endsWith(".edu")) return navigate({ to: "/reset-password", search: { email: e } });
+    if (until > Date.now() && e.endsWith(".edu")) { sessionStorage.setItem("loom-reset-email", e); return navigate({ to: "/reset-password" }); }
     setResetSent(false);
     if (!e.endsWith(".edu")) return setError("Enter your university .edu email above, then tap Forgot password.");
     setError("");
@@ -132,7 +132,8 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
     if (err) return setError("Couldn't send the reset email. Try again in a minute.");
     localStorage.setItem("loom-reset-cooldown", String(Date.now() + RESEND_COOLDOWN_SECONDS * 1000));
     setResetSent(true);
-    navigate({ to: "/reset-password", search: { email: e } });
+    sessionStorage.setItem("loom-reset-email", e);
+    navigate({ to: "/reset-password" });
   }
 
   async function resend() {
