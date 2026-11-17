@@ -143,10 +143,19 @@ function ResetPassword() {
         {step === "code" && (
           <form onSubmit={verify} className="space-y-3 text-left">
             <h1 className="text-2xl font-bold text-center">Enter your reset code</h1>
-            <p className="text-sm text-white/60 text-center">We emailed you a code. It may take a minute to arrive.</p>
-            <input type="email" className={inputCls} placeholder="name@university.edu" autoComplete="email" value={email} onChange={(e) => { setEmail(e.target.value); setError(""); }} />
+            {email ? (
+              <p className="text-sm text-white/60 text-center">
+                We emailed an 8-digit code to <span className="text-white font-semibold break-all">{email}</span>. It may take a minute to arrive.{" "}
+                <button type="button" onClick={() => { sessionStorage.removeItem("loom-reset-email"); navigate({ to: "/" }); }} className="underline underline-offset-4 text-white/70">Wrong email?</button>
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-white/60 text-center">Enter your university email and the code we sent.</p>
+                <input type="email" className={`${inputCls} text-center`} placeholder="name@university.edu" autoComplete="email" onBlur={(e) => { const v = e.target.value.trim(); if (v) { setEmail(v); sessionStorage.setItem("loom-reset-email", v); } }} />
+              </>
+            )}
             <input
-              className={`${inputCls} font-mono tracking-[0.25em] text-center text-xl`}
+              className={`${inputCls} font-mono tracking-[0.25em] pl-[0.25em] text-center text-xl`}
               placeholder="00000000"
               inputMode="numeric"
               autoComplete="one-time-code"
