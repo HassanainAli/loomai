@@ -177,15 +177,21 @@ export function SpecSheet({
       </div>
 
       {/* Matching Preferences */}
-      <div className="px-8 pt-2 pb-2">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-1">
-          Matching Preferences
-        </p>
+      <div className="px-5 space-y-4">
+      <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5">
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
+            Matching Preferences
+          </p>
+          <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-zinc-700 text-zinc-400">
+            Private
+          </span>
+        </div>
         <p className="text-xs text-muted-foreground mb-5">
           Only used to pair you. Never shown on your profile.
         </p>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
 
           <div>
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
@@ -195,7 +201,7 @@ export function SpecSheet({
               <select
                 value={userSpec.gender}
                 onChange={(e) => onUpdateUserSpec({ gender: e.target.value })}
-                className={`w-full appearance-none bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
+                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
                   userSpec.gender ? "" : "opacity-50"
                 }`}
               >
@@ -218,7 +224,7 @@ export function SpecSheet({
               <select
                 value={userSpec.seeking}
                 onChange={(e) => onUpdateUserSpec({ seeking: e.target.value })}
-                className={`w-full appearance-none bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
+                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
                   userSpec.seeking ? "" : "opacity-50"
                 }`}
               >
@@ -234,18 +240,23 @@ export function SpecSheet({
           </div>
 
         </div>
-      </div>
+      </section>
 
-      {/* Public Ledger */}
-      <div className="px-8 py-8">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-1">
-          Public Profile
-        </p>
+      {/* Public Profile */}
+      <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5">
+        <div className="flex items-start justify-between gap-3 mb-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
+            Public Profile
+          </p>
+          <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-zinc-700 text-zinc-400">
+            On profile
+          </span>
+        </div>
         <p className="text-xs text-muted-foreground mb-5">
           What your matches see.
         </p>
 
-        <div className="space-y-3 mb-8">
+        <div className="space-y-3 mb-6">
           <div>
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Campus Hub
@@ -255,7 +266,7 @@ export function SpecSheet({
                 required
                 value={userSpec.campus}
                 onChange={(e) => onUpdateUserSpec({ campus: e.target.value })}
-                className={`w-full appearance-none bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
+                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
                   userSpec.campus ? "" : "opacity-50"
                 }`}
               >
@@ -273,7 +284,8 @@ export function SpecSheet({
             </p>
           </div>
 
-          <div>
+          <div className="grid grid-cols-2 gap-3">
+          <div className="min-w-0">
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Class Standing
             </label>
@@ -281,10 +293,10 @@ export function SpecSheet({
               <select
                 value={userSpec.classYear}
                 onChange={(e) => onUpdateUserSpec({ classYear: e.target.value })}
-                className={`w-full appearance-none bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${userSpec.classYear ? "" : "opacity-50"}`}
+                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${userSpec.classYear ? "" : "opacity-50"}`}
               >
                 <option value="" disabled>
-                  Select class standing
+                  Select year
                 </option>
                 {CLASS_YEARS.map((y) => (
                   <option key={y} value={y}>{y}</option>
@@ -294,7 +306,7 @@ export function SpecSheet({
             </div>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Major
             </label>
@@ -303,13 +315,14 @@ export function SpecSheet({
               maxLength={60}
               value={userSpec.major}
               onChange={(e) => onUpdateUserSpec({ major: e.target.value })}
-              placeholder="e.g. Informatics, Biology, Undecided"
-              className="w-full bg-zinc-950 border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-all"
+              placeholder="e.g. Informatics"
+              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-all"
             />
+          </div>
           </div>
         </div>
 
-        <div className="mb-8">
+        <div className="mb-6">
           <label htmlFor="hobby-input" className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">
             Interests (optional)
           </label>
@@ -329,7 +342,7 @@ export function SpecSheet({
                   }
                 }}
                 placeholder={userSpec.hobbies.length >= MAX_HOBBIES ? `${MAX_HOBBIES}/${MAX_HOBBIES} added` : "e.g. Bouldering"}
-                className="w-full bg-zinc-950 border border-zinc-700 rounded-lg pl-3 pr-10 py-2.5 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] disabled:opacity-50 transition-all"
+                className="w-full bg-black border border-zinc-800 rounded-lg pl-3 pr-10 py-2.5 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] disabled:opacity-50 transition-all"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-zinc-500">
                 {MAX_HOBBY_LENGTH - hobbyDraft.length}
@@ -406,6 +419,7 @@ export function SpecSheet({
           })}
         </div>
 
+      </section>
       </div>
 
       <div className="flex-1 min-h-4" />
