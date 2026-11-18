@@ -183,9 +183,6 @@ export function SpecSheet({
           <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
             Matching Preferences
           </p>
-          <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-zinc-700 text-zinc-400">
-            Private
-          </span>
         </div>
         <p className="text-xs text-muted-foreground mb-5">
           Only used to pair you. Never shown on your profile.
@@ -248,9 +245,6 @@ export function SpecSheet({
           <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
             Public Profile
           </p>
-          <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-zinc-700 text-zinc-400">
-            On profile
-          </span>
         </div>
         <p className="text-xs text-muted-foreground mb-5">
           What your matches see.
