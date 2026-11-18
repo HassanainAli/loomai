@@ -269,7 +269,7 @@ export function SpecSheet({
           What your matches see.
         </p>
 
-        <div className="space-y-3 mb-6">
+        <div className="space-y-4 mb-4">
           <div>
             <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Campus Hub
