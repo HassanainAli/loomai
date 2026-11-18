@@ -77,6 +77,21 @@ export interface UserSpec {
   pace: string;
   intention: string;
   campus: string;
+  classYear: string;
+  major: string;
+  hobbies: string[];
+}
+
+export const CLASS_YEARS = ["Freshman", "Sophomore", "Junior", "Senior", "Graduate Student"] as const;
+export const MAX_HOBBIES = 5;
+export const MAX_HOBBY_LENGTH = 14;
+
+/** Normalizes a typed interest; returns null when it can't be added. */
+export function cleanHobby(raw: string, existing: string[]): string | null {
+  const t = raw.replace(/,/g, "").replace(/\s+/g, " ").trim();
+  if (!t || t.length > MAX_HOBBY_LENGTH || existing.length >= MAX_HOBBIES) return null;
+  if (existing.some((h) => h.toLowerCase() === t.toLowerCase())) return null;
+  return t;
 }
 
 export const CURRENT_USER_SPEC: UserSpec = {
@@ -86,6 +101,9 @@ export const CURRENT_USER_SPEC: UserSpec = {
   pace: "Slow mornings, deep-focus afternoons, early to bed. Weekends fully unplugged.",
   intention: "Intentional dating with a long-term partner in mind.",
   campus: "",
+  classYear: "",
+  major: "",
+  hobbies: [],
 };
 
 export const MATCHES: Match[] = [
@@ -93,8 +111,8 @@ export const MATCHES: Match[] = [
     id: "m1",
     name: "Maya",
     age: 21,
-    major: "Architecture",
-    location: "2.1 mi away",
+    major: "Junior · Architecture",
+    location: "UW Seattle",
     intention: "Intentional dating, open to seeing where it goes",
     hobbies: ["Pottery", "Trail running", "Vinyl"],
     whyMatched:
@@ -112,10 +130,10 @@ export const MATCHES: Match[] = [
     name: "Eli",
     status: "pending",
     age: 22,
-    major: "Computer Science",
-    location: "0.8 mi away",
+    major: "Senior · Computer Science",
+    location: "UW Bothell",
     intention: "Committed, long-term relationship",
-    hobbies: ["Bouldering", "Film photography", "Cooking"],
+    hobbies: ["Bouldering", "Film cameras", "Cooking"],
     whyMatched:
       "Your conflict styles are highly compatible — both prefer direct, low-drama conversation within 24 hours.",
     dailyAnswer:
@@ -165,26 +183,30 @@ export interface MatchRow {
   status?: string | null;
   thread_id?: string | null;
   unread_count?: number | null;
+  major?: string | null;
+  class_year?: string | null;
+  hobbies?: string[] | null;
 }
 
 export function rowToMatch(r: MatchRow): Match {
   const pct = Math.round(Math.max(0, Math.min(1, r.similarity_score)) * 100);
   const seeds = Array.isArray(r.seed_prompts) ? r.seed_prompts : [];
-  const h = r.height_in ? `${Math.floor(r.height_in / 12)}'${r.height_in % 12}"` : "";
+  const year = r.class_year === "Graduate Student" ? "Grad" : r.class_year;
+  const academic = [year, r.major?.trim()].filter(Boolean).join(" · ");
   return {
     id: r.match_id,
     matchId: r.match_id,
     name: r.display_name || "Loom student",
     age: ageFromDob(r.date_of_birth) ?? 0,
-    major: r.campus_hub || "UW",
-    location: h || "UW student",
+    major: academic,
+    location: r.campus_hub || "UW",
     intention:
       r.intention === "committed"
         ? "Committed, long-term relationship"
         : r.intention === "intentional"
           ? "Intentional dating, open to seeing where it goes"
           : "",
-    hobbies: [],
+    hobbies: Array.isArray(r.hobbies) ? r.hobbies : [],
     whyMatched: `${pct}% alignment on tonight's prompt.`,
     dailyAnswer: r.daily_answer ?? "",
     conflictAnswer: seeds[0]?.a ?? "",

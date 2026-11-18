@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Lock, Camera, Plus, ChevronDown, X } from "lucide-react";
 import { PrimaryButton } from "../Shell";
-import { OnboardingAnswers, UserSpec } from "../types";
+import { OnboardingAnswers, UserSpec, CLASS_YEARS, MAX_HOBBIES, MAX_HOBBY_LENGTH, cleanHobby } from "../types";
 import { useServerFn } from "@tanstack/react-start";
 import { embedBaseline } from "@/lib/matching.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +24,15 @@ export function SpecSheet({
   const runEmbedBaseline = useServerFn(embedBaseline);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [hobbyDraft, setHobbyDraft] = useState("");
+  const addHobby = () => {
+    const h = cleanHobby(hobbyDraft, userSpec.hobbies);
+    if (!h) return;
+    onUpdateUserSpec({ hobbies: [...userSpec.hobbies, h] });
+    setHobbyDraft("");
+  };
+  const removeHobby = (h: string) =>
+    onUpdateUserSpec({ hobbies: userSpec.hobbies.filter((x) => x !== h) });
   const [photos, setPhotos] = useState<(string | null)[]>([null, null, null]);
   const fileInputs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
 
@@ -91,6 +100,9 @@ export function SpecSheet({
               gender: userSpec.gender,
               campus_hub: userSpec.campus,
               target_preference: userSpec.seeking,
+              major: userSpec.major.trim() || null,
+              class_year: userSpec.classYear || null,
+              hobbies: userSpec.hobbies,
               ...(onboarding.seeds.length ? { seed_prompts: onboarding.seeds } : {}),
             },
           ],
@@ -250,6 +262,41 @@ export function SpecSheet({
               Shown on your match profile. All UW campuses share one match pool.
             </p>
           </div>
+
+          <div>
+            <label className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Class Standing
+            </label>
+            <div className="relative">
+              <select
+                value={userSpec.classYear}
+                onChange={(e) => onUpdateUserSpec({ classYear: e.target.value })}
+                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${userSpec.classYear ? "" : "opacity-50"}`}
+              >
+                <option value="" disabled>
+                  Select class standing
+                </option>
+                {CLASS_YEARS.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          </div>
+
+          <div>
+            <label className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+              Major
+            </label>
+            <input
+              type="text"
+              maxLength={60}
+              value={userSpec.major}
+              onChange={(e) => onUpdateUserSpec({ major: e.target.value })}
+              placeholder="e.g. Informatics, Biology, Undecided"
+              className="w-full bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 text-sm text-[#FACC15] placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all"
+            />
+          </div>
         </div>
       </div>
 
@@ -261,6 +308,59 @@ export function SpecSheet({
         <p className="text-xs text-muted-foreground mb-5">
           What your matches see.
         </p>
+
+        <div className="mb-8">
+          <label htmlFor="hobby-input" className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">
+            Interests (optional)
+          </label>
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                id="hobby-input"
+                type="text"
+                value={hobbyDraft}
+                maxLength={MAX_HOBBY_LENGTH}
+                disabled={userSpec.hobbies.length >= MAX_HOBBIES}
+                onChange={(e) => setHobbyDraft(e.target.value.replace(/,/g, ""))}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === ",") {
+                    e.preventDefault();
+                    addHobby();
+                  }
+                }}
+                placeholder={userSpec.hobbies.length >= MAX_HOBBIES ? `${MAX_HOBBIES}/${MAX_HOBBIES} added` : "e.g. Bouldering"}
+                className="w-full bg-zinc-950 border border-zinc-700 rounded-lg pl-3 pr-10 py-2.5 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] disabled:opacity-50 transition-all"
+              />
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-zinc-500">
+                {MAX_HOBBY_LENGTH - hobbyDraft.length}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={addHobby}
+              disabled={!cleanHobby(hobbyDraft, userSpec.hobbies)}
+              aria-label="Add interest"
+              className="w-11 shrink-0 rounded-lg border border-zinc-700 flex items-center justify-center text-[#FACC15] disabled:opacity-40 hover:border-[#FACC15] transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </div>
+          {userSpec.hobbies.length > 0 && (
+            <div className="flex flex-wrap gap-2 mt-3">
+              {userSpec.hobbies.map((h) => (
+                <span key={h} className="inline-flex items-center gap-1.5 text-xs font-bold pl-3 pr-1.5 py-1.5 rounded-full bg-black border border-zinc-700 whitespace-nowrap">
+                  {h}
+                  <button type="button" onClick={() => removeHobby(h)} aria-label={`Remove ${h}`} className="text-zinc-500 hover:text-[#FACC15]">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+          <p className="text-[11px] text-zinc-500 mt-2">
+            Up to {MAX_HOBBIES}. Shown on your profile only, never used for matching.
+          </p>
+        </div>
 
         <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">
           Photos

@@ -83,7 +83,7 @@ function Index() {
     async function loadFor(uid: string) {
       const { data: profile } = await (supabase as any)
         .from("profiles")
-        .select("display_name, gender, campus_hub, target_preference")
+        .select("display_name, gender, campus_hub, target_preference, major, class_year, hobbies")
         .eq("id", uid)
         .maybeSingle();
       if (cancelled) return;
@@ -100,6 +100,9 @@ function Index() {
           gender: profile.gender ?? "",
           campus: profile.campus_hub ?? "",
           seeking: profile.target_preference ?? "",
+          major: profile.major ?? "",
+          classYear: profile.class_year ?? "",
+          hobbies: Array.isArray(profile.hobbies) ? profile.hobbies : [],
         }));
         const [{ data: ds }, { data: ms }] = await Promise.all([
           (supabase as any).rpc("get_drop_state"),

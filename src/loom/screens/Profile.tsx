@@ -92,23 +92,14 @@ export function Profile({
             <h2 className="text-4xl font-black tracking-[-0.015em]">
               {match.name}{match.age ? `, ${match.age}` : ""}
             </h2>
-            <p className="text-sm text-muted-foreground font-medium mt-1">
-              {match.major} · {match.location}
-            </p>
+            {match.major && (
+              <p className="text-sm text-foreground/80 font-semibold mt-1">{match.major}</p>
+            )}
+            <p className="text-sm text-muted-foreground font-medium mt-0.5">{match.location}</p>
           </div>
 
           <Section label="Looking for">
             <p className="text-sm font-semibold">{match.intention}</p>
-            <div className="flex flex-wrap gap-2 mt-3">
-              {match.hobbies.map((h) => (
-                <span
-                  key={h}
-                  className="text-xs font-bold px-3 py-1.5 rounded-full bg-secondary border border-border"
-                >
-                  {h}
-                </span>
-              ))}
-            </div>
           </Section>
 
           {/* Photo Masonry: tall left, two stacked squares right */}
@@ -147,6 +138,18 @@ export function Profile({
           {match.matchId && match.pace && (
             <Section label="Hill to die on">
               <p className="text-sm leading-relaxed">{match.pace}</p>
+            </Section>
+          )}
+
+          {match.hobbies.length > 0 && (
+            <Section label="Interests">
+              <div className="flex flex-wrap gap-2">
+                {match.hobbies.map((h) => (
+                  <span key={h} className="text-xs font-bold px-3 py-1.5 rounded-full bg-secondary border border-border whitespace-nowrap">
+                    {h}
+                  </span>
+                ))}
+              </div>
             </Section>
           )}
 

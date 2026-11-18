@@ -344,12 +344,15 @@ export type Database = {
         Row: {
           baseline_embedding: string | null
           campus_hub: string | null
+          class_year: string | null
           created_at: string
           display_name: string | null
           gender: string | null
           height_in: number | null
+          hobbies: string[]
           id: string
           is_test_account: boolean
+          major: string | null
           seed_prompts: Json | null
           target_preference: string | null
           updated_at: string
@@ -357,12 +360,15 @@ export type Database = {
         Insert: {
           baseline_embedding?: string | null
           campus_hub?: string | null
+          class_year?: string | null
           created_at?: string
           display_name?: string | null
           gender?: string | null
           height_in?: number | null
+          hobbies?: string[]
           id: string
           is_test_account?: boolean
+          major?: string | null
           seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
@@ -370,12 +376,15 @@ export type Database = {
         Update: {
           baseline_embedding?: string | null
           campus_hub?: string | null
+          class_year?: string | null
           created_at?: string
           display_name?: string | null
           gender?: string | null
           height_in?: number | null
+          hobbies?: string[]
           id?: string
           is_test_account?: boolean
+          major?: string | null
           seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
@@ -541,12 +550,15 @@ export type Database = {
         Returns: {
           balance: string
           campus_hub: string
+          class_year: string
           daily_answer: string
           date_of_birth: string
           display_name: string
           drop_date: string
           height_in: number
+          hobbies: string[]
           intention: string
+          major: string
           match_id: string
           matched_user_id: string
           my_answer: string

@@ -113,6 +113,13 @@
       "when": 1793151031655,
       "tag": "0015_security_sweep_revoke_anon",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1794997498503,
+      "tag": "0016_profile_major_class_hobbies",
+      "breakpoints": true
     }
   ]
 }
