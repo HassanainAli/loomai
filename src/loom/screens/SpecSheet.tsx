@@ -187,7 +187,8 @@ export function SpecSheet({
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
+        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#FF2BD6] mb-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#FF2BD6] shadow-[0_0_10px_#FF2BD6]" />
           Step 4 of 4
         </p>
         <h2 className="text-3xl font-black tracking-[-0.015em]">
@@ -403,7 +404,7 @@ export function SpecSheet({
                       onUpdateUserSpec({ hobbies: [...userSpec.hobbies, c] });
                       setHobbyDraft("");
                     }}
-                    className="text-[11px] px-2.5 py-1 rounded-full border border-dashed border-zinc-700 text-zinc-400 hover:border-[#FACC15] hover:text-foreground transition-colors"
+                    className="text-[11px] px-2.5 py-1 rounded-full border border-dashed border-zinc-700 text-zinc-400 hover:border-[#FF2BD6] hover:text-[#FF2BD6] hover:bg-[#FF2BD6]/10 transition-colors"
                   >
                     + {h}
                   </button>
@@ -413,9 +414,9 @@ export function SpecSheet({
           {userSpec.hobbies.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {userSpec.hobbies.map((h) => (
-                <span key={h} className="inline-flex items-center gap-1.5 text-xs font-bold pl-3 pr-1.5 py-1.5 rounded-full bg-black border border-zinc-700 whitespace-nowrap">
+                <span key={h} className="inline-flex items-center gap-1.5 text-xs font-bold pl-3 pr-1.5 py-1.5 rounded-full bg-[#FF2BD6]/10 border border-[#FF2BD6]/50 text-foreground shadow-[0_0_12px_-4px_rgba(255,43,214,0.6)] whitespace-nowrap">
                   {h}
-                  <button type="button" onClick={() => removeHobby(h)} aria-label={`Remove ${h}`} className="text-zinc-500 hover:text-[#FACC15]">
+                  <button type="button" onClick={() => removeHobby(h)} aria-label={`Remove ${h}`} className="text-[#FF2BD6]/80 hover:text-[#FF2BD6]">
                     <X className="w-3 h-3" />
                   </button>
                 </span>
@@ -445,7 +446,7 @@ export function SpecSheet({
                 <button
                   type="button"
                   onClick={() => fileInputs[i].current?.click()}
-                  className="w-full h-full rounded-2xl bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-zinc-600 hover:border-[#FACC15] hover:text-[#FACC15] transition-colors overflow-hidden"
+                  className="w-full h-full rounded-2xl bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-[#FF2BD6]/60 hover:border-[#FF2BD6]/70 hover:text-[#FF2BD6] hover:shadow-[0_0_16px_rgba(255,43,214,0.25)] transition-all overflow-hidden"
                   aria-label={preview ? "Replace photo" : "Upload photo"}
                 >
                   {preview ? (
