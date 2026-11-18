@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Lock, Camera, Plus, ChevronDown, X } from "lucide-react";
+import { ArrowLeft, Camera, Plus, ChevronDown, X } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 import { OnboardingAnswers, UserSpec, CLASS_YEARS, MAX_HOBBIES, MAX_HOBBY_LENGTH, cleanHobby } from "../types";
 import { useServerFn } from "@tanstack/react-start";
@@ -73,7 +73,7 @@ export function SpecSheet({
       !userSpec.campus ||
       !userSpec.seeking
     ) {
-      setSaveError("Please fill in gender, campus, and preference.");
+      setSaveError("Please select your gender, who you're interested in, and campus.");
       return;
     }
     setSaving(true);
@@ -176,29 +176,25 @@ export function SpecSheet({
         </h2>
       </div>
 
-      {/* Identity Specs */}
+      {/* The Basics */}
       <div className="bg-zinc-950 border-y border-zinc-800 px-8 py-8">
-        <div className="flex items-center gap-2 mb-1">
-          <Lock className="w-3.5 h-3.5 text-[#FACC15]" />
-          <p className="font-mono text-[10px] font-bold uppercase tracking-widest text-[#FACC15]">
-            Identity Specs
+        <div className="flex items-center gap-2 mb-5">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
+            The Basics
           </p>
         </div>
-        <p className="text-xs text-zinc-500 mb-5">
-          Input your baseline specs for the engine sync.
-        </p>
 
         <div className="space-y-3">
 
           <div>
-            <label className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Gender
             </label>
             <div className="relative">
               <select
                 value={userSpec.gender}
                 onChange={(e) => onUpdateUserSpec({ gender: e.target.value })}
-                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${
+                className={`w-full appearance-none bg-black border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
                   userSpec.gender ? "" : "opacity-50"
                 }`}
               >
@@ -209,19 +205,19 @@ export function SpecSheet({
                 <option value="Woman">Woman</option>
                 <option value="Non-Binary">Non-Binary</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           <div>
-            <label className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Interested In
             </label>
             <div className="relative">
               <select
                 value={userSpec.seeking}
                 onChange={(e) => onUpdateUserSpec({ seeking: e.target.value })}
-                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${
+                className={`w-full appearance-none bg-black border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
                   userSpec.seeking ? "" : "opacity-50"
                 }`}
               >
@@ -232,12 +228,12 @@ export function SpecSheet({
                 <option value="Women">Women</option>
                 <option value="Everyone">Everyone</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           <div>
-            <label className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Campus Hub
             </label>
             <div className="relative">
@@ -245,7 +241,7 @@ export function SpecSheet({
                 required
                 value={userSpec.campus}
                 onChange={(e) => onUpdateUserSpec({ campus: e.target.value })}
-                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${
+                className={`w-full appearance-none bg-black border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
                   userSpec.campus ? "" : "opacity-50"
                 }`}
               >
@@ -256,7 +252,7 @@ export function SpecSheet({
                 <option value="UW Seattle">UW Seattle</option>
                 <option value="UW Tacoma">UW Tacoma</option>
               </select>
-              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
             <p className="text-[11px] text-zinc-500 leading-snug normal-case mt-1.5">
               Shown on your match profile. All UW campuses share one match pool.
@@ -264,14 +260,14 @@ export function SpecSheet({
           </div>
 
           <div>
-            <label className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Class Standing
             </label>
             <div className="relative">
               <select
                 value={userSpec.classYear}
                 onChange={(e) => onUpdateUserSpec({ classYear: e.target.value })}
-                className={`w-full appearance-none bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 pr-9 text-sm text-[#FACC15] focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all ${userSpec.classYear ? "" : "opacity-50"}`}
+                className={`w-full appearance-none bg-black border border-zinc-700 rounded-lg px-3 py-2.5 pr-9 text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${userSpec.classYear ? "" : "opacity-50"}`}
               >
                 <option value="" disabled>
                   Select class standing
@@ -280,12 +276,12 @@ export function SpecSheet({
                   <option key={y} value={y}>{y}</option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-[#FACC15] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
           </div>
 
           <div>
-            <label className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 block mb-1.5">
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
               Major
             </label>
             <input
@@ -294,7 +290,7 @@ export function SpecSheet({
               value={userSpec.major}
               onChange={(e) => onUpdateUserSpec({ major: e.target.value })}
               placeholder="e.g. Informatics, Biology, Undecided"
-              className="w-full bg-black border border-yellow-400/50 rounded-lg px-3 py-2.5 text-sm text-[#FACC15] placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] focus:shadow-[0_0_12px_-2px_rgba(250,204,21,0.6)] transition-all"
+              className="w-full bg-black border border-zinc-700 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-all"
             />
           </div>
         </div>
