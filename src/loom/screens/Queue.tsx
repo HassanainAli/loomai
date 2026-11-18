@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { MATCHES, Match, MatchRow, rowToMatch, DropState, emptyQueueMessage, CampusStatus, campusProgressLabel } from "../types";
 import { supabase } from "@/integrations/supabase/client";
-import { Nebula } from "../Nebula";
 
 export function Queue({
   onOpen,
@@ -45,9 +44,7 @@ export function Queue({
   }, [isGuest]);
 
   return (
-    <div className="relative flex flex-col h-full p-8 pt-14 overflow-y-auto">
-      <Nebula variant="soft" />
-      <div className="relative">
+    <div className="flex flex-col h-full p-8 pt-14 overflow-y-auto">
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
         8:00 PM Drop
       </p>
@@ -93,12 +90,8 @@ export function Queue({
       )}
 
       <div className="space-y-4">
-        {matches?.map((m, i) => (
-          <div
-            key={m.id}
-            className="bg-card/90 backdrop-blur-sm border-2 border-border rounded-3xl p-5 nn-unlock"
-            style={{ animationDelay: `${i * 140}ms` }}
-          >
+        {matches?.map((m) => (
+          <div key={m.id} className="bg-card border-2 border-border rounded-3xl p-5">
             <div className="flex items-center gap-4 mb-4">
               <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-neutral-300 to-neutral-500">
                 {!!m.unread && (
@@ -135,7 +128,6 @@ export function Queue({
             </button>
           </div>
         ))}
-      </div>
       </div>
     </div>
   );

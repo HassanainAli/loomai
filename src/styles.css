@@ -19,7 +19,6 @@
  */
 
 @theme inline {
-  --color-signal: var(--signal);
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 4px);
@@ -74,7 +73,6 @@
   --popover: oklch(0.16 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.88 0.19 95);
-  --signal: #FF2BD6;
   --primary-foreground: oklch(0.05 0 0);
   --secondary: oklch(0.2 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -301,77 +299,33 @@ body.kb-open [data-guest-bar] { display: none; }
 }
 
 /* Thinking nebula */
-.nn-glow {
+.nn-nebula-cloud {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(80px);
+  filter: blur(40px);
   mix-blend-mode: screen;
-  animation: nn-breathe 12s ease-in-out infinite;
-  transition: opacity 1.2s ease;
+  animation: nn-breathe 9s ease-in-out infinite;
 }
-.nn-glow-a { width: 80%; height: 50%; left: -20%; top: 5%; background: radial-gradient(circle, oklch(0.68 0.29 340 / 0.35), transparent 70%); }
-.nn-glow-b { width: 75%; height: 45%; right: -25%; bottom: 0%; background: radial-gradient(circle, oklch(0.8 0.15 210 / 0.22), transparent 70%); animation-delay: -6s; animation-duration: 15s; }
-.nn-field-soft .nn-glow { opacity: 0.5; }
-.nn-phase-sync .nn-glow-a { opacity: 1; animation-duration: 6s; }
+.nn-nebula-a { width: 70%; height: 45%; left: -10%; top: 15%; background: radial-gradient(circle, oklch(0.68 0.29 340 / 0.55), transparent 70%); }
+.nn-nebula-b { width: 60%; height: 40%; right: -15%; top: 40%; background: radial-gradient(circle, oklch(0.8 0.15 210 / 0.35), transparent 70%); animation-delay: -3s; animation-duration: 11s; }
+.nn-nebula-c { width: 50%; height: 35%; left: 20%; bottom: -5%; background: radial-gradient(circle, oklch(0.55 0.25 300 / 0.45), transparent 70%); animation-delay: -6s; animation-duration: 13s; }
 @keyframes nn-breathe {
-  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.75; }
-  50% { transform: translate(4%, -3%) scale(1.1); opacity: 1; }
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.7; }
+  50% { transform: translate(6%, -4%) scale(1.18); opacity: 1; }
 }
-.nn-node {
+.nn-dust {
   position: absolute;
-  width: 3px; height: 3px;
-  margin: -1.5px 0 0 -1.5px;
   border-radius: 9999px;
-  background: oklch(0.95 0.02 330 / 0.7);
+  background: oklch(0.97 0.02 330);
+  box-shadow: 0 0 6px oklch(0.75 0.25 340);
+  animation: nn-dust 6s ease-in-out infinite;
 }
-.nn-node::after {
-  content: "";
-  position: absolute; inset: -1px;
-  border-radius: 9999px;
-  border: 1px solid oklch(0.75 0.2 340 / 0.5);
-  animation: nn-ping 5s ease-out infinite;
-  animation-delay: inherit;
+@keyframes nn-dust {
+  0%, 100% { transform: translateY(0) scale(0.6); opacity: 0.1; }
+  50% { transform: translateY(-14px) scale(1.2); opacity: 0.9; }
 }
-@keyframes nn-ping {
-  0% { transform: scale(1); opacity: 0.6; }
-  70%, 100% { transform: scale(9); opacity: 0; }
-}
-.nn-focal { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; background: oklch(0.72 0.28 340); box-shadow: 0 0 10px oklch(0.72 0.28 340); transition: box-shadow 0.6s ease, transform 0.6s ease; }
-.nn-focal-b { background: oklch(0.82 0.14 210); box-shadow: 0 0 10px oklch(0.82 0.14 210); }
-.nn-focal-a::after { animation-delay: 0s; }
-.nn-focal-b::after { animation-delay: 2.5s; border-color: oklch(0.82 0.14 210 / 0.5); }
-.nn-phase-sync .nn-focal::after { animation-duration: 2.4s; }
-.nn-phase-sync .nn-focal-b::after { animation-delay: 1.2s; }
-.nn-phase-aligned .nn-focal { transform: scale(1.6); }
-.nn-phase-aligned .nn-focal::after { animation-duration: 1.4s; animation-delay: 0s; }
-.nn-link {
-  stroke: url(#none);
-  stroke: oklch(0.85 0.15 300 / 0.9);
-  stroke-width: 0.45;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  opacity: 0;
-  filter: drop-shadow(0 0 4px oklch(0.72 0.28 340));
-}
-.nn-phase-aligned .nn-link { opacity: 1; animation: nn-draw 0.9s cubic-bezier(0.6, 0, 0.2, 1) forwards; }
-@keyframes nn-draw { to { stroke-dashoffset: 0; } }
-.nn-scan {
-  position: absolute; left: 0; right: 0; height: 30%;
-  top: -30%;
-  background: linear-gradient(to bottom, transparent, color-mix(in oklab, var(--signal) 14%, transparent) 65%, transparent);
-  opacity: 0;
-}
-.nn-phase-sync .nn-scan { opacity: 1; animation: nn-scan 3.2s ease-in-out infinite; }
-@keyframes nn-scan { from { top: -30%; } to { top: 100%; } }
-@keyframes nn-card-scan { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
-.nn-card-syncing { animation: nn-card-scan 1.8s ease-in-out infinite; }
-@keyframes nn-unlock { from { opacity: 0; transform: translateY(10px) scale(0.98); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
-.nn-unlock { animation: nn-unlock 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-@keyframes nn-fade-swap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-.nn-fade-swap { animation: nn-fade-swap 0.5s ease-out both; }
 @keyframes nn-fade-blur { from { opacity: 0; backdrop-filter: blur(0); } to { opacity: 1; backdrop-filter: blur(24px); } }
 .nn-blur-in { animation: nn-fade-blur 0.5s ease-out both; }
 @media (prefers-reduced-motion: reduce) {
-  .nn-glow, .nn-node::after, .nn-scan, .nn-card-syncing, .nn-unlock, .nn-fade-swap { animation: none !important; }
-  .nn-phase-aligned .nn-link { animation: none; stroke-dashoffset: 0; }
+  .nn-nebula-cloud, .nn-dust { animation: none; }
 }
