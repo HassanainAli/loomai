@@ -187,8 +187,7 @@ export function SpecSheet({
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <p className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#FF2BD6] mb-2">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#FF2BD6] shadow-[0_0_10px_#FF2BD6]" />
+        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
           Step 4 of 4
         </p>
         <h2 className="text-3xl font-black tracking-[-0.015em]">
