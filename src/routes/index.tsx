@@ -27,10 +27,11 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "An anti-burnout dating app for university students. Deep onboarding, one daily prompt, two curated matches at 8 PM.",
+          "The anti-swipe dating app.",
       },
       { property: "og:title", content: "Loom — Two matches a day. No swiping." },
-      { property: "og:description", content: "A closed-loop campus matching app for verified university students." },
+      { property: "og:description", content: "The anti-swipe dating app." },
+      { name: "twitter:description", content: "The anti-swipe dating app." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
