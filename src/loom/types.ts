@@ -87,11 +87,17 @@ export const MAX_HOBBIES = 5;
 export const MAX_HOBBY_LENGTH = 14;
 
 /** Normalizes a typed interest; returns null when it can't be added. */
+/** Capitalizes the first letter for clean profile display. */
+export function capFirst(s: string): string {
+  const t = s.trim();
+  return t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+}
+
 export function cleanHobby(raw: string, existing: string[]): string | null {
   const t = raw.replace(/,/g, "").replace(/\s+/g, " ").trim();
   if (!t || t.length > MAX_HOBBY_LENGTH || existing.length >= MAX_HOBBIES) return null;
   if (existing.some((h) => h.toLowerCase() === t.toLowerCase())) return null;
-  return t;
+  return capFirst(t);
 }
 
 export const CURRENT_USER_SPEC: UserSpec = {
@@ -192,7 +198,7 @@ export function rowToMatch(r: MatchRow): Match {
   const pct = Math.round(Math.max(0, Math.min(1, r.similarity_score)) * 100);
   const seeds = Array.isArray(r.seed_prompts) ? r.seed_prompts : [];
   const year = r.class_year === "Graduate Student" ? "Grad" : r.class_year;
-  const academic = [year, r.major?.trim()].filter(Boolean).join(" · ");
+  const academic = [year, r.major ? capFirst(r.major) : null].filter(Boolean).join(" · ");
   return {
     id: r.match_id,
     matchId: r.match_id,
@@ -206,7 +212,7 @@ export function rowToMatch(r: MatchRow): Match {
         : r.intention === "intentional"
           ? "Intentional dating, open to seeing where it goes"
           : "",
-    hobbies: Array.isArray(r.hobbies) ? r.hobbies : [],
+    hobbies: Array.isArray(r.hobbies) ? r.hobbies.map(capFirst) : [],
     whyMatched: `${pct}% alignment on tonight's prompt.`,
     dailyAnswer: r.daily_answer ?? "",
     conflictAnswer: seeds[0]?.a ?? "",

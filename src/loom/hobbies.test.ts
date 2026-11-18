@@ -9,6 +9,9 @@ describe("interests", () => {
   it("caps at 5 tags", () => {
     expect(cleanHobby("Matcha", ["a", "b", "c", "d", "e"])).toBeNull();
   });
+  it("capitalizes the first letter", () => {
+    expect(cleanHobby("anime", [])).toBe("Anime");
+  });
   it("ignores duplicates", () => {
     expect(cleanHobby("matcha", ["Matcha"])).toBeNull();
   });
@@ -20,5 +23,6 @@ describe("profile header", () => {
     expect(m.major).toBe("Junior · Informatics");
     expect(m.location).toBe("UW Seattle");
     expect(m.hobbies).toEqual(["Matcha"]);
+    expect(rowToMatch({ match_id: "y", similarity_score: 0, major: "business", class_year: "Senior" } as any).major).toBe("Senior · Business");
   });
 });

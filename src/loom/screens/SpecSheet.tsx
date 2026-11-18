@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, Camera, Plus, ChevronDown, X } from "lucide-react";
 import { PrimaryButton } from "../Shell";
-import { OnboardingAnswers, UserSpec, CLASS_YEARS, MAX_HOBBIES, MAX_HOBBY_LENGTH, cleanHobby } from "../types";
+import { OnboardingAnswers, UserSpec, CLASS_YEARS, MAX_HOBBIES, MAX_HOBBY_LENGTH, cleanHobby, capFirst } from "../types";
 import { useServerFn } from "@tanstack/react-start";
 import { embedBaseline } from "@/lib/matching.functions";
 import { supabase } from "@/integrations/supabase/client";
@@ -100,7 +100,7 @@ export function SpecSheet({
               gender: userSpec.gender,
               campus_hub: userSpec.campus,
               target_preference: userSpec.seeking,
-              major: userSpec.major.trim() || null,
+              major: capFirst(userSpec.major) || null,
               class_year: userSpec.classYear || null,
               hobbies: userSpec.hobbies,
               ...(onboarding.seeds.length ? { seed_prompts: onboarding.seeds } : {}),
