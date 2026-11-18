@@ -6,6 +6,25 @@ import { useServerFn } from "@tanstack/react-start";
 import { embedBaseline } from "@/lib/matching.functions";
 import { supabase } from "@/integrations/supabase/client";
 
+const COMMON_MAJORS = [
+  "Accounting", "Aeronautics & Astronautics", "Anthropology", "Applied Mathematics", "Architecture",
+  "Art", "Biochemistry", "Bioengineering", "Biology", "Business Administration", "Chemical Engineering",
+  "Chemistry", "Civil Engineering", "Communication", "Computer Engineering", "Computer Science",
+  "Data Science", "Design", "Economics", "Education", "Electrical Engineering", "English",
+  "Environmental Science", "Finance", "Gender Studies", "Geography", "Global Health", "History",
+  "Human Centered Design & Engineering", "Industrial Engineering", "Informatics", "International Studies",
+  "Journalism", "Law, Societies & Justice", "Linguistics", "Marketing", "Materials Science", "Mathematics",
+  "Mechanical Engineering", "Media Studies", "Microbiology", "Music", "Neuroscience", "Nursing",
+  "Philosophy", "Physics", "Political Science", "Psychology", "Public Health", "Sociology", "Statistics",
+  "Undeclared",
+];
+
+const HOBBY_SUGGESTIONS = [
+  "Bouldering", "Thrifting", "Cooking", "Gym", "Hiking", "Gaming", "Anime", "Photography",
+  "Coffee", "Matcha", "Running", "Reading", "Concerts", "Skiing", "Baking", "Basketball", "Soccer",
+  "Yoga", "Art", "Music", "Travel", "Movies", "Volleyball", "Tennis",
+];
+
 export function SpecSheet({
   onNext,
   onBack,
@@ -307,11 +326,21 @@ export function SpecSheet({
             <input
               type="text"
               maxLength={60}
+              list="major-suggestions"
+              spellCheck
+              autoCorrect="on"
+              autoCapitalize="words"
+              autoComplete="off"
               value={userSpec.major}
               onChange={(e) => onUpdateUserSpec({ major: e.target.value })}
               placeholder="e.g. Informatics"
               className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-all"
             />
+            <datalist id="major-suggestions">
+              {COMMON_MAJORS.map((m) => (
+                <option key={m} value={m} />
+              ))}
+            </datalist>
           </div>
           </div>
         </div>
@@ -326,6 +355,10 @@ export function SpecSheet({
                 id="hobby-input"
                 type="text"
                 value={hobbyDraft}
+                spellCheck
+                autoCorrect="on"
+                autoCapitalize="words"
+                autoComplete="off"
                 maxLength={MAX_HOBBY_LENGTH}
                 disabled={userSpec.hobbies.length >= MAX_HOBBIES}
                 onChange={(e) => setHobbyDraft(e.target.value.replace(/,/g, ""))}
@@ -352,6 +385,31 @@ export function SpecSheet({
               <Plus className="w-4 h-4" />
             </button>
           </div>
+          {userSpec.hobbies.length < MAX_HOBBIES && (
+            <div className="flex flex-wrap gap-1.5 mt-3">
+              {HOBBY_SUGGESTIONS.filter(
+                (h) =>
+                  !userSpec.hobbies.some((x) => x.toLowerCase() === h.toLowerCase()) &&
+                  (!hobbyDraft.trim() || h.toLowerCase().includes(hobbyDraft.trim().toLowerCase())),
+              )
+                .slice(0, 6)
+                .map((h) => (
+                  <button
+                    key={h}
+                    type="button"
+                    onClick={() => {
+                      const c = cleanHobby(h, userSpec.hobbies);
+                      if (!c) return;
+                      onUpdateUserSpec({ hobbies: [...userSpec.hobbies, c] });
+                      setHobbyDraft("");
+                    }}
+                    className="text-[11px] px-2.5 py-1 rounded-full border border-dashed border-zinc-700 text-zinc-400 hover:border-[#FACC15] hover:text-foreground transition-colors"
+                  >
+                    + {h}
+                  </button>
+                ))}
+            </div>
+          )}
           {userSpec.hobbies.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
               {userSpec.hobbies.map((h) => (
