@@ -422,9 +422,9 @@ export function SpecSheet({
               ))}
             </div>
           )}
-          <p className="text-[11px] text-zinc-500 mt-2">
-            Up to {MAX_HOBBIES}. Shown on your profile only, never used for matching.
-          </p>
+          {userSpec.hobbies.length >= MAX_HOBBIES && (
+            <p className="text-[11px] text-zinc-500 mt-2">Up to {MAX_HOBBIES}.</p>
+          )}
         </div>
 
         <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">
