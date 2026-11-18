@@ -20,9 +20,9 @@ const COMMON_MAJORS = [
 ];
 
 const HOBBY_SUGGESTIONS = [
-  "Bouldering", "Thrifting", "Cooking", "Gym", "Hiking", "Gaming", "Anime", "Photography",
-  "Coffee", "Matcha", "Running", "Reading", "Concerts", "Skiing", "Baking", "Basketball", "Soccer",
-  "Yoga", "Art", "Music", "Travel", "Movies", "Volleyball", "Tennis",
+  "Coffee", "Concerts", "Thrifting", "Hiking", "Matcha", "Reading", "Movies", "Baking", "Travel",
+  "Gym", "Cooking", "Music", "Art", "Running", "Yoga", "Photography", "Gaming", "Anime", "Skiing",
+  "Basketball", "Soccer", "Volleyball", "Tennis", "Bouldering",
 ];
 
 export function SpecSheet({
@@ -368,7 +368,7 @@ export function SpecSheet({
                     addHobby();
                   }
                 }}
-                placeholder={userSpec.hobbies.length >= MAX_HOBBIES ? `${MAX_HOBBIES}/${MAX_HOBBIES} added` : "e.g. Bouldering"}
+                placeholder={userSpec.hobbies.length >= MAX_HOBBIES ? `${MAX_HOBBIES}/${MAX_HOBBIES} added` : "e.g. Coffee"}
                 className="w-full bg-black border border-zinc-800 rounded-lg pl-3 pr-10 py-2.5 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] disabled:opacity-50 transition-all"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-zinc-500">
@@ -392,7 +392,7 @@ export function SpecSheet({
                   !userSpec.hobbies.some((x) => x.toLowerCase() === h.toLowerCase()) &&
                   (!hobbyDraft.trim() || h.toLowerCase().includes(hobbyDraft.trim().toLowerCase())),
               )
-                .slice(0, 6)
+                .slice(0, 4)
                 .map((h) => (
                   <button
                     key={h}
