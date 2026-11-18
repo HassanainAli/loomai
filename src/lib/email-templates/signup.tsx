@@ -1,58 +1,26 @@
 import * as React from 'react'
 
-import {
-  Body,
-  Button,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Link,
-  Preview,
-  Text,
-} from '@react-email/components'
+import { Body, Container, Head, Heading, Html, Preview, Text } from '@react-email/components'
 
 interface SignupEmailProps {
   siteName: string
-  siteUrl: string
-  recipient: string
-  confirmationUrl: string
+  token: string
 }
 
-export const SignupEmail = ({
-  siteName,
-  siteUrl,
-  recipient,
-  confirmationUrl,
-}: SignupEmailProps) => (
+// Code-only on purpose: campus email scanners open links and burn one-time
+// confirmation links before the student can. A typed code can't be consumed that way.
+export const SignupEmail = ({ siteName, token }: SignupEmailProps) => (
   <Html lang="en" dir="ltr">
-    <Head>
-      <style>{darkModeCss}</style>
-    </Head>
-    <Preview>Confirm your email for {siteName}</Preview>
+    <Head />
+    <Preview>Your {siteName} verification code: {token}</Preview>
     <Body style={main}>
       <Container style={container}>
         <Text style={brand}>loom<span style={dot}>.</span></Text>
-        <Heading style={h1}>Confirm your email</Heading>
-        <Text style={text}>
-          Thanks for signing up for{' '}
-          <Link href={siteUrl} style={link}>
-            <strong>{siteName}</strong>
-          </Link>
-          !
-        </Text>
-        <Text style={text}>
-          Please confirm your email address (
-          <Link href={`mailto:${recipient}`} style={link}>
-            {recipient}
-          </Link>
-          ) by clicking the button below:
-        </Text>
-        <Button className="dm-btn" style={button} href={confirmationUrl}>
-          Verify Email
-        </Button>
+        <Heading style={h1}>Verify your student email</Heading>
+        <Text style={text}>Enter this code in Loom to finish creating your account.</Text>
+        <Text style={codeStyle}>{token}</Text>
         <Text style={footer}>
-          If you didn't create an account, you can safely ignore this email.
+          This code expires in 15 minutes. Never share it with anyone, Loom will never ask for it. If you didn't sign up for Loom, you can ignore this email.
         </Text>
       </Container>
     </Body>
@@ -67,16 +35,16 @@ const brand = { fontSize: '28px', fontWeight: 900 as const, color: '#ffffff', ma
 const dot = { color: '#FACC15' }
 const h1 = { fontSize: '22px', fontWeight: 'bold' as const, color: '#ffffff', margin: '0 0 16px' }
 const text = { fontSize: '14px', color: '#c9c9cf', lineHeight: '1.5', margin: '0 0 20px' }
-const link = { color: '#FF2BD6', textDecoration: 'underline' }
-const button = {
-  backgroundColor: '#FACC15',
-  color: '#050505',
+const codeStyle = {
+  fontFamily: "'JetBrains Mono', Courier, monospace",
+  fontSize: '32px',
   fontWeight: 'bold' as const,
-  fontSize: '14px',
-  border: '1px solid #FACC15',
-  borderRadius: '8px',
-  padding: '12px 20px',
-  textDecoration: 'none',
+  letterSpacing: '8px',
+  color: '#FF2BD6',
+  backgroundColor: '#140812',
+  borderRadius: '10px',
+  padding: '16px 0',
+  textAlign: 'center' as const,
+  margin: '0 0 28px',
 }
-const footer = { fontSize: '12px', color: '#8a8a92', margin: '30px 0 0' }
-const darkModeCss = ``
+const footer = { fontSize: '12px', color: '#8a8a92', margin: '28px 0 0' }

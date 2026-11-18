@@ -1,6 +1,6 @@
 import { GuestEntryLink } from "../guest/GuestMode"; // GUEST MODE
 import { PASSWORD_RULES, passwordProblems, RESEND_COOLDOWN_SECONDS } from "@/loom/passwordRules";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Brand } from "../Shell";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,6 +51,9 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
   const [busy, setBusy] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [resent, setResent] = useState(false);
+  const [otp, setOtp] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [cooldown, setCooldown] = useState(0);
   const [resetSent, setResetSent] = useState(false);
   const navigate = useNavigate();
 
@@ -96,7 +99,12 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
         return setError(msg || "Could not create your account.");
       }
       if (data.session) return onNext();
+      // Existing confirmed account: signUp returns a user with no identities.
+      // Stay neutral (no enumeration) and still show the code screen.
       setSentTo(e);
+      setOtp("");
+      setOtpError("");
+      setCooldown(RESEND_COOLDOWN_SECONDS);
       return;
     }
 
@@ -107,11 +115,16 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
     if (err) {
       setBusy(false);
       console.error("[Auth] signin error:", err);
-      return setError(
-        /confirm/i.test(err.message)
-          ? "Please confirm your email first — check your university inbox."
-          : "Incorrect email or password.",
-      );
+      if (/confirm/i.test(err.message)) {
+        // Unconfirmed account: send a fresh code and show the code screen.
+        await supabase.auth.resend({ type: "signup", email: e });
+        setSentTo(e);
+        setOtp("");
+        setOtpError("");
+        setCooldown(RESEND_COOLDOWN_SECONDS);
+        return;
+      }
+      return setError("Incorrect email or password.");
     }
     // Returning users: stay on this screen (busy) while the session listener
     // loads the profile and routes straight to the right screen. Calling
@@ -136,14 +149,41 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
     navigate({ to: "/reset-password" });
   }
 
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
+
   async function resend() {
-    if (!sentTo) return;
-    await supabase.auth.resend({
+    if (!sentTo || cooldown > 0) return;
+    setOtpError("");
+    const { error: err } = await supabase.auth.resend({
       type: "signup",
       email: sentTo,
       options: { emailRedirectTo: `${window.location.origin}/` },
     });
-    setResent(true);
+    if (err && /rate|limit|seconds/i.test(err.message)) setOtpError("Please wait a moment before requesting another code.");
+    else if (err) setOtpError("Couldn't send a new code. Try again in a minute.");
+    else setResent(true);
+    setCooldown(RESEND_COOLDOWN_SECONDS);
+  }
+
+  async function verifyCode() {
+    if (!sentTo || otp.length !== 8) return;
+    setOtpError("");
+    setBusy(true);
+    const { error: err } = await supabase.auth.verifyOtp({ email: sentTo, token: otp, type: "signup" });
+    setBusy(false);
+    if (err) {
+      console.error("[Auth] verify error:", err);
+      return setOtpError(
+        /expired/i.test(err.message)
+          ? "That code has expired. Send a new code below."
+          : "That code didn't work. Check the digits and try again.",
+      );
+    }
+    onNext();
   }
 
   const canSubmit =
@@ -168,18 +208,34 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
       {sentTo ? (
         <div key="verify" className="loom-shutter flex flex-col items-center justify-center flex-1 px-8 py-10 text-center">
           <Brand style={{ fontSize: "3.5rem", fontWeight: 900 }} className="mb-8 leading-none" />
-          <h2 className="text-2xl font-black mb-3">Check your inbox</h2>
-          <p className="text-sm text-white/60 max-w-xs mb-2">We sent a confirmation link to</p>
-          <p className="text-sm font-bold text-[#ff2bd6] mb-6 break-all">{sentTo}</p>
-          <p className="text-xs text-white/50 max-w-xs mb-8">
-            Tap the link in that email to verify you're a student, then come back and sign in.
-          </p>
+          <h2 className="text-2xl font-black mb-3">Verify your email</h2>
+          <p className="text-sm text-white/60 max-w-xs">We emailed an 8-digit code to:</p>
+          <p className="text-sm font-bold text-[#ff2bd6] my-1.5 whitespace-nowrap">{sentTo}</p>
+          <p className="text-sm text-white/60 max-w-xs">It may take a minute to arrive.</p>
+          <input
+            value={otp}
+            onChange={(ev) => setOtp(ev.target.value.replace(/\D/g, "").slice(0, 8))}
+            onKeyDown={(ev) => ev.key === "Enter" && verifyCode()}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            aria-label="8-digit verification code"
+            placeholder="00000000"
+            className={inputCls + " !text-center tracking-[0.4em] font-mono text-2xl max-w-xs mt-5"}
+          />
+          {otpError && <p role="alert" className="text-xs text-[#ff2bd6] mt-3 max-w-xs">{otpError}</p>}
+          <button
+            onClick={verifyCode}
+            disabled={busy || otp.length !== 8}
+            className="loom-cta mt-5 w-full max-w-xs px-8 py-3 rounded-full text-sm font-bold text-white disabled:opacity-40"
+          >
+            {busy ? "Verifying..." : "Verify and continue"}
+          </button>
           <button
             onClick={resend}
-            disabled={resent}
-            className="text-sm font-medium text-white/80 underline underline-offset-4 disabled:no-underline disabled:text-white/40"
+            disabled={cooldown > 0}
+            className="mt-6 text-sm text-white/50 underline underline-offset-4 disabled:no-underline disabled:opacity-60"
           >
-            {resent ? "Link resent" : "Resend link"}
+            {cooldown > 0 ? `Send a new code in ${cooldown}s` : resent ? "Code sent. Send another" : "Send a new code"}
           </button>
           <button
             onClick={() => {
@@ -189,9 +245,9 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
               setConfirm("");
               switchMode("signin");
             }}
-            className="loom-cta mt-8 w-full max-w-xs px-8 py-3 rounded-full text-sm font-bold text-white"
+            className="mt-4 text-sm text-white/50 underline underline-offset-4"
           >
-            Back to sign in
+            Wrong email? Back to sign in
           </button>
         </div>
       ) : (
