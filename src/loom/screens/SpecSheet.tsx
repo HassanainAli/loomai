@@ -207,54 +207,36 @@ export function SpecSheet({
           Only used to pair you. Never shown on your profile.
         </p>
 
-        <div className="grid grid-cols-2 gap-3">
-
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
-              Gender
-            </label>
-            <div className="relative">
-              <select
-                value={userSpec.gender}
-                onChange={(e) => onUpdateUserSpec({ gender: e.target.value })}
-                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
-                  userSpec.gender ? "" : "opacity-50"
-                }`}
-              >
-                <option value="" disabled>
-                  Select gender
-                </option>
-                <option value="Man">Man</option>
-                <option value="Woman">Woman</option>
-                <option value="Non-Binary">Non-Binary</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="space-y-4">
+          {([
+            { label: "Gender", key: "gender", opts: ["Man", "Woman", "Non-Binary"] },
+            { label: "Interested In", key: "seeking", opts: ["Men", "Women", "Everyone"] },
+          ] as const).map((f) => (
+            <div key={f.key} role="radiogroup" aria-label={f.label}>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground mb-1.5">{f.label}</p>
+              <div className="grid grid-cols-3 gap-2">
+                {f.opts.map((o) => {
+                  const on = userSpec[f.key] === o;
+                  return (
+                    <button
+                      key={o}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => onUpdateUserSpec({ [f.key]: o })}
+                      className={`rounded-full border py-2 text-xs font-bold transition-colors ${
+                        on
+                          ? "border-[#FF2BD6] bg-[#FF2BD6]/10 text-foreground"
+                          : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-600"
+                      }`}
+                    >
+                      {o}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-
-          <div>
-            <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-1.5">
-              Interested In
-            </label>
-            <div className="relative">
-              <select
-                value={userSpec.seeking}
-                onChange={(e) => onUpdateUserSpec({ seeking: e.target.value })}
-                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
-                  userSpec.seeking ? "" : "opacity-50"
-                }`}
-              >
-                <option value="" disabled>
-                  Select preference
-                </option>
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-                <option value="Everyone">Everyone</option>
-              </select>
-              <ChevronDown className="w-4 h-4 text-zinc-500 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-          </div>
-
+          ))}
         </div>
       </section>
 
@@ -442,13 +424,13 @@ export function SpecSheet({
                 <button
                   type="button"
                   onClick={() => fileInputs[i].current?.click()}
-                  className="w-full h-full rounded-2xl bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-[#FF2BD6]/60 hover:border-[#FF2BD6]/70 hover:text-[#FF2BD6] hover:shadow-[0_0_16px_rgba(255,43,214,0.25)] transition-all overflow-hidden"
+                  className="w-full h-full rounded-2xl bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-[#FF2BD6]/60 hover:border-[#FF2BD6]/70 hover:text-[#FF2BD6] transition-all overflow-hidden"
                   aria-label={preview ? "Replace photo" : "Upload photo"}
                 >
                   {preview ? (
                     <img src={preview} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
                   ) : i === 0 ? (
-                    <Camera className="w-5 h-5" />
+                    <span className="flex flex-col items-center gap-1"><Camera className="w-5 h-5" /><span className="text-[9px] font-bold uppercase tracking-wider">Main</span></span>
                   ) : (
                     <Plus className="w-5 h-5" />
                   )}
