@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MATCHES, Match, MatchRow, rowToMatch, DropState, emptyQueueMessage, CampusStatus, campusProgressLabel } from "../types";
+import { Nebula } from "../Nebula";
 import { supabase } from "@/integrations/supabase/client";
 
 export function Queue({
@@ -44,7 +45,9 @@ export function Queue({
   }, [isGuest]);
 
   return (
-    <div className="flex flex-col h-full p-8 pt-14 overflow-y-auto">
+    <div className="relative flex flex-col h-full p-8 pt-14 overflow-y-auto">
+      <Nebula />
+      <div className="relative">
       <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2">
         8:00 PM Drop
       </p>
@@ -129,6 +132,7 @@ export function Queue({
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }
