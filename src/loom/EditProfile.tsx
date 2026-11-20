@@ -3,6 +3,7 @@ import { ArrowLeft, ChevronDown, Lock, X } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { embedBaseline } from "@/lib/matching.functions";
+import { guestProfile } from "./guest/mockProfile"; // GUEST MODE
 import { SEED_PROMPTS } from "./screens/Onboard2";
 import { COMMON_MAJORS, HOBBY_SUGGESTIONS } from "./screens/SpecSheet";
 import { CLASS_YEARS, MAX_HOBBIES, MAX_HOBBY_LENGTH, ageFromDob, capFirst, cleanHobby, type UserSpec } from "./types";
@@ -46,7 +47,8 @@ function Choice({ on, title, desc, onClick }: { on: boolean; title: string; desc
   );
 }
 
-export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose }: {
+export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose, isGuest = false }: {
+  isGuest?: boolean; // GUEST MODE
   userId: string | null;
   userSpec: UserSpec;
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
@@ -67,6 +69,13 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose }: {
 
   useEffect(() => {
     let off = false;
+    if (isGuest) { // GUEST MODE
+      const g = guestProfile;
+      setS((prev) => ({ ...prev, name: g.name, gender: g.gender, seeking: g.seeking, campus: g.campus, major: g.major, classYear: g.classYear, hobbies: [...g.hobbies] }));
+      setSeeds([...g.seeds]); setOrigSeeds([...g.seeds]); setIntention(g.intention); setBalance(g.balance);
+      setEmail(g.email); setAge(g.age); setLoading(false);
+      return;
+    }
     (async () => {
       const { data: u } = await supabase.auth.getUser();
       if (off) return;
@@ -103,7 +112,9 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose }: {
     if (seeds.some((a) => a.trim().length <= 10)) { setError("Each prompt answer needs a little more detail."); return; }
     setBusy(true); setError(null);
     const major = capFirst(s.major);
-    if (userId) {
+    if (isGuest) { // GUEST MODE: save to the dummy account only
+      Object.assign(guestProfile, { gender: s.gender, seeking: s.seeking, campus: s.campus, major, classYear: s.classYear, hobbies: [...s.hobbies], seeds: seeds.map((a) => a.trim()), ...(intention ? { intention } : {}), ...(balance ? { balance } : {}) });
+    } else if (userId) {
       const { error: pErr } = await (supabase as any).from("profiles").update({
         gender: s.gender, target_preference: s.seeking, campus_hub: s.campus,
         major: major || null, class_year: s.classYear || null, hobbies: s.hobbies,

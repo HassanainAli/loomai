@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ChevronRight, LifeBuoy, LogOut, Pencil, Trash2, X } from "lucide-react";
+import { ChevronRight, LifeBuoy, LogOut, Trash2, X } from "lucide-react";
+import { guestCard } from "./guest/mockProfile"; // GUEST MODE
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteMyAccount } from "@/lib/account.functions";
@@ -19,23 +20,24 @@ const FAQ = [
   ["How does Focus Mode work?", "When you both greenlight, a private chat opens. It closes if neither of you writes for 48 hours."],
 ];
 
-function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+function Sheet({ title, onClose, children }: { title?: string; onClose: () => void; children: React.ReactNode }) {
   return (
     <div className="absolute inset-0 z-50 bg-background/70 backdrop-blur-sm flex items-end" onClick={onClose}>
       <div className="w-full max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-zinc-800 bg-zinc-950 px-6 pt-3 pb-8" onClick={(e) => e.stopPropagation()}>
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-700" />
-        <div className="flex items-center justify-between mb-4">
+        {title && <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-black tracking-tight text-foreground">{title}</h3>
           <button aria-label="Close" onClick={onClose} className="p-2 -mr-2 text-zinc-500 hover:text-foreground"><X className="w-5 h-5" /></button>
-        </div>
+        </div>}
         {children}
       </div>
     </div>
   );
 }
 
-export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec }: {
+export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec, isGuest = false }: {
   open: boolean;
+  isGuest?: boolean; // GUEST MODE
   onClose: () => void;
   userId: string | null;
   userSpec: UserSpec;
@@ -50,6 +52,7 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec 
 
   // Load the user's own card (as matches see it) whenever the menu opens.
   useEffect(() => {
+    if (open && isGuest) { setMe(guestCard()); return; } // GUEST MODE
     if (!open || !userId) return;
     let off = false;
     (async () => {
@@ -76,15 +79,15 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec 
       });
     })();
     return () => { off = true; };
-  }, [open, userId, view]);
+  }, [open, userId, view, isGuest]);
 
   if (!open) return null;
   const close = () => { setView("menu"); setError(null); setConfirm(""); onClose(); };
 
   if (view === "edit") {
     return (
-      <EditProfile userId={userId} userSpec={userSpec} onUpdateUserSpec={onUpdateUserSpec}
-        onClose={(saved) => { if (saved) close(); else setView("menu"); }} />
+      <EditProfile isGuest={isGuest} userId={userId} userSpec={userSpec} onUpdateUserSpec={onUpdateUserSpec}
+        onClose={() => setView("menu")} />
     );
   }
 
@@ -98,7 +101,7 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec 
 
   async function doDelete() {
     setBusy(true); setError(null);
-    const res = await runDelete().catch(() => ({ ok: false as const }));
+    const res = isGuest ? ({ ok: false as const }) : await runDelete().catch(() => ({ ok: false as const }));
     if (!res.ok) { setBusy(false); setError("Couldn't delete your account. Try again."); return; }
     await supabase.auth.signOut();
   }
@@ -158,20 +161,19 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec 
   }
 
   return (
-    <Sheet title="Account" onClose={close}>
-      <button onClick={() => me && setView("preview")} disabled={!me}
-        className="w-full mb-3 flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-3 text-left hover:border-[#FF2BD6]/60 transition-colors disabled:opacity-60">
-        <div className="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-[#FF2BD6]/70 via-zinc-800 to-cyan-400/50" />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-bold text-foreground">{me ? `${me.name}${me.age ? `, ${me.age}` : ""}` : userSpec.name || "Your profile"}</p>
-          <p className="truncate text-xs text-muted-foreground">{me?.location || userSpec.campus || "Loading…"}</p>
+    <Sheet onClose={close}>
+      <div className="mb-3 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-4">
+        <p className="truncate text-xl font-black tracking-tight text-foreground mb-3">{me?.name || userSpec.name || "Your profile"}</p>
+        <div className="grid grid-cols-2 gap-2">
+          <button onClick={() => me && setView("preview")} disabled={!me}
+            className="rounded-full border border-[#FF2BD6]/50 py-2 text-xs font-bold text-foreground hover:bg-[#FF2BD6]/10 disabled:opacity-50">Preview</button>
+          <button onClick={() => setView("edit")}
+            className="rounded-full border border-zinc-700 py-2 text-xs font-bold text-foreground hover:border-zinc-500">Edit</button>
         </div>
-        <span className="shrink-0 rounded-full border border-[#FF2BD6]/50 px-3 py-1 text-[11px] font-bold text-foreground">Preview</span>
-      </button>
+      </div>
       <div className="divide-y divide-zinc-900">
-        <button className={row} onClick={() => setView("edit")}><Pencil className="w-4 h-4 text-zinc-400" />Edit profile<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>
         <button className={row} onClick={() => setView("help")}><LifeBuoy className="w-4 h-4 text-zinc-400" />Help & support<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>
-        <button className={row} onClick={() => supabase.auth.signOut()}><LogOut className="w-4 h-4 text-zinc-400" />Sign out</button>
+        <button className={row} onClick={() => (isGuest ? close() : supabase.auth.signOut())}><LogOut className="w-4 h-4 text-zinc-400" />Sign out</button>
         <button className={`${row} text-destructive`} onClick={() => setView("delete")}><Trash2 className="w-4 h-4" />Delete account</button>
       </div>
     </Sheet>

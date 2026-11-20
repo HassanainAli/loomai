@@ -41,7 +41,9 @@ export function DailyGate({
   onUpdateUserSpec,
   userId,
   displayName,
+  isGuest = false, // GUEST MODE
 }: {
+  isGuest?: boolean;
   passStreak: number;
   onSubmit: () => void;
   onRecalibrate: (reason: string) => void;
@@ -201,7 +203,7 @@ export function DailyGate({
         >
           <Menu className="w-5 h-5" strokeWidth={1.5} />
         </button>
-        <AccountMenu
+        <AccountMenu isGuest={isGuest}
           open={menuOpen}
           onClose={() => setMenuOpen(false)}
           userId={userId}

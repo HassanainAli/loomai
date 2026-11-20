@@ -220,6 +220,7 @@ function Index() {
       )}
       {screen === "dailyGate" && (
         <DailyGate
+          isGuest={guest} // GUEST MODE
           userId={userId}
           displayName={displayName}
           passStreak={passStreak}
