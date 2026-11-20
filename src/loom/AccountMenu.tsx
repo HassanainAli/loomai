@@ -1,14 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronRight, LifeBuoy, LogOut, Pencil, Trash2, X } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteMyAccount } from "@/lib/account.functions";
 import { EditProfile } from "./EditProfile";
+import { SEED_PROMPTS } from "./screens/Onboard2";
+import { Profile } from "./screens/Profile";
+import { ageFromDob, capFirst, type Match } from "./types";
 import type { UserSpec } from "./types";
 
 export const SUPPORT_EMAIL = "support@tryloom.cc";
 
-type View = "menu" | "edit" | "help" | "delete";
+type View = "menu" | "edit" | "help" | "delete" | "preview";
 
 const FAQ = [
   ["When do matches drop?", "Every night at 8:00 PM Pacific. Answer the day's prompt before then to be included."],
@@ -43,6 +46,37 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec 
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState("");
   const runDelete = useServerFn(deleteMyAccount);
+  const [me, setMe] = useState<Match | null>(null);
+
+  // Load the user's own card (as matches see it) whenever the menu opens.
+  useEffect(() => {
+    if (!open || !userId) return;
+    let off = false;
+    (async () => {
+      const [{ data: u }, { data: p }, { data: m }] = await Promise.all([
+        supabase.auth.getUser(),
+        (supabase as any).from("profiles").select("display_name, campus_hub, major, class_year, hobbies, seed_prompts").eq("id", userId).maybeSingle(),
+        (supabase as any).from("matching_preferences").select("intention").eq("user_id", userId).limit(1).maybeSingle(),
+      ]);
+      if (off) return;
+      const saved: any[] = Array.isArray(p?.seed_prompts) ? p.seed_prompts : [];
+      const ans = SEED_PROMPTS.map((q, i) => (saved.find((x) => x?.q === q)?.a ?? saved[i]?.a ?? "") as string);
+      const intention = m?.intention === "committed" ? "Long-term relationship" : m?.intention === "intentional" ? "Dating, open to seeing where it goes" : "";
+      setMe({
+        id: "me",
+        name: p?.display_name || userSpec.name || "You",
+        age: ageFromDob(u.user?.user_metadata?.date_of_birth as string | undefined) ?? 0,
+        major: [p?.class_year, capFirst(p?.major ?? "")].filter(Boolean).join(" · "),
+        location: p?.campus_hub ?? userSpec.campus,
+        intention,
+        hobbies: (Array.isArray(p?.hobbies) ? p.hobbies : []).map(capFirst),
+        whyMatched: "This is how your card looks to tonight's matches.",
+        dailyAnswer: "",
+        conflictAnswer: ans[0], sundayAnswer: ans[1], pace: ans[2],
+      });
+    })();
+    return () => { off = true; };
+  }, [open, userId, view]);
 
   if (!open) return null;
   const close = () => { setView("menu"); setError(null); setConfirm(""); onClose(); };
@@ -51,6 +85,14 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec 
     return (
       <EditProfile userId={userId} userSpec={userSpec} onUpdateUserSpec={onUpdateUserSpec}
         onClose={(saved) => { if (saved) close(); else setView("menu"); }} />
+    );
+  }
+
+  if (view === "preview" && me) {
+    return (
+      <div className="absolute inset-0 z-50 bg-background">
+        <Profile match={me} preview onBack={() => setView("menu")} />
+      </div>
     );
   }
 
@@ -117,6 +159,15 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec 
 
   return (
     <Sheet title="Account" onClose={close}>
+      <button onClick={() => me && setView("preview")} disabled={!me}
+        className="w-full mb-3 flex items-center gap-3 rounded-2xl border border-zinc-800 bg-zinc-900/50 p-3 text-left hover:border-[#FF2BD6]/60 transition-colors disabled:opacity-60">
+        <div className="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-[#FF2BD6]/70 via-zinc-800 to-cyan-400/50" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-bold text-foreground">{me ? `${me.name}${me.age ? `, ${me.age}` : ""}` : userSpec.name || "Your profile"}</p>
+          <p className="truncate text-xs text-muted-foreground">{me?.location || userSpec.campus || "Loading…"}</p>
+        </div>
+        <span className="shrink-0 rounded-full border border-[#FF2BD6]/50 px-3 py-1 text-[11px] font-bold text-foreground">Preview</span>
+      </button>
       <div className="divide-y divide-zinc-900">
         <button className={row} onClick={() => setView("edit")}><Pencil className="w-4 h-4 text-zinc-400" />Edit profile<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>
         <button className={row} onClick={() => setView("help")}><LifeBuoy className="w-4 h-4 text-zinc-400" />Help & support<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>

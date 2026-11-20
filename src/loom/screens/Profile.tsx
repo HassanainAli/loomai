@@ -15,6 +15,7 @@ export function Profile({
   notice,
   userSpec = CURRENT_USER_SPEC,
   isGuest = false, // GUEST MODE
+  preview = false,
 }: {
   match: Match;
   onPass?: () => void;
@@ -25,6 +26,8 @@ export function Profile({
   notice?: string | null;
   userSpec?: UserSpec;
   isGuest?: boolean; // GUEST MODE
+  /** Self-preview: show the card as matches see it, with no match actions. */
+  preview?: boolean;
 }) {
   const generate = useServerFn(generateAlignmentSpec);
   const [open, setOpen] = useState(false);
@@ -72,14 +75,14 @@ export function Profile({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto pb-32">
+      <div className={`flex-1 overflow-y-auto ${preview ? "pb-8" : "pb-32"}`}>
         <div className="bg-[#FACC15] text-black px-5 pt-12 pb-4 flex items-start gap-3">
           <button onClick={onBack} className="shrink-0 mt-0.5">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest mb-1">
-              Why we matched you
+              {preview ? "Your profile" : "Why we matched you"}
             </p>
             <p className="text-sm font-semibold leading-snug">
               {match.whyMatched}
@@ -109,7 +112,7 @@ export function Profile({
             <div className="rounded-2xl bg-gradient-to-br from-zinc-800 to-black" />
           </div>
 
-          <Section label="Today's prompt · their answer">
+          {!preview && <Section label="Today's prompt · their answer">
             <p className="text-2xl font-black italic leading-snug tracking-tight">
               "{match.dailyAnswer}"
             </p>
@@ -121,7 +124,7 @@ export function Profile({
                 <p className="text-sm italic leading-relaxed">"{match.myAnswer}"</p>
               </div>
             )}
-          </Section>
+          </Section>}
 
           {match.conflictAnswer && (
             <Section label="Conflict style">
@@ -135,7 +138,7 @@ export function Profile({
             </Section>
           )}
 
-          {match.matchId && match.pace && (
+          {(match.matchId || preview) && match.pace && (
             <Section label="Hill to die on">
               <p className="text-sm leading-relaxed">{match.pace}</p>
             </Section>
@@ -154,7 +157,7 @@ export function Profile({
           )}
 
           {/* Technical Specs Footer (sample matches only) */}
-          {!match.matchId && <div className="pt-2">
+          {!match.matchId && !preview && <div className="pt-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">
               Technical Specs
             </p>
@@ -175,13 +178,13 @@ export function Profile({
           </div>}
 
           {/* View Alignment Spec CTA */}
-          <button
+          {!preview && <button
             onClick={handleViewAlignment}
             className="w-full mt-2 relative rounded-2xl border-2 border-[#FACC15] bg-black/40 px-5 py-4 flex items-center justify-center gap-2 text-[#FACC15] font-bold text-sm tracking-wider uppercase shadow-[0_0_24px_-4px_rgba(250,204,21,0.6)] hover:shadow-[0_0_36px_-2px_rgba(250,204,21,0.85)] transition-shadow"
           >
             <Sparkles className="w-4 h-4" />
             View Alignment Spec
-          </button>
+          </button>}
         </div>
       </div>
 
@@ -190,14 +193,14 @@ export function Profile({
           {notice}
         </p>
       )}
-      {hideActions && (
+      {hideActions && !preview && (
         <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5">
           <p className="text-xs text-muted-foreground text-center">
             Green light locked in. If it's mutual, you'll chat in Focus Mode.
           </p>
         </div>
       )}
-      {!hideActions && (
+      {!hideActions && !preview && (
         <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5 flex gap-4">
           <button
             onClick={onPass}
