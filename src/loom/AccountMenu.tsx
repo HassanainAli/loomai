@@ -22,9 +22,8 @@ const FAQ = [
 
 function Sheet({ title, onClose, children }: { title?: string; onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="absolute inset-0 z-50 bg-background/70 backdrop-blur-sm flex items-end" onClick={onClose}>
-      <div className="w-full max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-zinc-800 bg-zinc-950 px-6 pt-3 pb-8" onClick={(e) => e.stopPropagation()}>
-        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-700" />
+    <div className="absolute inset-0 z-50 bg-background/60 backdrop-blur-sm" onClick={onClose}>
+      <div className="absolute right-4 top-24 w-[calc(100%-2rem)] max-w-xs max-h-[75%] overflow-y-auto rounded-2xl border border-zinc-800 bg-zinc-950 p-4 shadow-2xl origin-top-right animate-in fade-in zoom-in-95 duration-150" onClick={(e) => e.stopPropagation()}>
         {title && <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-black tracking-tight text-foreground">{title}</h3>
           <button aria-label="Close" onClick={onClose} className="p-2 -mr-2 text-zinc-500 hover:text-foreground"><X className="w-5 h-5" /></button>
@@ -106,7 +105,7 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec,
     await supabase.auth.signOut();
   }
 
-  const row = "w-full flex items-center gap-3 py-3.5 text-left text-sm font-semibold text-foreground";
+  const row = "w-full flex items-center gap-3 py-3 text-left text-sm font-semibold";
   const mail = (subject: string) => `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}`;
 
   if (view === "help") {
@@ -172,9 +171,9 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec,
         </div>
       </div>
       <div className="divide-y divide-zinc-900">
-        <button className={row} onClick={() => setView("help")}><LifeBuoy className="w-4 h-4 text-zinc-400" />Help & support<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>
-        <button className={row} onClick={() => (isGuest ? close() : supabase.auth.signOut())}><LogOut className="w-4 h-4 text-zinc-400" />Sign out</button>
-        <button className={`${row} text-destructive`} onClick={() => setView("delete")}><Trash2 className="w-4 h-4" />Delete account</button>
+        <button className={`${row} text-foreground`} onClick={() => setView("help")}><LifeBuoy className="w-4 h-4 text-zinc-400" />Help & support<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>
+        <button className={`${row} text-foreground`} onClick={() => (isGuest ? close() : supabase.auth.signOut())}><LogOut className="w-4 h-4 text-zinc-400" />Sign out</button>
+        <button className={`${row} -mx-2 px-2 rounded-lg text-red-500 hover:text-red-400 hover:bg-red-500/10`} onClick={() => setView("delete")}><Trash2 className="w-4 h-4" />Delete account</button>
       </div>
     </Sheet>
   );
