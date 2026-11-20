@@ -1,19 +1,37 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { ChevronRight, LifeBuoy, LogOut, Pencil, Trash2, X } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { deleteMyAccount } from "@/lib/account.functions";
-import { CLASS_YEARS, MAX_HOBBIES, type UserSpec } from "./types";
+import { EditProfile } from "./EditProfile";
+import type { UserSpec } from "./types";
 
-type View = "menu" | "edit" | "delete";
+export const SUPPORT_EMAIL = "support@tryloom.cc";
 
-export function AccountMenu({
-  open,
-  onClose,
-  userId,
-  userSpec,
-  onUpdateUserSpec,
-}: {
+type View = "menu" | "edit" | "help" | "delete";
+
+const FAQ = [
+  ["When do matches drop?", "Every night at 8:00 PM Pacific. Answer the day's prompt before then to be included."],
+  ["Why didn't I get a match?", "Some nights there isn't a strong fit. We'd rather skip a night than send someone random."],
+  ["How does Focus Mode work?", "When you both greenlight, a private chat opens. It closes if neither of you writes for 48 hours."],
+];
+
+function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div className="absolute inset-0 z-50 bg-background/70 backdrop-blur-sm flex items-end" onClick={onClose}>
+      <div className="w-full max-h-[85%] overflow-y-auto rounded-t-3xl border-t border-zinc-800 bg-zinc-950 px-6 pt-3 pb-8" onClick={(e) => e.stopPropagation()}>
+        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-700" />
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-black tracking-tight text-foreground">{title}</h3>
+          <button aria-label="Close" onClick={onClose} className="p-2 -mr-2 text-zinc-500 hover:text-foreground"><X className="w-5 h-5" /></button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec }: {
   open: boolean;
   onClose: () => void;
   userId: string | null;
@@ -21,9 +39,6 @@ export function AccountMenu({
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
 }) {
   const [view, setView] = useState<View>("menu");
-  const [major, setMajor] = useState(userSpec.major);
-  const [classYear, setClassYear] = useState(userSpec.classYear);
-  const [hobbies, setHobbies] = useState(userSpec.hobbies.join(", "));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState("");
@@ -32,19 +47,11 @@ export function AccountMenu({
   if (!open) return null;
   const close = () => { setView("menu"); setError(null); setConfirm(""); onClose(); };
 
-  async function save() {
-    const tags = hobbies.split(",").map((h) => h.trim()).filter(Boolean).slice(0, MAX_HOBBIES)
-      .map((h) => h.charAt(0).toUpperCase() + h.slice(1));
-    const m = major.trim() ? major.trim().charAt(0).toUpperCase() + major.trim().slice(1) : "";
-    setBusy(true); setError(null);
-    if (userId) {
-      const { error } = await (supabase as any).from("profiles")
-        .update({ major: m || null, class_year: classYear || null, hobbies: tags }).eq("id", userId);
-      if (error) { setBusy(false); setError("Couldn't save. Try again."); return; }
-    }
-    onUpdateUserSpec({ major: m, classYear, hobbies: tags });
-    setBusy(false);
-    close();
+  if (view === "edit") {
+    return (
+      <EditProfile userId={userId} userSpec={userSpec} onUpdateUserSpec={onUpdateUserSpec}
+        onClose={(saved) => { if (saved) close(); else setView("menu"); }} />
+    );
   }
 
   async function doDelete() {
@@ -54,66 +61,68 @@ export function AccountMenu({
     await supabase.auth.signOut();
   }
 
-  const item = "w-full text-left py-4 border-b border-border text-white font-sans text-base";
-  const input = "w-full bg-transparent border border-border rounded-lg px-3 py-2.5 text-white font-sans text-sm focus:outline-none focus:border-yellow-400";
+  const row = "w-full flex items-center gap-3 py-3.5 text-left text-sm font-semibold text-foreground";
+  const mail = (subject: string) => `mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(subject)}`;
+
+  if (view === "help") {
+    return (
+      <Sheet title="Help & support" onClose={close}>
+        <div className="space-y-2 mb-5">
+          <a href={mail("Loom support")} className="block rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-3 text-sm font-semibold text-foreground hover:border-zinc-600">
+            Email support
+            <span className="block text-xs font-normal text-muted-foreground mt-0.5">{SUPPORT_EMAIL}</span>
+          </a>
+          <a href={mail("Safety report")} className="block rounded-xl border border-[#FF2BD6]/40 bg-[#FF2BD6]/5 px-4 py-3 text-sm font-semibold text-foreground hover:border-[#FF2BD6]">
+            Report a safety concern
+            <span className="block text-xs font-normal text-muted-foreground mt-0.5">In an emergency, call 911 first.</span>
+          </a>
+        </div>
+        <div className="divide-y divide-zinc-900 border-y border-zinc-900 mb-5">
+          {FAQ.map(([q, a]) => (
+            <details key={q} className="group py-3">
+              <summary className="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-foreground">
+                {q}<ChevronRight className="w-4 h-4 text-zinc-500 transition-transform group-open:rotate-90" />
+              </summary>
+              <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{a}</p>
+            </details>
+          ))}
+        </div>
+        <div className="flex gap-4 text-xs text-muted-foreground">
+          <a href="/terms" target="_blank" rel="noreferrer" className="hover:text-foreground underline underline-offset-4">Terms</a>
+          <a href="/privacy" target="_blank" rel="noreferrer" className="hover:text-foreground underline underline-offset-4">Privacy</a>
+        </div>
+        <button onClick={() => setView("menu")} className="mt-5 text-sm text-zinc-500">Back</button>
+      </Sheet>
+    );
+  }
+
+  if (view === "delete") {
+    return (
+      <Sheet title="Delete account" onClose={close}>
+        <p className="text-sm text-zinc-300 leading-relaxed mb-4">
+          This permanently removes your profile, prompt answers, matches, and chats. You won't be in future drops. This can't be undone.
+        </p>
+        <label className="text-xs text-muted-foreground">Type DELETE to confirm
+          <input value={confirm} onChange={(e) => setConfirm(e.target.value)} autoCapitalize="characters"
+            className="mt-1.5 w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:border-[#FACC15]" />
+        </label>
+        {error && <p className="text-sm text-destructive mt-3">{error}</p>}
+        <button disabled={busy || confirm !== "DELETE"} onClick={doDelete} className="mt-4 w-full rounded-full bg-destructive text-destructive-foreground py-3 font-bold disabled:opacity-40">
+          {busy ? "Deleting…" : "Delete my account"}
+        </button>
+        <button onClick={() => setView("menu")} className="mt-3 w-full text-sm text-zinc-500">Cancel</button>
+      </Sheet>
+    );
+  }
 
   return (
-    <div className="absolute inset-0 z-50 bg-background/80 backdrop-blur-sm flex justify-end" onClick={close}>
-      <div className="h-full w-[85%] bg-background border-l border-border px-6 pt-12 pb-8 flex flex-col overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-8">
-          <h3 className="text-xl font-black tracking-tight text-white font-sans">
-            {view === "menu" ? "Account" : view === "edit" ? "Edit profile" : "Delete account"}
-          </h3>
-          <button aria-label="Close" onClick={close} className="p-2 -mr-2 text-zinc-500"><X className="w-5 h-5" /></button>
-        </div>
-
-        {view === "menu" && (
-          <div>
-            <button className={item} onClick={() => setView("edit")}>Edit profile</button>
-            <button className={item} onClick={() => supabase.auth.signOut()}>Sign out</button>
-            <button className={`${item} text-destructive border-b-0`} onClick={() => setView("delete")}>Delete account</button>
-          </div>
-        )}
-
-        {view === "edit" && (
-          <div className="flex flex-col gap-4">
-            <label className="text-sm text-zinc-400 font-sans">Major
-              <input className={`${input} mt-1.5`} value={major} onChange={(e) => setMajor(e.target.value)} spellCheck autoCapitalize="words" />
-            </label>
-            <label className="text-sm text-zinc-400 font-sans">Class standing
-              <select className={`${input} mt-1.5`} value={classYear} onChange={(e) => setClassYear(e.target.value)}>
-                <option value="">Select</option>
-                {CLASS_YEARS.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </label>
-            <label className="text-sm text-zinc-400 font-sans">Interests (comma separated, up to 5)
-              <input className={`${input} mt-1.5`} value={hobbies} onChange={(e) => setHobbies(e.target.value)} spellCheck />
-            </label>
-            <p className="text-xs text-zinc-500 font-sans">Changes apply starting with your next drop.</p>
-            {error && <p className="text-sm text-destructive font-sans">{error}</p>}
-            <button disabled={busy} onClick={save} className="mt-2 w-full rounded-full bg-primary text-primary-foreground py-3 font-sans font-bold disabled:opacity-50">
-              {busy ? "Saving..." : "Save changes"}
-            </button>
-            <button onClick={() => setView("menu")} className="text-sm text-zinc-500 font-sans">Back</button>
-          </div>
-        )}
-
-        {view === "delete" && (
-          <div className="flex flex-col gap-4">
-            <p className="text-sm text-zinc-300 font-sans leading-relaxed">
-              This permanently removes your profile, prompt answers, matches, and chats. You won't be in future drops. This can't be undone.
-            </p>
-            <label className="text-sm text-zinc-400 font-sans">Type DELETE to confirm
-              <input className={`${input} mt-1.5`} value={confirm} onChange={(e) => setConfirm(e.target.value)} autoCapitalize="characters" />
-            </label>
-            {error && <p className="text-sm text-destructive font-sans">{error}</p>}
-            <button disabled={busy || confirm !== "DELETE"} onClick={doDelete} className="w-full rounded-full bg-destructive text-destructive-foreground py-3 font-sans font-bold disabled:opacity-40">
-              {busy ? "Deleting..." : "Delete my account"}
-            </button>
-            <button onClick={() => setView("menu")} className="text-sm text-zinc-500 font-sans">Cancel</button>
-          </div>
-        )}
+    <Sheet title="Account" onClose={close}>
+      <div className="divide-y divide-zinc-900">
+        <button className={row} onClick={() => setView("edit")}><Pencil className="w-4 h-4 text-zinc-400" />Edit profile<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>
+        <button className={row} onClick={() => setView("help")}><LifeBuoy className="w-4 h-4 text-zinc-400" />Help & support<ChevronRight className="ml-auto w-4 h-4 text-zinc-600" /></button>
+        <button className={row} onClick={() => supabase.auth.signOut()}><LogOut className="w-4 h-4 text-zinc-400" />Sign out</button>
+        <button className={`${row} text-destructive`} onClick={() => setView("delete")}><Trash2 className="w-4 h-4" />Delete account</button>
       </div>
-    </div>
+    </Sheet>
   );
 }

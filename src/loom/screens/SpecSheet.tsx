@@ -6,7 +6,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { embedBaseline } from "@/lib/matching.functions";
 import { supabase } from "@/integrations/supabase/client";
 
-const COMMON_MAJORS = [
+export const COMMON_MAJORS = [
   "Accounting", "Aeronautics & Astronautics", "Anthropology", "Applied Mathematics", "Architecture",
   "Art", "Biochemistry", "Bioengineering", "Biology", "Business Administration", "Chemical Engineering",
   "Chemistry", "Civil Engineering", "Communication", "Computer Engineering", "Computer Science",
@@ -19,7 +19,7 @@ const COMMON_MAJORS = [
   "Undeclared",
 ];
 
-const HOBBY_SUGGESTIONS = [
+export const HOBBY_SUGGESTIONS = [
   "Coffee", "Concerts", "Thrifting", "Hiking", "Matcha", "Reading", "Movies", "Baking", "Travel",
   "Gym", "Cooking", "Music", "Art", "Running", "Yoga", "Photography", "Gaming", "Anime", "Skiing",
   "Basketball", "Soccer", "Volleyball", "Tennis", "Bouldering",
