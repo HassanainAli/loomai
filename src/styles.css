@@ -329,3 +329,9 @@ body.kb-open [data-guest-bar] { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .nn-nebula-cloud, .nn-dust { animation: none; }
 }
+
+/* Hide native scrollbars app-wide; scrolling still works via touch, wheel, trackpad */
+@layer base {
+  * { scrollbar-width: none; -ms-overflow-style: none; }
+  *::-webkit-scrollbar { display: none; width: 0; height: 0; }
+}
