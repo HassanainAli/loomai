@@ -20,6 +20,7 @@ import { supabase as sb } from "@/integrations/supabase/client";
 import { CURRENT_USER_SPEC, MATCHES, rowToMatch, type MatchRow } from "@/loom/types";
 import { GUEST_MODE_ENABLED, ReviewerBar } from "@/loom/guest/GuestMode"; // GUEST MODE
 import { landingScreen } from "@/loom/flow";
+import { notifyMutualGreenlight } from "@/lib/match-notify.functions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -275,6 +276,7 @@ function Index() {
             const row = await setMatchStatus(activeMatch, "greenlit");
             if (!row || row.expired) return;
             if (row.status === "mutual" && row.thread_id) {
+              notifyMutualGreenlight({ data: { matchId: activeMatch.matchId! } }).catch((e) => console.error("[notify]", e));
               setActiveMatch({ ...activeMatch, status: "mutual", threadId: row.thread_id });
               setScreen("focus");
             } else {
