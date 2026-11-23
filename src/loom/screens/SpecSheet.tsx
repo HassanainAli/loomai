@@ -197,7 +197,7 @@ export function SpecSheet({
 
       {/* Matching Preferences */}
       <div className="px-5 space-y-4">
-      <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5">
+      <section className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-zinc-900/60 to-zinc-950/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] p-5">
         <div className="flex items-start justify-between gap-3 mb-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
             Matching Preferences
@@ -227,7 +227,7 @@ export function SpecSheet({
                       className={`rounded-full border py-2 text-xs font-bold transition-colors ${
                         on
                           ? "border-[#FF2BD6] bg-[#FF2BD6]/10 text-foreground"
-                          : "border-zinc-800 bg-zinc-900/50 text-zinc-400 hover:border-zinc-600"
+                          : "border-white/[0.06] bg-zinc-900/80 text-zinc-300 hover:border-zinc-500"
                       }`}
                     >
                       {o}
@@ -241,7 +241,7 @@ export function SpecSheet({
       </section>
 
       {/* Public Profile */}
-      <section className="rounded-2xl border border-zinc-800 bg-zinc-950/80 p-5">
+      <section className="rounded-2xl border border-white/[0.08] bg-gradient-to-b from-zinc-900/60 to-zinc-950/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] p-5">
         <div className="flex items-start justify-between gap-3 mb-1">
           <p className="text-[10px] font-bold uppercase tracking-widest text-foreground">
             Public Profile
@@ -261,7 +261,7 @@ export function SpecSheet({
                 required
                 value={userSpec.campus}
                 onChange={(e) => onUpdateUserSpec({ campus: e.target.value })}
-                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
+                className={`w-full appearance-none bg-zinc-950/80 border border-white/[0.08] rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${
                   userSpec.campus ? "" : "opacity-50"
                 }`}
               >
@@ -285,7 +285,7 @@ export function SpecSheet({
               <select
                 value={userSpec.classYear}
                 onChange={(e) => onUpdateUserSpec({ classYear: e.target.value })}
-                className={`w-full appearance-none bg-black border border-zinc-800 rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${userSpec.classYear ? "" : "opacity-50"}`}
+                className={`w-full appearance-none bg-zinc-950/80 border border-white/[0.08] rounded-lg pl-3 pr-8 py-2.5 truncate text-sm text-foreground focus:outline-none focus:border-[#FACC15] transition-all ${userSpec.classYear ? "" : "opacity-50"}`}
               >
                 <option value="" disabled>
                   Select year
@@ -313,7 +313,7 @@ export function SpecSheet({
               value={userSpec.major}
               onChange={(e) => onUpdateUserSpec({ major: e.target.value })}
               placeholder="e.g. Informatics"
-              className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-all"
+              className="w-full bg-zinc-950/80 border border-white/[0.08] rounded-lg px-3 py-2.5 text-sm text-foreground placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] transition-all"
             />
             <datalist id="major-suggestions">
               {COMMON_MAJORS.map((m) => (
@@ -348,7 +348,7 @@ export function SpecSheet({
                   }
                 }}
                 placeholder={userSpec.hobbies.length >= MAX_HOBBIES ? `${MAX_HOBBIES}/${MAX_HOBBIES} added` : "e.g. Coffee"}
-                className="w-full bg-black border border-zinc-800 rounded-lg pl-3 pr-10 py-2.5 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] disabled:opacity-50 transition-all"
+                className="w-full bg-zinc-950/80 border border-white/[0.08] rounded-lg pl-3 pr-10 py-2.5 text-sm placeholder:text-zinc-600 focus:outline-none focus:border-[#FACC15] disabled:opacity-50 transition-all"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 font-mono text-[10px] text-zinc-500">
                 {MAX_HOBBY_LENGTH - hobbyDraft.length}
@@ -382,7 +382,7 @@ export function SpecSheet({
                       onUpdateUserSpec({ hobbies: [...userSpec.hobbies, c] });
                       setHobbyDraft("");
                     }}
-                    className="text-[11px] px-2.5 py-1 rounded-full border border-dashed border-zinc-700 text-zinc-400 hover:border-[#FF2BD6] hover:text-[#FF2BD6] hover:bg-[#FF2BD6]/10 transition-colors"
+                    className="text-[11px] px-2.5 py-1 rounded-full border border-zinc-700 text-zinc-300 hover:border-[#FF2BD6] hover:text-[#FF2BD6] hover:bg-[#FF2BD6]/10 transition-colors"
                   >
                     + {h}
                   </button>
@@ -424,13 +424,13 @@ export function SpecSheet({
                 <button
                   type="button"
                   onClick={() => fileInputs[i].current?.click()}
-                  className="w-full h-full rounded-2xl bg-zinc-900 border border-dashed border-zinc-700 flex items-center justify-center text-[#FF2BD6]/60 hover:border-[#FF2BD6]/70 hover:text-[#FF2BD6] transition-all overflow-hidden"
+                  className={`w-full h-full rounded-2xl flex items-center justify-center transition-all overflow-hidden ${i === 0 ? "bg-[#FF2BD6]/[0.06] border border-[#FF2BD6]/30 text-[#FF2BD6] hover:border-[#FF2BD6]/70" : "bg-zinc-900/80 border border-dashed border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300"}`}
                   aria-label={preview ? "Replace photo" : "Upload photo"}
                 >
                   {preview ? (
                     <img src={preview} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
                   ) : i === 0 ? (
-                    <span className="flex flex-col items-center gap-1"><Camera className="w-5 h-5" /><span className="text-[9px] font-bold uppercase tracking-wider">Main</span></span>
+                    <span className="flex flex-col items-center gap-1"><Camera className="w-5 h-5" /><span className="text-[9px] font-bold uppercase tracking-wider">Main photo</span></span>
                   ) : (
                     <Plus className="w-5 h-5" />
                   )}
