@@ -76,16 +76,16 @@ export function Profile({
   return (
     <div className="flex flex-col h-full">
       <div className={`flex-1 overflow-y-auto ${preview ? "pb-8" : "pb-32"}`}>
-        <div className="bg-[#FACC15] text-black px-5 pt-12 pb-4 flex items-start gap-3">
-          <button onClick={onBack} className="shrink-0 mt-0.5">
+        <div className={`bg-[#FACC15] text-black px-5 ${preview ? "pt-10 pb-3 items-center" : "pt-12 pb-4 items-start"} flex gap-3`}>
+          <button onClick={onBack} aria-label="Back" className={`shrink-0 ${preview ? "" : "mt-0.5"}`}>
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 min-w-0">
             <p className="text-[10px] font-black uppercase tracking-widest mb-1">
-              {preview ? "Your profile" : "Why we matched you"}
+              {preview ? "Public profile" : "Why we matched you"}
             </p>
             <p className="text-sm font-semibold leading-snug">
-              {match.whyMatched}
+              {preview ? "How your matches see you tonight" : match.whyMatched}
             </p>
           </div>
         </div>
@@ -111,6 +111,18 @@ export function Profile({
             <div className="rounded-2xl bg-gradient-to-br from-zinc-600 to-zinc-800" />
             <div className="rounded-2xl bg-gradient-to-br from-zinc-800 to-black" />
           </div>
+
+          {match.hobbies.length > 0 && (
+            <Section label="Interests">
+              <div className="flex flex-wrap gap-2">
+                {match.hobbies.map((h) => (
+                  <span key={h} className="text-xs font-bold px-3 py-1.5 rounded-full bg-secondary border border-border whitespace-nowrap">
+                    {h}
+                  </span>
+                ))}
+              </div>
+            </Section>
+          )}
 
           {!preview && <Section label="Today's prompt · their answer">
             <p className="text-2xl font-black italic leading-snug tracking-tight">
@@ -138,23 +150,12 @@ export function Profile({
             </Section>
           )}
 
-          {(match.matchId || preview) && match.pace && (
+          {match.pace && (
             <Section label="Hill to die on">
               <p className="text-sm leading-relaxed">{match.pace}</p>
             </Section>
           )}
 
-          {match.hobbies.length > 0 && (
-            <Section label="Interests">
-              <div className="flex flex-wrap gap-2">
-                {match.hobbies.map((h) => (
-                  <span key={h} className="text-xs font-bold px-3 py-1.5 rounded-full bg-secondary border border-border whitespace-nowrap">
-                    {h}
-                  </span>
-                ))}
-              </div>
-            </Section>
-          )}
 
           {/* Technical Specs Footer (sample matches only) */}
           {!match.matchId && !preview && <div className="pt-2">

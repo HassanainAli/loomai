@@ -120,7 +120,7 @@ export const MATCHES: Match[] = [
     major: "Junior · Architecture",
     location: "UW Seattle",
     intention: "Intentional dating, open to seeing where it goes",
-    hobbies: ["Pottery", "Trail running", "Vinyl"],
+    hobbies: ["Coffee", "Thrifting", "Pottery"],
     whyMatched:
       "You both strongly value structured routines and selected 'The Mirror' for pacing.",
     dailyAnswer:
@@ -129,7 +129,7 @@ export const MATCHES: Match[] = [
       "I sit with it for a day, then I bring it up directly. I hate when things fester. Calm but unflinching.",
     sundayAnswer:
       "Slow morning with coffee and a book, a long walk, then cooking something elaborate for dinner. No phone after 7.",
-    pace: "Early riser, structured weekdays, slow Sundays. Phone off after 7 PM.",
+    pace: "Pineapple belongs on pizza. Sweet and salty is the whole point.",
   },
   {
     id: "m2",
@@ -139,16 +139,16 @@ export const MATCHES: Match[] = [
     major: "Senior · Computer Science",
     location: "UW Bothell",
     intention: "Committed, long-term relationship",
-    hobbies: ["Bouldering", "Film cameras", "Cooking"],
+    hobbies: ["Concerts", "Hiking", "Cooking"],
     whyMatched:
-      "Your conflict styles are highly compatible — both prefer direct, low-drama conversation within 24 hours.",
+      "Your conflict styles are highly compatible: both prefer direct, low-drama conversation within 24 hours.",
     dailyAnswer:
       "Group trips of more than 4 people should require a written constitution. Otherwise it's chaos.",
     conflictAnswer:
       "Direct conversation, same day if possible. I'd rather have one uncomfortable hour than a week of weirdness.",
     sundayAnswer:
       "Gym early, then a long bike ride. Afternoon at the bookstore, evening cooking with friends. Asleep by 11.",
-    pace: "Early gym, deep work blocks, social evenings. Asleep by 11 sharp.",
+    pace: "The Ave has better food than anywhere downtown. I will not be taking questions.",
   },
 ];
 // Parses 5'10", 5' 10, 5ft 10in, 70 or 70in into inches. Returns null if unreadable.

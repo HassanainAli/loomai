@@ -10,6 +10,7 @@ import { Onboard2 } from "@/loom/screens/Onboard2";
 import { Onboard3 } from "@/loom/screens/Onboard3";
 import { SpecSheet } from "@/loom/screens/SpecSheet";
 import { DailyGate } from "@/loom/screens/DailyGate";
+import { guestProfile } from "@/loom/guest/mockProfile"; // GUEST MODE
 import { Anticipation } from "@/loom/screens/Anticipation";
 import { Queue } from "@/loom/screens/Queue";
 import { Profile } from "@/loom/screens/Profile";
@@ -222,7 +223,7 @@ function Index() {
         <DailyGate
           isGuest={guest} // GUEST MODE
           userId={userId}
-          displayName={displayName}
+          displayName={guest ? guestProfile.name /* GUEST MODE */ : displayName}
           passStreak={passStreak}
           onSubmit={() => setScreen("anticipation")}
           onRecalibrate={(reason) => {
