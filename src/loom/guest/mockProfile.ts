@@ -4,7 +4,7 @@ import { SEED_PROMPTS } from "../screens/Onboard2";
 import { ELI_SAMPLE, type Match } from "../types";
 
 export const guestProfile = {
-  name: ELI_SAMPLE.name, age: ELI_SAMPLE.age, email: "eli.guest@uw.edu",
+  name: "Alex", age: ELI_SAMPLE.age, email: "alex.guest@uw.edu",
   gender: "Man", seeking: "Women", campus: ELI_SAMPLE.location, classYear: "Senior", major: "Computer Science",
   hobbies: [...ELI_SAMPLE.hobbies],
   intention: "committed" as "committed" | "intentional",

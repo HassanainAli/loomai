@@ -21,4 +21,4 @@
 
 - Match cards, self-preview, and guest cards use the same Profile renderer and public-field order, including saved daily answers; only partner comparisons, alignment, and actions differ, preventing demo and live layout drift.
 
-- Guest account defaults and the sample match derive from the same fixture; guest edits use a separate mutable copy so preview updates cannot overwrite the sample card.
+- Guest account public defaults derive from the shared sample fixture with a separate identity; guest edits use a mutable copy so preview updates cannot overwrite either sample match.

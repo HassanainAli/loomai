@@ -112,7 +112,7 @@ export const CURRENT_USER_SPEC: UserSpec = {
   hobbies: [],
 };
 
-// GUEST MODE: one UW sample match, never used for signed-in matching.
+// GUEST MODE: UW sample matches, never used for signed-in matching.
 export const GUEST_PROMPT = "What is a completely harmless hill you are fully prepared to die on?";
 
 export const ELI_SAMPLE: Match = {
@@ -134,7 +134,26 @@ export const ELI_SAMPLE: Match = {
       "Coffee on the Ave, a long walk through the Arboretum, then browsing books at the University Book Store. Dinner with friends to end the day.",
     pace: "The Ave has better food than anywhere downtown. I will not be taking questions.",
 };
-export const MATCHES: Match[] = [ELI_SAMPLE];
+export const MAYA_SAMPLE: Match = {
+  id: "m1",
+  name: "Maya",
+  status: "pending",
+  age: 21,
+  major: "Junior · Architecture",
+  location: "UW Seattle",
+  intention: "Intentional dating, open to seeing where it goes",
+  hobbies: ["Thrifting", "Concerts", "Pottery"],
+  whyMatched: "",
+  promptText: GUEST_PROMPT,
+  dailyAnswer:
+    "Rain doesn't cancel a walk through campus. It just means we stop for hot chocolate on the Ave afterward.",
+  conflictAnswer:
+    "I need a little time to sort out what I'm feeling, then I want to talk in person. Tell me what's bothering you, not what you think I meant.",
+  sundayAnswer:
+    "A slow coffee, a thrift-store browse with a friend, then sketching by Portage Bay. I'll make dinner if you pick the playlist.",
+  pace: "The cherry blossoms are worth the crowds. You can complain about the photos after we take ours.",
+};
+export const MATCHES: Match[] = [MAYA_SAMPLE, ELI_SAMPLE];
 // Parses 5'10", 5' 10, 5ft 10in, 70 or 70in into inches. Returns null if unreadable.
 export function parseHeightInches(raw: string): number | null {
   const t = raw.trim().toLowerCase();

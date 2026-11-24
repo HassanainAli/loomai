@@ -77,7 +77,7 @@ export function Profile({
   return (
     <div className="flex flex-col h-full">
       <div className={`flex-1 overflow-y-auto ${preview ? "pb-8" : "pb-32"}`}>
-        <div className="flex items-center gap-3 px-5 pt-10 pb-3 border-b border-border">
+        <div className="flex items-center gap-3 border-b border-border">
           <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back" className="shrink-0 text-foreground hover:bg-secondary">
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -118,7 +118,7 @@ export function Profile({
             </Section>
           )}
 
-          {match.dailyAnswer && <Section label={preview ? "Today's prompt · your answer" : "Today's prompt · their answer"}>
+          {match.dailyAnswer && <Section label="Today's prompt">
             {match.promptText && <p className="text-sm text-muted-foreground leading-relaxed mb-3">{match.promptText}</p>}
             <p className="text-2xl font-black italic leading-snug break-words">
               "{match.dailyAnswer}"
