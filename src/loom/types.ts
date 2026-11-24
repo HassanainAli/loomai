@@ -112,45 +112,29 @@ export const CURRENT_USER_SPEC: UserSpec = {
   hobbies: [],
 };
 
-export const MATCHES: Match[] = [
-  {
-    id: "m1",
-    name: "Maya",
-    age: 21,
-    major: "Junior · Architecture",
-    location: "UW Seattle",
-    intention: "Intentional dating, open to seeing where it goes",
-    hobbies: ["Coffee", "Thrifting", "Pottery"],
-    whyMatched:
-      "You both strongly value structured routines and selected 'The Mirror' for pacing.",
-    dailyAnswer:
-      "Brunch is a scam. It's just expensive breakfast you waited two hours for. Make eggs at home.",
-    conflictAnswer:
-      "I sit with it for a day, then I bring it up directly. I hate when things fester. Calm but unflinching.",
-    sundayAnswer:
-      "Slow morning with coffee and a book, a long walk, then cooking something elaborate for dinner. No phone after 7.",
-    pace: "Pineapple belongs on pizza. Sweet and salty is the whole point.",
-  },
-  {
+// GUEST MODE: one UW sample match, never used for signed-in matching.
+export const GUEST_PROMPT = "What is a completely harmless hill you are fully prepared to die on?";
+
+export const ELI_SAMPLE: Match = {
     id: "m2",
     name: "Eli",
     status: "pending",
     age: 22,
     major: "Senior · Computer Science",
-    location: "UW Bothell",
+    location: "UW Seattle",
     intention: "Committed, long-term relationship",
-    hobbies: ["Concerts", "Hiking", "Cooking"],
-    whyMatched:
-      "Your conflict styles are highly compatible: both prefer direct, low-drama conversation within 24 hours.",
+    hobbies: ["Coffee", "Hiking", "Photography"],
+    whyMatched: "",
+    promptText: GUEST_PROMPT,
     dailyAnswer:
-      "Group trips of more than 4 people should require a written constitution. Otherwise it's chaos.",
+      "Suzzallo's reading room is top-tier, but typing on a mechanical keyboard there should be a misdemeanor.",
     conflictAnswer:
       "Direct conversation, same day if possible. I'd rather have one uncomfortable hour than a week of weirdness.",
     sundayAnswer:
-      "Gym early, then a long bike ride. Afternoon at the bookstore, evening cooking with friends. Asleep by 11.",
+      "Coffee on the Ave, a long walk through the Arboretum, then browsing books at the University Book Store. Dinner with friends to end the day.",
     pace: "The Ave has better food than anywhere downtown. I will not be taking questions.",
-  },
-];
+};
+export const MATCHES: Match[] = [ELI_SAMPLE];
 // Parses 5'10", 5' 10, 5ft 10in, 70 or 70in into inches. Returns null if unreadable.
 export function parseHeightInches(raw: string): number | null {
   const t = raw.trim().toLowerCase();

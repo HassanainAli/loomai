@@ -19,6 +19,10 @@
  */
 
 @theme inline {
+  --color-alignment-gold: var(--alignment-gold);
+  --color-alignment-glass: var(--alignment-glass);
+  --color-alignment-magenta: var(--alignment-magenta);
+  --color-alignment-backdrop: var(--alignment-backdrop);
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-sm: calc(var(--radius) - 4px);
@@ -64,6 +68,13 @@
 }
 
 :root {
+  --alignment-gold: oklch(0.852 0.199 91.936);
+  --alignment-glass: oklch(0 0 0);
+  --alignment-magenta: oklch(0.65 0.29 328);
+  --alignment-backdrop: oklch(0.293 0.136 325.661);
+  --alignment-trigger-shadow: 0 0 24px -4px oklch(0.852 0.199 91.936 / 60%);
+  --alignment-trigger-hover-shadow: 0 0 36px -2px oklch(0.852 0.199 91.936 / 85%);
+  --alignment-dialog-shadow: 0 0 60px -10px oklch(0.667 0.295 322.15 / 70%);
   --radius: 0.625rem;
   /* Loom "Void" dark theme — applied globally (no light mode) */
   --background: oklch(0 0 0);
@@ -361,3 +372,9 @@ body.kb-open [data-guest-bar] { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .daily-typing-dot, .daily-prompt-reveal { animation: none; }
 }
+
+/* Original Neon Noir Alignment Spec treatment. */
+.alignment-trigger { box-shadow: var(--alignment-trigger-shadow); transition: box-shadow 160ms ease; }
+.alignment-trigger:hover { box-shadow: var(--alignment-trigger-hover-shadow); }
+.alignment-dialog { box-shadow: var(--alignment-dialog-shadow); }
+@media (prefers-reduced-motion: reduce) { .alignment-trigger { transition: none; } }

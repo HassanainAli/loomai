@@ -19,4 +19,6 @@
 - App emails use the managed email service through the server-only template helper, not application queues or generic browser send endpoints, because this project's sending and delivery tracking are platform-managed.
 - Keep `/lovable/*` email routes outside login redirects and request guards; each handler authenticates its own caller so managed previews remain reachable.
 
-- Match cards, self-preview, and guest cards use the same Profile renderer; only match-specific answers, alignment, and actions differ, preventing demo and live layout drift.
+- Match cards, self-preview, and guest cards use the same Profile renderer and public-field order, including saved daily answers; only partner comparisons, alignment, and actions differ, preventing demo and live layout drift.
+
+- Guest account defaults and the sample match derive from the same fixture; guest edits use a separate mutable copy so preview updates cannot overwrite the sample card.

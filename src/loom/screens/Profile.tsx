@@ -45,7 +45,7 @@ export function Profile({
     // GUEST MODE: show a sample spec instead of calling the engine.
     if (isGuest) {
       await new Promise((r) => setTimeout(r, 600));
-      setSpec(match.whyMatched);
+      setSpec("Both profiles prioritize intentional pacing and low-stimulus environments. High compatibility signal for quiet 1-on-1 campus walks.");
       setLoading(false);
       return;
     }
@@ -118,12 +118,12 @@ export function Profile({
             </Section>
           )}
 
-          {!preview && <Section label="Today's prompt · their answer">
+          {match.dailyAnswer && <Section label={preview ? "Today's prompt · your answer" : "Today's prompt · their answer"}>
             {match.promptText && <p className="text-sm text-muted-foreground leading-relaxed mb-3">{match.promptText}</p>}
             <p className="text-2xl font-black italic leading-snug break-words">
               "{match.dailyAnswer}"
             </p>
-            {match.myAnswer && (
+            {!preview && match.myAnswer && (
               <div className="mt-4 pt-4 border-t border-border">
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">
                   Your answer
@@ -155,7 +155,7 @@ export function Profile({
           {/* View Alignment Spec CTA */}
           {!preview && <Button variant="outline"
             onClick={handleViewAlignment}
-            className="w-full h-auto mt-2 rounded-lg border-primary bg-background px-5 py-4 text-primary font-bold hover:bg-primary/10 hover:text-primary"
+            className="alignment-trigger w-full h-auto mt-2 rounded-2xl border-2 border-alignment-gold bg-alignment-glass/40 px-5 py-4 text-alignment-gold font-bold text-sm uppercase hover:bg-alignment-glass/40 hover:text-alignment-gold"
           >
             <Sparkles className="w-4 h-4" />
             View Alignment Spec
@@ -199,20 +199,20 @@ export function Profile({
           onClick={() => setOpen(false)}
         >
           {/* Magenta blur backdrop */}
-          <div className="absolute inset-0 backdrop-blur-2xl bg-background/80" />
+          <div className="absolute inset-0 backdrop-blur-2xl bg-alignment-backdrop/30" />
           <div role="dialog" aria-modal="true" aria-label="Alignment Spec"
-            className="relative w-full max-w-sm rounded-lg border border-primary/40 bg-popover p-6 max-h-full overflow-y-auto"
+            className="alignment-dialog relative w-full max-w-sm rounded-3xl border border-alignment-gold/40 bg-alignment-glass/70 backdrop-blur-xl p-6 max-h-full overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+              <p className="text-[10px] font-black uppercase tracking-widest text-alignment-gold">
                 {userSpec.name.trim()
                   ? `${userSpec.name.trim()}'s Alignment Spec`
                   : "Alignment Spec"}
               </p>
               <Button variant="ghost" size="icon"
                 onClick={() => setOpen(false)}
-                className="text-muted-foreground hover:text-white transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -221,7 +221,7 @@ export function Profile({
 
             {loading && (
               <div className="flex items-center gap-3 text-foreground/80 py-6">
-                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                <Loader2 className="w-4 h-4 animate-spin text-alignment-gold" />
                 <span className="text-sm font-mono tracking-wider">Thinking…</span>
               </div>
             )}
@@ -235,7 +235,7 @@ export function Profile({
                 <p className="text-lg font-black text-foreground mb-1">Why you matched</p>
                 {diag?.unlocked && <p className="text-sm text-foreground/80 leading-relaxed mb-3">{match.whyMatched}</p>}
                 {match.similarity !== undefined && (
-                  <p className="mt-1 mb-4 text-3xl font-black text-primary">{match.similarity}% aligned</p>
+                  <p className="mt-1 mb-4 text-3xl font-black text-alignment-gold">{match.similarity}% aligned</p>
                 )}
                 <div className={`space-y-3 ${diag?.unlocked ? "" : "blur-sm select-none"}`} aria-hidden={!diag?.unlocked}>
                   {[
@@ -249,7 +249,7 @@ export function Profile({
                         <span>{v == null ? "Not available" : `${Math.round(Number(v) * 100)}%`}</span>
                       </div>
                       <div className="h-1.5 rounded-full bg-secondary">
-                        <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, Number(v ?? 0) * 100))}%` }} />
+                        <div className="h-full rounded-full bg-alignment-magenta" style={{ width: `${Math.max(0, Math.min(100, Number(v ?? 0) * 100))}%` }} />
                       </div>
                     </div>
                   ))}
@@ -263,17 +263,14 @@ export function Profile({
             )}
 
             {!loading && !error && spec && (
-              <div className="space-y-3">
-                <h3 className="text-lg font-black">Why you matched</h3>
-                <p className="text-base text-foreground leading-relaxed font-medium">{spec}</p>
-              </div>
+              <p className="text-base text-foreground leading-relaxed font-medium">{spec}</p>
             )}
 
             <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
               <p className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
                 {match.matchId ? (diag?.unlocked ? "Loom+ · Unlocked" : "Loom+ · Locked") : "Guest preview"}
               </p>
-              <p className="text-[9px] font-mono uppercase tracking-widest text-primary">
+              <p className="text-[9px] font-mono uppercase tracking-widest text-alignment-gold">
                 {match.name}
               </p>
             </div>

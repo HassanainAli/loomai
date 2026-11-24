@@ -1,19 +1,15 @@
 // GUEST MODE: dummy account used by the account menu, preview and edit screens.
 // Delete with the rest of src/loom/guest/ before launch.
 import { SEED_PROMPTS } from "../screens/Onboard2";
-import type { Match } from "../types";
+import { ELI_SAMPLE, type Match } from "../types";
 
 export const guestProfile = {
-  name: "Alex", age: 21, email: "alex.guest@uw.edu",
-  gender: "Man", seeking: "Women", campus: "UW Seattle", classYear: "Junior", major: "Informatics",
-  hobbies: ["Coffee", "Concerts", "Hiking"],
-  intention: "intentional" as "committed" | "intentional",
+  name: ELI_SAMPLE.name, age: ELI_SAMPLE.age, email: "eli.guest@uw.edu",
+  gender: "Man", seeking: "Women", campus: ELI_SAMPLE.location, classYear: "Senior", major: "Computer Science",
+  hobbies: [...ELI_SAMPLE.hobbies],
+  intention: "committed" as "committed" | "intentional",
   balance: "mirror" as "mirror" | "counterweight",
-  seeds: [
-    "I take a beat to cool off, then I bring it up directly. I'd rather talk it out than let it sit.",
-    "Farmers market in the morning, a long walk around Green Lake, then cooking something new at night.",
-    "Pineapple belongs on pizza and I will defend it to anyone who asks.",
-  ],
+  seeds: [ELI_SAMPLE.conflictAnswer, ELI_SAMPLE.sundayAnswer, ELI_SAMPLE.pace],
 };
 
 export function guestCard(): Match {
@@ -21,8 +17,9 @@ export function guestCard(): Match {
   return {
     id: "me", name: g.name, age: g.age, major: [g.classYear, g.major].filter(Boolean).join(" · "),
     location: g.campus,
-    intention: g.intention === "committed" ? "Long-term relationship" : "Dating, open to seeing where it goes",
-    hobbies: g.hobbies, whyMatched: "", dailyAnswer: "",
+    intention: g.intention === "committed" ? "Committed, long-term relationship" : "Intentional dating, open to seeing where it goes",
+    hobbies: [...g.hobbies], whyMatched: "", promptText: ELI_SAMPLE.promptText ?? "",
+    dailyAnswer: ELI_SAMPLE.dailyAnswer,
     conflictAnswer: g.seeds[0], sundayAnswer: g.seeds[1], pace: g.seeds[2],
   };
 }

@@ -55,15 +55,22 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec,
     if (!open || !userId) return;
     let off = false;
     (async () => {
-      const [{ data: u }, { data: p }, { data: m }] = await Promise.all([
+      const [{ data: u }, { data: p }, { data: m }, { data: prompts }] = await Promise.all([
         supabase.auth.getUser(),
         (supabase as any).from("profiles").select("display_name, campus_hub, major, class_year, hobbies, seed_prompts").eq("id", userId).maybeSingle(),
         (supabase as any).from("matching_preferences").select("intention").eq("user_id", userId).limit(1).maybeSingle(),
+        (supabase as any).rpc("get_current_prompt"),
       ]);
+      const prompt = Array.isArray(prompts) ? prompts[0] : null;
+      const response = prompt?.drop_date
+        ? await (supabase as any).from("prompt_responses")
+          .select("response_text").eq("user_id", userId).eq("drop_date", prompt.drop_date)
+          .order("created_at", { ascending: false }).limit(1).maybeSingle()
+        : null;
       if (off) return;
       const saved: any[] = Array.isArray(p?.seed_prompts) ? p.seed_prompts : [];
       const ans = SEED_PROMPTS.map((q, i) => (saved.find((x) => x?.q === q)?.a ?? saved[i]?.a ?? "") as string);
-      const intention = m?.intention === "committed" ? "Long-term relationship" : m?.intention === "intentional" ? "Dating, open to seeing where it goes" : "";
+      const intention = m?.intention === "committed" ? "Committed, long-term relationship" : m?.intention === "intentional" ? "Intentional dating, open to seeing where it goes" : "";
       setMe({
         id: "me",
         name: p?.display_name || userSpec.name || "You",
@@ -73,7 +80,8 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec,
         intention,
         hobbies: (Array.isArray(p?.hobbies) ? p.hobbies : []).map(capFirst),
         whyMatched: "This is how your card looks to tonight's matches.",
-        dailyAnswer: "",
+        dailyAnswer: response?.data?.response_text ?? "",
+        promptText: prompt?.prompt_text ?? "",
         conflictAnswer: ans[0], sundayAnswer: ans[1], pace: ans[2],
       });
     })();
