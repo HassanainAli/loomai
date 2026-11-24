@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Lock } from "lucide-react";
+import { Nebula } from "../Nebula";
 import { secondsUntilPacific8pm, showSkipToDrop } from "../flow";
 
 export function Anticipation({ onDrop, isGuest = false }: { onDrop: () => void; isGuest?: boolean }) {
@@ -30,6 +31,7 @@ export function Anticipation({ onDrop, isGuest = false }: { onDrop: () => void; 
 
   return (
     <div className="relative flex flex-col h-full p-8 pt-14 overflow-y-auto">
+      <Nebula />
       <p className="relative text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
         Drop at 8:00 PM Pacific
       </p>
