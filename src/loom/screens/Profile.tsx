@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Match, CURRENT_USER_SPEC, UserSpec } from "../types";
 import { generateAlignmentSpec } from "@/lib/alignment.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 export function Profile({
   match,
@@ -44,7 +45,7 @@ export function Profile({
     // GUEST MODE: show a sample spec instead of calling the engine.
     if (isGuest) {
       await new Promise((r) => setTimeout(r, 600));
-      setSpec("Both profiles prioritize intentional pacing and low-stimulus environments. High compatibility signal for quiet 1-on-1 campus walks.");
+      setSpec(match.whyMatched);
       setLoading(false);
       return;
     }
@@ -76,23 +77,16 @@ export function Profile({
   return (
     <div className="flex flex-col h-full">
       <div className={`flex-1 overflow-y-auto ${preview ? "pb-8" : "pb-32"}`}>
-        <div className={`bg-[#FACC15] text-black px-5 ${preview ? "pt-10 pb-3 items-center" : "pt-12 pb-4 items-start"} flex gap-3`}>
-          <button onClick={onBack} aria-label="Back" className={`shrink-0 ${preview ? "" : "mt-0.5"}`}>
+        <div className="flex items-center gap-3 px-5 pt-10 pb-3 border-b border-border">
+          <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back" className="shrink-0 text-foreground hover:bg-secondary">
             <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-black uppercase tracking-widest mb-1">
-              {preview ? "Public profile" : "Why we matched you"}
-            </p>
-            <p className="text-sm font-semibold leading-snug">
-              {preview ? "How your matches see you tonight" : match.whyMatched}
-            </p>
-          </div>
+          </Button>
+          <p className="text-sm font-semibold text-muted-foreground">{preview ? "Public profile" : "Tonight's match"}</p>
         </div>
 
         <div className="p-6 space-y-6">
           <div>
-            <h2 className="text-4xl font-black tracking-[-0.015em]">
+            <h2 className="text-4xl font-black break-words">
               {match.name}{match.age ? `, ${match.age}` : ""}
             </h2>
             {match.major && (
@@ -107,9 +101,9 @@ export function Profile({
 
           {/* Photo Masonry: tall left, two stacked squares right */}
           <div className="grid grid-cols-2 grid-rows-2 gap-3 h-[420px]">
-            <div className="row-span-2 rounded-2xl bg-gradient-to-br from-zinc-700 to-zinc-900" />
-            <div className="rounded-2xl bg-gradient-to-br from-zinc-600 to-zinc-800" />
-            <div className="rounded-2xl bg-gradient-to-br from-zinc-800 to-black" />
+            <div className="row-span-2 rounded-lg bg-gradient-to-br from-muted to-secondary" />
+            <div className="rounded-lg bg-gradient-to-br from-border to-muted" />
+            <div className="rounded-lg bg-gradient-to-br from-secondary to-background" />
           </div>
 
           {match.hobbies.length > 0 && (
@@ -125,7 +119,8 @@ export function Profile({
           )}
 
           {!preview && <Section label="Today's prompt · their answer">
-            <p className="text-2xl font-black italic leading-snug tracking-tight">
+            {match.promptText && <p className="text-sm text-muted-foreground leading-relaxed mb-3">{match.promptText}</p>}
+            <p className="text-2xl font-black italic leading-snug break-words">
               "{match.dailyAnswer}"
             </p>
             {match.myAnswer && (
@@ -157,35 +152,14 @@ export function Profile({
           )}
 
 
-          {/* Technical Specs Footer (sample matches only) */}
-          {!match.matchId && !preview && <div className="pt-2">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">
-              Technical Specs
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {[
-                "STRATEGY: THE MIRROR",
-                "BATTERY: RECHARGE",
-                "DEALBREAKER: SMOKING",
-              ].map((spec) => (
-                <span
-                  key={spec}
-                  className="text-[10px] font-mono font-bold px-3 py-1.5 rounded-full border border-[#FACC15] text-[#FACC15] tracking-wider"
-                >
-                  {spec}
-                </span>
-              ))}
-            </div>
-          </div>}
-
           {/* View Alignment Spec CTA */}
-          {!preview && <button
+          {!preview && <Button variant="outline"
             onClick={handleViewAlignment}
-            className="w-full mt-2 relative rounded-2xl border-2 border-[#FACC15] bg-black/40 px-5 py-4 flex items-center justify-center gap-2 text-[#FACC15] font-bold text-sm tracking-wider uppercase shadow-[0_0_24px_-4px_rgba(250,204,21,0.6)] hover:shadow-[0_0_36px_-2px_rgba(250,204,21,0.85)] transition-shadow"
+            className="w-full h-auto mt-2 rounded-lg border-primary bg-background px-5 py-4 text-primary font-bold hover:bg-primary/10 hover:text-primary"
           >
             <Sparkles className="w-4 h-4" />
             View Alignment Spec
-          </button>}
+          </Button>}
         </div>
       </div>
 
@@ -225,42 +199,43 @@ export function Profile({
           onClick={() => setOpen(false)}
         >
           {/* Magenta blur backdrop */}
-          <div className="absolute inset-0 backdrop-blur-2xl bg-fuchsia-900/30" />
-          <div
-            className="relative w-full max-w-sm rounded-3xl border border-[#FACC15]/40 bg-black/70 backdrop-blur-xl p-6 shadow-[0_0_60px_-10px_rgba(217,70,239,0.7)]"
+          <div className="absolute inset-0 backdrop-blur-2xl bg-background/80" />
+          <div role="dialog" aria-modal="true" aria-label="Alignment Spec"
+            className="relative w-full max-w-sm rounded-lg border border-primary/40 bg-popover p-6 max-h-full overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[10px] font-black uppercase tracking-widest text-[#FACC15]">
+              <p className="text-[10px] font-black uppercase tracking-widest text-primary">
                 {userSpec.name.trim()
                   ? `${userSpec.name.trim()}'s Alignment Spec`
                   : "Alignment Spec"}
               </p>
-              <button
+              <Button variant="ghost" size="icon"
                 onClick={() => setOpen(false)}
-                className="text-zinc-400 hover:text-white transition-colors"
+                className="text-muted-foreground hover:text-white transition-colors"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
-              </button>
+              </Button>
             </div>
 
             {loading && (
-              <div className="flex items-center gap-3 text-zinc-300 py-6">
-                <Loader2 className="w-4 h-4 animate-spin text-[#FACC15]" />
+              <div className="flex items-center gap-3 text-foreground/80 py-6">
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
                 <span className="text-sm font-mono tracking-wider">Thinking…</span>
               </div>
             )}
 
             {!loading && error && (
-              <p className="text-sm text-rose-400 font-mono py-2">{error}</p>
+              <p className="text-sm text-destructive font-mono py-2">{error}</p>
             )}
 
             {match.matchId && (
               <div className="py-2">
-                <p className="text-lg font-black text-zinc-100 mb-1">Why you matched</p>
+                <p className="text-lg font-black text-foreground mb-1">Why you matched</p>
+                {diag?.unlocked && <p className="text-sm text-foreground/80 leading-relaxed mb-3">{match.whyMatched}</p>}
                 {match.similarity !== undefined && (
-                  <p className="mt-1 mb-4 text-3xl font-black text-[#FACC15]">{match.similarity}% aligned</p>
+                  <p className="mt-1 mb-4 text-3xl font-black text-primary">{match.similarity}% aligned</p>
                 )}
                 <div className={`space-y-3 ${diag?.unlocked ? "" : "blur-sm select-none"}`} aria-hidden={!diag?.unlocked}>
                   {[
@@ -269,18 +244,18 @@ export function Profile({
                     ["Style", diag?.unlocked ? diag.style_fit : 0.81],
                   ].map(([label, v]) => (
                     <div key={label as string}>
-                      <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                      <div className="flex justify-between text-xs text-muted-foreground mb-1">
                         <span>{label}</span>
-                        <span>{v == null ? "—" : `${Math.round(Number(v) * 100)}%`}</span>
+                        <span>{v == null ? "Not available" : `${Math.round(Number(v) * 100)}%`}</span>
                       </div>
-                      <div className="h-1.5 rounded-full bg-white/10">
-                        <div className="h-full rounded-full bg-[#FF2BD6]" style={{ width: `${Math.max(0, Math.min(100, Number(v ?? 0) * 100))}%` }} />
+                      <div className="h-1.5 rounded-full bg-secondary">
+                        <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(0, Math.min(100, Number(v ?? 0) * 100))}%` }} />
                       </div>
                     </div>
                   ))}
                 </div>
                 {!diag?.unlocked && (
-                  <p className="mt-4 text-sm text-zinc-400 leading-relaxed">
+                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
                     The full breakdown is part of Loom+. Coming soon.
                   </p>
                 )}
@@ -288,16 +263,17 @@ export function Profile({
             )}
 
             {!loading && !error && spec && (
-              <p className="text-base text-zinc-100 leading-relaxed font-medium">
-                {spec}
-              </p>
+              <div className="space-y-3">
+                <h3 className="text-lg font-black">Why you matched</h3>
+                <p className="text-base text-foreground leading-relaxed font-medium">{spec}</p>
+              </div>
             )}
 
-            <div className="mt-5 pt-4 border-t border-white/10 flex items-center justify-between">
-              <p className="text-[9px] font-mono uppercase tracking-widest text-zinc-500">
-                {match.matchId ? "Loom+ · Locked" : "Engine · Gemma 4 (31B)"}
+            <div className="mt-5 pt-4 border-t border-border flex items-center justify-between">
+              <p className="text-[9px] font-mono uppercase tracking-widest text-muted-foreground">
+                {match.matchId ? (diag?.unlocked ? "Loom+ · Unlocked" : "Loom+ · Locked") : "Guest preview"}
               </p>
-              <p className="text-[9px] font-mono uppercase tracking-widest text-fuchsia-400">
+              <p className="text-[9px] font-mono uppercase tracking-widest text-primary">
                 {match.name}
               </p>
             </div>

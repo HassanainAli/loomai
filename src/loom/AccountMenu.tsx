@@ -93,7 +93,7 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec,
   if (view === "preview" && me) {
     return (
       <div className="absolute inset-0 z-50 bg-background">
-        <Profile match={me} preview onBack={() => setView("menu")} />
+        <Profile match={me} preview isGuest={isGuest} onBack={() => setView("menu")} />
       </div>
     );
   }

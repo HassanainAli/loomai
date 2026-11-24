@@ -335,3 +335,21 @@ body.kb-open [data-guest-bar] { display: none; }
   * { scrollbar-width: none; -ms-overflow-style: none; }
   *::-webkit-scrollbar { display: none; width: 0; height: 0; }
 }
+
+/* The prompt keeps its final footprint while the typing dots are visible. */
+.daily-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted-foreground);
+  animation: daily-typing 1s ease-in-out infinite;
+}
+.daily-typing-dot:nth-child(2) { animation-delay: 150ms; }
+.daily-typing-dot:nth-child(3) { animation-delay: 300ms; }
+@keyframes daily-typing {
+  0%, 60%, 100% { opacity: 0.4; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .daily-typing-dot { animation: none; }
+}

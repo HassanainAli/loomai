@@ -18,3 +18,5 @@
 - The `loom.` wordmark is rendered only via `src/loom/Wordmark.tsx`; font families come from `--font-sans`/`--font-mono` tokens in styles.css (no inline fontFamily) so branding stays consistent.
 - App emails use the managed email service through the server-only template helper, not application queues or generic browser send endpoints, because this project's sending and delivery tracking are platform-managed.
 - Keep `/lovable/*` email routes outside login redirects and request guards; each handler authenticates its own caller so managed previews remain reachable.
+
+- Match cards, self-preview, and guest cards use the same Profile renderer; only match-specific answers, alignment, and actions differ, preventing demo and live layout drift.

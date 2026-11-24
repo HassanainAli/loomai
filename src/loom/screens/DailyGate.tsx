@@ -54,6 +54,11 @@ export function DailyGate({
 }) {
   const runEmbed = useServerFn(embedDailyAnswer);
   const [answer, setAnswer] = useState("");
+  const [typingDone, setTypingDone] = useState(false);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setTypingDone(true), 1000);
+    return () => window.clearTimeout(timer);
+  }, []);
   const [menuOpen, setMenuOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -220,10 +225,17 @@ export function DailyGate({
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="bg-secondary border border-border rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[85%]">
-          <p className="text-[15px] font-medium leading-snug text-white">
-            {todaysPrompt}
+        <div className="relative bg-secondary border border-border rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[85%] min-w-16 min-h-10" aria-live="polite" aria-busy={!typingDone || !todaysPrompt}>
+          <p className={`text-[15px] font-medium leading-snug text-foreground transition-opacity motion-reduce:transition-none ${typingDone && todaysPrompt ? "opacity-100" : "opacity-0"}`} aria-hidden={!typingDone || !todaysPrompt}>
+            {todaysPrompt || FALLBACK_PROMPT}
           </p>
+          {(!typingDone || !todaysPrompt) && (
+            <div role="status" aria-label="Typing" className="absolute inset-0 flex items-center gap-1.5 px-4">
+              <span className="daily-typing-dot" />
+              <span className="daily-typing-dot" />
+              <span className="daily-typing-dot" />
+            </div>
+          )}
         </div>
       </div>
 
