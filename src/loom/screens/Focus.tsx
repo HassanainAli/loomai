@@ -168,7 +168,7 @@ export function Focus({
   }
 
   if (showProfile) {
-    return <Profile match={match} hideActions onBack={() => setShowProfile(false)} />;
+    return <Profile match={match} hideActions isGuest={isGuest} backLabel="Back to chat" onBack={() => setShowProfile(false)} />;
   }
 
   return (

@@ -29,3 +29,4 @@
 - [x] Return from account preview and editing to the daily prompt without reopening the menu.
 - [x] Keep guest navigation visible and add direct public-profile and prefilled-editor destinations.
 - [x] Verify guest navigation, editing, save/readback, and shared profile headers at 390x844 and 1280x1800 (signed-in visual checks not included).
+- [x] Audit chat profile entry and guest jumps during greenlight confirmation; preserve guest context and clear transient overlays when navigating.

@@ -17,6 +17,7 @@ export function Profile({
   userSpec = CURRENT_USER_SPEC,
   isGuest = false, // GUEST MODE
   preview = false,
+  backLabel,
 }: {
   match: Match;
   onPass?: () => void;
@@ -29,6 +30,7 @@ export function Profile({
   isGuest?: boolean; // GUEST MODE
   /** Self-preview: show the card as matches see it, with no match actions. */
   preview?: boolean;
+  backLabel?: string;
 }) {
   const generate = useServerFn(generateAlignmentSpec);
   const [open, setOpen] = useState(false);
@@ -80,7 +82,7 @@ export function Profile({
         <div className="p-6 space-y-6">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back" title={preview ? "Back to today's prompt" : "Back to matches"} className="-ml-2 shrink-0 text-foreground hover:bg-secondary">
+              <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back" title={backLabel ?? (preview ? "Back to today's prompt" : "Back to matches")} className="-ml-2 shrink-0 text-foreground hover:bg-secondary">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
               <p className="text-sm font-semibold text-muted-foreground">{preview ? "Public profile" : "Tonight's match"}</p>

@@ -169,6 +169,7 @@ function Index() {
   // GUEST MODE (temporary): jump between screens without signing in.
   const guestJump = (destination: GuestScreen) => {
     const next = guestDestination(destination);
+    setGlSent(null);
     if ((next.screen === "profile" || next.screen === "focus") && !activeMatch) {
       const sample = MATCHES[0];
       if (sample) setActiveMatch(sample);
@@ -180,7 +181,7 @@ function Index() {
   const app = (
     <>
       {guest && (
-        <ReviewerBar screen={accountView === "preview" ? "publicProfile" : accountView === "edit" ? "editProfile" : screen} onJump={guestJump} onExit={() => { setAccountView(null); setGuest(false); setGuestMatches(MATCHES); setScreen("auth"); }} />
+        <ReviewerBar screen={accountView === "preview" ? "publicProfile" : accountView === "edit" ? "editProfile" : screen} onJump={guestJump} onExit={() => { setGlSent(null); setAccountView(null); setGuest(false); setGuestMatches(MATCHES); setScreen("auth"); }} />
       )}
       {screen === "auth" && (
         <Auth
