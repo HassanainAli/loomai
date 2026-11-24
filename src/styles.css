@@ -336,7 +336,15 @@ body.kb-open [data-guest-bar] { display: none; }
   *::-webkit-scrollbar { display: none; width: 0; height: 0; }
 }
 
-/* The prompt keeps its final footprint while the typing dots are visible. */
+/* Only the compact dots occupy space until the prompt is revealed. */
+.daily-prompt-reveal {
+  transform-origin: bottom left;
+  animation: daily-prompt-reveal 180ms ease-out both;
+}
+@keyframes daily-prompt-reveal {
+  from { opacity: 0; transform: translateY(3px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 .daily-typing-dot {
   width: 6px;
   height: 6px;
@@ -351,5 +359,5 @@ body.kb-open [data-guest-bar] { display: none; }
   30% { opacity: 1; transform: translateY(-3px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .daily-typing-dot { animation: none; }
+  .daily-typing-dot, .daily-prompt-reveal { animation: none; }
 }

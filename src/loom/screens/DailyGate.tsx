@@ -225,12 +225,15 @@ export function DailyGate({
             className="w-full h-full object-cover"
           />
         </div>
-        <div className="relative bg-secondary border border-border rounded-2xl rounded-bl-md px-4 py-2.5 max-w-[85%] min-w-16 min-h-10" aria-live="polite" aria-busy={!typingDone || !todaysPrompt}>
-          <p className={`text-[15px] font-medium leading-snug text-foreground transition-opacity motion-reduce:transition-none ${typingDone && todaysPrompt ? "opacity-100" : "opacity-0"}`} aria-hidden={!typingDone || !todaysPrompt}>
-            {todaysPrompt || FALLBACK_PROMPT}
-          </p>
-          {(!typingDone || !todaysPrompt) && (
-            <div role="status" aria-label="Typing" className="absolute inset-0 flex items-center gap-1.5 px-4">
+        <div className="min-w-0 max-w-[85%]" aria-live="polite" aria-busy={!typingDone || !todaysPrompt}>
+          {typingDone && todaysPrompt ? (
+            <div className="daily-prompt-reveal bg-secondary border border-border rounded-2xl rounded-bl-md px-4 py-2.5">
+              <p className="text-[15px] font-medium leading-snug text-foreground">
+                {todaysPrompt}
+              </p>
+            </div>
+          ) : (
+            <div role="status" aria-label="Typing" className="flex items-center justify-center gap-1.5 w-16 h-10 bg-secondary border border-border rounded-2xl rounded-bl-md">
               <span className="daily-typing-dot" />
               <span className="daily-typing-dot" />
               <span className="daily-typing-dot" />
