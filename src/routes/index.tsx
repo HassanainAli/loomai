@@ -19,6 +19,8 @@ import type { Match, OnboardingAnswers, Screen, UserSpec } from "@/loom/types";
 import { supabase as sb } from "@/integrations/supabase/client";
 import { CURRENT_USER_SPEC, MATCHES, rowToMatch, type MatchRow } from "@/loom/types";
 import { GUEST_MODE_ENABLED, ReviewerBar } from "@/loom/guest/GuestMode"; // GUEST MODE
+import { guestDestination, type GuestScreen } from "@/loom/guest/navigation"; // GUEST MODE
+import { AccountMenu, type AccountView } from "@/loom/AccountMenu";
 import { landingScreen } from "@/loom/flow";
 import { notifyMutualGreenlight } from "@/lib/match-notify.functions";
 
@@ -43,6 +45,7 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const [screen, setScreen] = useState<Screen>("auth");
+  const [accountView, setAccountView] = useState<AccountView | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
   const [activeMatch, setActiveMatch] = useState<Match | null>(null);
@@ -164,15 +167,20 @@ function Index() {
   }, []);
 
   // GUEST MODE (temporary): jump between screens without signing in.
-  const guestJump = (s: Screen) => {
-    if ((s === "profile" || s === "focus") && !activeMatch) setActiveMatch(MATCHES[0]);
-    setScreen(s);
+  const guestJump = (destination: GuestScreen) => {
+    const next = guestDestination(destination);
+    if ((next.screen === "profile" || next.screen === "focus") && !activeMatch) {
+      const sample = MATCHES[0];
+      if (sample) setActiveMatch(sample);
+    }
+    setAccountView(next.accountView);
+    setScreen(next.screen);
   };
 
   const app = (
     <>
       {guest && (
-        <ReviewerBar screen={screen} onJump={guestJump} onExit={() => { setGuest(false); setGuestMatches(MATCHES); setScreen("auth"); }} />
+        <ReviewerBar screen={accountView === "preview" ? "publicProfile" : accountView === "edit" ? "editProfile" : screen} onJump={guestJump} onExit={() => { setAccountView(null); setGuest(false); setGuestMatches(MATCHES); setScreen("auth"); }} />
       )}
       {screen === "auth" && (
         <Auth
@@ -225,6 +233,7 @@ function Index() {
           isGuest={guest} // GUEST MODE
           userId={userId}
           displayName={guest ? guestProfile.name /* GUEST MODE */ : displayName}
+          onOpenAccount={() => setAccountView("menu")}
           passStreak={passStreak}
           onSubmit={() => setScreen("anticipation")}
           onRecalibrate={(reason) => {
@@ -285,6 +294,9 @@ function Index() {
           }}
         />
       )}
+      <AccountMenu open={accountView !== null} view={accountView ?? "menu"} onViewChange={setAccountView}
+        onClose={() => { setAccountView(null); setScreen("dailyGate"); }}
+        isGuest={guest} userId={userId} userSpec={userSpec} onUpdateUserSpec={updateUserSpec} />
       {glSent && (
         <GreenLightSent onDone={() => { const next = glSent; setGlSent(null); next(); }} />
       )}

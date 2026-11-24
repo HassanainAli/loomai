@@ -4,7 +4,6 @@ import { UserSpec } from "../types";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { embedDailyAnswer } from "@/lib/matching.functions";
-import { AccountMenu } from "../AccountMenu";
 
 // Fallback shown only if the daily prompt can't be loaded.
 const FALLBACK_PROMPT = "What is a completely harmless hill you are fully prepared to die on?";
@@ -41,6 +40,7 @@ export function DailyGate({
   onUpdateUserSpec,
   userId,
   displayName,
+  onOpenAccount,
   isGuest = false, // GUEST MODE
 }: {
   isGuest?: boolean;
@@ -51,6 +51,7 @@ export function DailyGate({
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
   userId: string | null;
   displayName: string;
+  onOpenAccount: () => void;
 }) {
   const runEmbed = useServerFn(embedDailyAnswer);
   const [answer, setAnswer] = useState("");
@@ -59,7 +60,6 @@ export function DailyGate({
     const timer = window.setTimeout(() => setTypingDone(true), 1000);
     return () => window.clearTimeout(timer);
   }, []);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   // Keyboard handling: pin the screen to the visible area above the iOS keyboard.
@@ -203,18 +203,11 @@ export function DailyGate({
         <button
           type="button"
           aria-label="Menu"
-          onClick={() => setMenuOpen(true)}
+          onClick={onOpenAccount}
           className="shrink-0 -mr-1 -mt-1 p-2 text-zinc-500 hover:text-white"
         >
           <Menu className="w-5 h-5" strokeWidth={1.5} />
         </button>
-        <AccountMenu isGuest={isGuest}
-          open={menuOpen}
-          onClose={() => setMenuOpen(false)}
-          userId={userId}
-          userSpec={userSpec}
-          onUpdateUserSpec={onUpdateUserSpec}
-        />
       </div>
 
       <div className="flex items-end gap-2 px-8">

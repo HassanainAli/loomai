@@ -251,7 +251,7 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose, isGue
         </div>
       )}
 
-      <div className="shrink-0 px-5 pt-3 pb-6 border-t border-zinc-900 bg-background">
+      <div className={`shrink-0 px-5 pt-3 ${isGuest ? "pb-16" : "pb-6"} border-t border-zinc-900 bg-background`}>
         {error && <p className="text-sm text-destructive mb-2">{error}</p>}
         <button disabled={busy || loading} onClick={save} className="w-full rounded-full bg-primary text-primary-foreground py-3 font-bold disabled:opacity-50">
           {busy ? "Saving…" : "Save changes"}

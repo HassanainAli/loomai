@@ -22,3 +22,4 @@
 - Match cards, self-preview, and guest cards use the same Profile renderer and public-field order, including saved daily answers; only partner comparisons, alignment, and actions differ, preventing demo and live layout drift.
 
 - Guest account public defaults derive from the shared sample fixture with a separate identity; guest edits use a mutable copy so preview updates cannot overwrite either sample match.
+- Keep account overlay navigation in the root app state and the guest reviewer bar above it, so direct demo jumps and account back actions never reopen stale menus.

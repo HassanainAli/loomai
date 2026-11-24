@@ -76,16 +76,15 @@ export function Profile({
 
   return (
     <div className="flex flex-col h-full">
-      <div className={`flex-1 overflow-y-auto ${preview ? "pb-8" : "pb-32"}`}>
-        <div className="flex items-center gap-3 border-b border-border">
-          <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back" className="shrink-0 text-foreground hover:bg-secondary">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <p className="text-sm font-semibold text-muted-foreground">{preview ? "Public profile" : "Tonight's match"}</p>
-        </div>
-
+      <div className={`flex-1 overflow-y-auto ${preview ? (isGuest ? "pb-16" : "pb-8") : "pb-32"}`}>
         <div className="p-6 space-y-6">
           <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Button variant="ghost" size="icon" onClick={onBack} aria-label="Back" title={preview ? "Back to today's prompt" : "Back to matches"} className="-ml-2 shrink-0 text-foreground hover:bg-secondary">
+                <ArrowLeft className="w-5 h-5" />
+              </Button>
+              <p className="text-sm font-semibold text-muted-foreground">{preview ? "Public profile" : "Tonight's match"}</p>
+            </div>
             <h2 className="text-4xl font-black break-words">
               {match.name}{match.age ? `, ${match.age}` : ""}
             </h2>
@@ -169,14 +168,14 @@ export function Profile({
         </p>
       )}
       {hideActions && !preview && (
-        <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5">
+        <div className={`absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5 ${isGuest ? "pb-14" : ""}`}>
           <p className="text-xs text-muted-foreground text-center">
             Green light locked in. If it's mutual, you'll chat in Focus Mode.
           </p>
         </div>
       )}
       {!hideActions && !preview && (
-        <div className="absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5 flex gap-4">
+        <div className={`absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5 flex gap-4 ${isGuest ? "pb-14" : ""}`}>
           <button
             onClick={onPass}
             className="flex-1 bg-zinc-900 border-2 border-rose-900 text-rose-500 rounded-2xl py-4 flex items-center justify-center hover:border-rose-700 transition-colors"

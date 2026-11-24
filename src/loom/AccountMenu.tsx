@@ -12,7 +12,7 @@ import type { UserSpec } from "./types";
 
 export const SUPPORT_EMAIL = "support@tryloom.cc";
 
-type View = "menu" | "edit" | "help" | "delete" | "preview";
+export type AccountView = "menu" | "edit" | "help" | "delete" | "preview";
 
 const FAQ = [
   ["When do matches drop?", "Every night at 8:00 PM Pacific. Answer the day's prompt before then to be included."],
@@ -34,15 +34,16 @@ function Sheet({ title, onClose, children }: { title?: string; onClose: () => vo
   );
 }
 
-export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec, isGuest = false }: {
+export function AccountMenu({ open, view, onViewChange: setView, onClose, userId, userSpec, onUpdateUserSpec, isGuest = false }: {
   open: boolean;
+  view: AccountView;
+  onViewChange: (view: AccountView) => void;
   isGuest?: boolean; // GUEST MODE
   onClose: () => void;
   userId: string | null;
   userSpec: UserSpec;
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
 }) {
-  const [view, setView] = useState<View>("menu");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirm, setConfirm] = useState("");
@@ -89,19 +90,19 @@ export function AccountMenu({ open, onClose, userId, userSpec, onUpdateUserSpec,
   }, [open, userId, view, isGuest]);
 
   if (!open) return null;
-  const close = () => { setView("menu"); setError(null); setConfirm(""); onClose(); };
+  const close = () => { setError(null); setConfirm(""); onClose(); };
 
   if (view === "edit") {
     return (
       <EditProfile isGuest={isGuest} userId={userId} userSpec={userSpec} onUpdateUserSpec={onUpdateUserSpec}
-        onClose={() => setView("menu")} />
+        onClose={close} />
     );
   }
 
   if (view === "preview" && me) {
     return (
       <div className="absolute inset-0 z-50 bg-background">
-        <Profile match={me} preview isGuest={isGuest} onBack={() => setView("menu")} />
+        <Profile match={me} preview isGuest={isGuest} onBack={close} />
       </div>
     );
   }

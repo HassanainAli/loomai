@@ -23,3 +23,9 @@
 - [x] Remove spacing around the match back-button header and simplify the daily-prompt label in the shared live/preview renderer.
 - [x] Name the personal guest account Alex, keeping Maya and Eli as the two matches.
 - [x] Verify both restored matches and Alex's self-preview on mobile and desktop (live, preview, and guest use the same Profile renderer; signed-in visual testing is not included).
+
+# Profile navigation cleanup
+- [x] Place the back arrow within the shared profile content and remove the header divider.
+- [x] Return from account preview and editing to the daily prompt without reopening the menu.
+- [x] Keep guest navigation visible and add direct public-profile and prefilled-editor destinations.
+- [x] Verify guest navigation, editing, save/readback, and shared profile headers at 390x844 and 1280x1800 (signed-in visual checks not included).

@@ -1,17 +1,19 @@
 // TEMPORARY guest preview mode. To remove: delete this folder and the
 // lines marked "GUEST MODE" in src/routes/index.tsx and Auth.tsx.
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import type { Screen } from "../types";
+import type { GuestScreen } from "./navigation";
 
 export const GUEST_MODE_ENABLED = true;
 
-export const GUEST_SCREENS: { id: Screen; label: string }[] = [
+export const GUEST_SCREENS: { id: GuestScreen; label: string }[] = [
   { id: "auth", label: "Sign in" },
   { id: "onboard1", label: "Onboarding 1" },
   { id: "onboard2", label: "Onboarding 2" },
   { id: "onboard3", label: "Onboarding 3" },
   { id: "specSheet", label: "Spec sheet" },
   { id: "dailyGate", label: "Daily prompt" },
+  { id: "publicProfile", label: "Your public profile" },
+  { id: "editProfile", label: "Edit profile" },
   { id: "anticipation", label: "8pm drop" },
   { id: "queue", label: "Match queue" },
   { id: "profile", label: "Match profile" },
@@ -38,22 +40,22 @@ export function ReviewerBar({
   onJump,
   onExit,
 }: {
-  screen: Screen;
-  onJump: (s: Screen) => void;
+  screen: GuestScreen;
+  onJump: (s: GuestScreen) => void;
   onExit: () => void;
 }) {
   const idx = Math.max(0, GUEST_SCREENS.findIndex((s) => s.id === screen));
   const prev = GUEST_SCREENS[idx - 1];
   const next = GUEST_SCREENS[idx + 1];
   return (
-    <div data-guest-bar className="absolute left-1/2 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-50 -translate-x-1/2 flex items-center gap-1 rounded-full border border-white/15 bg-black/85 px-2 py-1 text-xs text-white shadow-lg backdrop-blur">
+    <div data-guest-bar className="absolute left-1/2 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] -translate-x-1/2 flex items-center gap-1 rounded-full border border-border bg-background/85 px-2 py-1 text-xs text-foreground shadow-lg backdrop-blur">
       <button aria-label="Previous screen" disabled={!prev} onClick={() => prev && onJump(prev.id)} className="p-1 disabled:opacity-30">
         <ChevronLeft size={14} />
       </button>
       <select
         aria-label="Jump to screen"
-        value={GUEST_SCREENS[idx].id}
-        onChange={(e) => onJump(e.target.value as Screen)}
+        value={GUEST_SCREENS[idx]?.id ?? "dailyGate"}
+        onChange={(e) => onJump(e.target.value as GuestScreen)}
         className="bg-transparent text-xs outline-none"
       >
         {GUEST_SCREENS.map((s) => (
