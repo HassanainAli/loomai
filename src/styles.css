@@ -380,6 +380,21 @@ body.kb-open [data-guest-bar] { display: none; }
 @media (prefers-reduced-motion: reduce) { .alignment-trigger { transition: none; } }
 
 /* Desktop landing: campus photo + liquid glass */
+.lp-hero { min-height: 700px; height: calc(100svh - 2rem); }
+.lp-photo-frame { container-type: size; }
+.lp-quad-landscape {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100cqh;
+  height: 100cqw;
+  max-width: none;
+  object-fit: cover;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.lp-auth-vignette {
+  background: linear-gradient(180deg, color-mix(in oklch, var(--background) 35%, transparent), color-mix(in oklch, var(--background) 78%, transparent) 40%, color-mix(in oklch, var(--background) 85%, transparent) 75%, var(--background));
+}
 .lp-quad { filter: saturate(1.1) contrast(1.05); }
 .lp-vignette {
   background:

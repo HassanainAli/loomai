@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Brand } from "../Shell";
 import { supabase } from "@/integrations/supabase/client";
+import quad from "@/assets/uw-quad-dusk.jpg.asset.json";
 
 type Mode = "signin" | "signup";
 
@@ -192,7 +193,11 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
       : email && password;
 
   return (
-    <div className="relative flex flex-col h-full bg-black text-white overflow-y-auto">
+    <div className="relative isolate flex flex-col h-full bg-background text-foreground overflow-y-auto">
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 lg:hidden">
+        <img src={quad.url} alt="" className="lp-quad h-full w-full object-cover" />
+        <div className="lp-auth-vignette absolute inset-0" />
+      </div>
       <style>{`
         @keyframes loom-shutter { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
         .loom-shutter { animation: loom-shutter 0.45s ease-out both; }
