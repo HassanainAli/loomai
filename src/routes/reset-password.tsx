@@ -23,7 +23,7 @@ export const Route = createFileRoute("/reset-password")({
 });
 
 const inputCls =
-  "w-full bg-transparent border-0 border-b border-white/30 text-base text-white placeholder:text-white/25 px-0 pt-3.5 pb-1.5 focus:outline-none focus:border-white";
+  "w-full bg-transparent border-0 border-b border-white/30 text-sm text-white placeholder:text-white/25 px-0 pt-3.5 pb-1.5 focus:outline-none focus:border-white";
 const cta = "bg-primary text-primary-foreground w-full py-3 rounded-full text-sm font-bold disabled:opacity-40";
 
 type Step = "checking" | "code" | "password" | "done";
