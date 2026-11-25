@@ -23,3 +23,4 @@
 
 - Guest account public defaults derive from the shared sample fixture with a separate identity; guest edits use a mutable copy so preview updates cannot overwrite either sample match.
 - Keep account overlay navigation in the root app state and the guest reviewer bar above it, so direct demo jumps and account back actions never reopen stale menus.
+- Keep guest main-journey and optional account navigation separate in the guest navigation module; restarting from Focus resets only demo match state, so repeated demos cannot alter live chat behavior.

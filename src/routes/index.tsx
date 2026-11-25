@@ -170,6 +170,12 @@ function Index() {
   const guestJump = (destination: GuestScreen) => {
     const next = guestDestination(destination);
     setGlSent(null);
+    if (screen === "focus" && destination === "dailyGate") {
+      setActiveMatch(null);
+      setGuestMatches(MATCHES);
+      setPassStreak(0);
+      setProfileNotice(null);
+    }
     if ((next.screen === "profile" || next.screen === "focus") && !activeMatch) {
       const sample = MATCHES[0];
       if (sample) setActiveMatch(sample);
@@ -307,6 +313,7 @@ function Index() {
           isGuest={guest /* GUEST MODE */}
           match={activeMatch}
           onEject={() => {
+            if (guest) { guestJump("dailyGate"); return; }
             setActiveMatch(null);
             // After a connection ends, go back to the daily rhythm (prompt or countdown).
             if (!guest && userId && loadForRef.current) loadForRef.current(userId);

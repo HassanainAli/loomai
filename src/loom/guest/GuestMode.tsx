@@ -1,24 +1,12 @@
 // TEMPORARY guest preview mode. To remove: delete this folder and the
 // lines marked "GUEST MODE" in src/routes/index.tsx and Auth.tsx.
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import type { GuestScreen } from "./navigation";
+import { Button } from "@/components/ui/button";
+import { GUEST_JOURNEY, GUEST_ACCOUNT_SCREENS, guestAdjacentScreen, type GuestScreen } from "./navigation";
 
 export const GUEST_MODE_ENABLED = true;
 
-export const GUEST_SCREENS: { id: GuestScreen; label: string }[] = [
-  { id: "auth", label: "Sign in" },
-  { id: "onboard1", label: "Onboarding 1" },
-  { id: "onboard2", label: "Onboarding 2" },
-  { id: "onboard3", label: "Onboarding 3" },
-  { id: "specSheet", label: "Spec sheet" },
-  { id: "dailyGate", label: "Daily prompt" },
-  { id: "publicProfile", label: "Your public profile" },
-  { id: "editProfile", label: "Edit profile" },
-  { id: "anticipation", label: "8pm drop" },
-  { id: "queue", label: "Match queue" },
-  { id: "profile", label: "Match profile" },
-  { id: "focus", label: "Focus chat" },
-];
+export const GUEST_SCREENS = [...GUEST_JOURNEY, ...GUEST_ACCOUNT_SCREENS];
 
 export function GuestEntryLink({ onClick }: { onClick: () => void }) {
   if (!GUEST_MODE_ENABLED) return null;
@@ -44,32 +32,36 @@ export function ReviewerBar({
   onJump: (s: GuestScreen) => void;
   onExit: () => void;
 }) {
-  const idx = Math.max(0, GUEST_SCREENS.findIndex((s) => s.id === screen));
-  const prev = GUEST_SCREENS[idx - 1];
-  const next = GUEST_SCREENS[idx + 1];
+  const prev = guestAdjacentScreen(screen, "previous");
+  const next = guestAdjacentScreen(screen, "next");
   return (
     <div data-guest-bar className="absolute left-1/2 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-[60] -translate-x-1/2 flex items-center gap-1 rounded-full border border-border bg-background/85 px-2 py-1 text-xs text-foreground shadow-lg backdrop-blur">
-      <button aria-label="Previous screen" disabled={!prev} onClick={() => prev && onJump(prev.id)} className="p-1 disabled:opacity-30">
+      <Button variant="ghost" aria-label="Previous screen" title="Previous screen" disabled={!prev} onClick={() => prev && onJump(prev)} className="h-auto p-1 disabled:opacity-30">
         <ChevronLeft size={14} />
-      </button>
+      </Button>
       <select
         aria-label="Jump to screen"
-        value={GUEST_SCREENS[idx]?.id ?? "dailyGate"}
+        value={screen}
         onChange={(e) => onJump(e.target.value as GuestScreen)}
-        className="bg-transparent text-xs outline-none"
+        className="min-w-0 max-w-[210px] bg-transparent text-xs outline-none"
       >
-        {GUEST_SCREENS.map((s) => (
-          <option key={s.id} value={s.id} className="bg-black">
-            Guest · {s.label}
-          </option>
-        ))}
+        <optgroup label="Main journey" className="bg-background">
+          {GUEST_JOURNEY.map((s) => (
+            <option key={s.id} value={s.id} className="bg-background">Guest · {s.label}</option>
+          ))}
+        </optgroup>
+        <optgroup label="Account menu (optional)" className="bg-background">
+          {GUEST_ACCOUNT_SCREENS.map((s) => (
+            <option key={s.id} value={s.id} className="bg-background">Guest · {s.label}</option>
+          ))}
+        </optgroup>
       </select>
-      <button aria-label="Next screen" disabled={!next} onClick={() => next && onJump(next.id)} className="p-1 disabled:opacity-30">
+      <Button variant="ghost" aria-label="Next screen" title={screen === "focus" ? "Back to Daily prompt" : "Next screen"} disabled={!next} onClick={() => next && onJump(next)} className="h-auto p-1 disabled:opacity-30">
         <ChevronRight size={14} />
-      </button>
-      <button aria-label="Exit guest preview" onClick={onExit} className="ml-1 p-1 text-white/60 hover:text-[#ff2bd6]">
+      </Button>
+      <Button variant="ghost" aria-label="Exit guest preview" title="Exit guest preview" onClick={onExit} className="ml-1 h-auto p-1 text-muted-foreground hover:text-primary">
         <X size={14} />
-      </button>
+      </Button>
     </div>
   );
 }

@@ -4,6 +4,11 @@
 - [x] Loom+ "Why you matched" locked breakdown.
 - [ ] Real end-to-end test with two non-admin student accounts (needs two real .edu signups).
 
+# Guest journey loop
+- [x] Use descriptive onboarding labels and separate optional account screens from main-journey arrows.
+- [x] Loop guest Focus chat and End connection back to Daily prompt, resetting demo matches only.
+- [x] Verify main journey, account-screen arrows, and chat-ending loop on mobile and desktop.
+
 
 # SCRUM-52: Profile card unification
 - [x] Share clean match and self-preview hierarchy without yellow banners or prototype specs.
