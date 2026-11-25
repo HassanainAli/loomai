@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 type Mode = "signin" | "signup";
 
 const inputCls =
-  "loom-input w-full bg-transparent border-0 border-b border-white/30 text-left text-sm text-white placeholder:text-white/25 px-0 pt-3.5 pb-1.5 focus:outline-none transition-all";
+  "loom-input w-full bg-transparent border-0 border-b border-white/15 text-left text-sm text-white placeholder:text-white/25 px-0 pt-3.5 pb-1.5 focus:outline-none transition-all";
 
 function formatDob(raw: string) {
   const d = raw.replace(/\D/g, "").slice(0, 8);
@@ -256,10 +256,10 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
           <Brand style={{ fontSize: "3.5rem", fontWeight: 900 }} className="mb-8 leading-none" />
 
           <div key={mode} className="loom-shutter w-full max-w-xs">
-            <h2 className="text-2xl font-black mb-1 text-center">
+            <h2 className="text-xl font-bold tracking-tight mb-1 text-left">
               {mode === "signup" ? "Join your campus" : "Welcome back"}
             </h2>
-            <p className="text-sm text-white/50 mb-6 text-center">
+            <p className="text-xs text-white/45 mb-6 text-left">
               {mode === "signup"
                 ? "Verified students only. Takes a minute."
                 : "Sign in with your university email."}
@@ -330,7 +330,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
               {error && <p className="text-xs pt-1 text-red-400 font-medium whitespace-pre-line">{error}</p>}
 
               {mode === "signup" && (
-                <p className="!mt-6 text-center text-xs leading-5 text-muted-foreground">
+                <p className="!mt-6 text-left text-[11px] leading-relaxed text-white/40">
                   By joining, you agree to our{" "}
                   <Link to="/terms" className="text-foreground underline underline-offset-4 hover:text-primary">Terms of Service</Link>
                   {" and "}
@@ -341,7 +341,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
               <button
                 type="submit"
                 disabled={!canSubmit || busy}
-                className="loom-cta !mt-8 w-full px-8 py-3 rounded-full text-sm font-bold text-white tracking-wide active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
+                className="loom-cta !mt-8 w-full px-8 py-3 rounded-full text-sm font-semibold tracking-wide text-white active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 {busy ? (
                   <span className="inline-flex items-center justify-center gap-2">
@@ -354,13 +354,13 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
 
             {mode === "signin" && (
               <p className="mt-6 text-center">
-                <button type="button" onClick={forgot} className="text-sm text-white/50 underline underline-offset-4 hover:text-[#ff2bd6]">
+                <button type="button" onClick={forgot} className="text-xs text-white/45 underline underline-offset-4 hover:text-[#ff2bd6]">
                   Forgot password?
                 </button>
               </p>
             )}
 
-            <p className="mt-4 text-center text-sm text-white/50">
+            <p className="mt-4 text-center text-xs text-white/45">
               {mode === "signin" ? "New to Loom? " : "Already have an account? "}
               <button
                 type="button"
