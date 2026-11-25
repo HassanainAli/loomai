@@ -3,6 +3,7 @@ import { X, ArrowUp } from "lucide-react";
 import { Match, MAX_MESSAGE_LENGTH, cleanMessage } from "../types";
 import { Profile } from "./Profile";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 interface Msg {
   id: string;
@@ -175,16 +176,16 @@ export function Focus({
     <div className="flex flex-col h-full">
       <div className="border-b border-border px-4 pt-12 pb-3 flex items-center justify-between bg-background">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-neutral-300 to-neutral-500" />
-          <div>
-            <h2 className="font-black text-base leading-tight">{match.name}</h2>
-            <button
-              onClick={() => setShowProfile(true)}
-              className="text-xs text-muted-foreground underline underline-offset-2"
-            >
-              View Profile
-            </button>
-          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setShowProfile(true)}
+            aria-label={`View ${match.name}'s profile`}
+            title={`View ${match.name}'s profile`}
+            className="w-10 h-10 shrink-0 rounded-xl bg-gradient-to-br from-secondary to-muted-foreground p-0"
+          />
+          <h2 className="font-black text-base leading-tight">{match.name}</h2>
         </div>
         {ended ? (
           <button
