@@ -23,7 +23,7 @@ export const Route = createFileRoute("/reset-password")({
 });
 
 const inputCls =
-  "w-full bg-transparent border-0 border-b border-white/30 text-base text-white placeholder:text-white/25 px-0 py-3 focus:outline-none focus:border-white";
+  "w-full bg-transparent border-0 border-b border-white/30 text-base text-white placeholder:text-white/25 px-0 pt-3.5 pb-1.5 focus:outline-none focus:border-white";
 const cta = "bg-primary text-primary-foreground w-full py-3 rounded-full text-sm font-bold disabled:opacity-40";
 
 type Step = "checking" | "code" | "password" | "done";
@@ -142,7 +142,7 @@ function ResetPassword() {
         {step === "checking" && <h1 className="text-2xl font-bold">One moment…</h1>}
 
         {step === "code" && (
-          <form onSubmit={verify} className="space-y-3 text-left">
+          <form onSubmit={verify} className="space-y-4 text-left">
             <h1 className="text-2xl font-bold text-center">Enter your reset code</h1>
             {email ? (
               <p className="text-sm leading-relaxed text-white/60 text-center pt-1">
@@ -180,7 +180,7 @@ function ResetPassword() {
         )}
 
         {step === "password" && (
-          <form onSubmit={save} className="space-y-3 text-left">
+          <form onSubmit={save} className="space-y-4 text-left">
             <h1 className="text-2xl font-bold text-center">Choose a new password</h1>
             <input type="password" className={inputCls} placeholder="New password" autoComplete="new-password" value={password} onChange={(e) => { setPassword(e.target.value); setError(""); }} />
             <input type="password" className={inputCls} placeholder="Confirm new password" autoComplete="new-password" value={confirm} onChange={(e) => { setConfirm(e.target.value); setError(""); }} />

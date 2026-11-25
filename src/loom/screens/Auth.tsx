@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 type Mode = "signin" | "signup";
 
 const inputCls =
-  "loom-input w-full bg-transparent border-0 border-b border-white/30 text-left text-base text-white placeholder:text-white/25 px-0 py-3 focus:outline-none transition-all";
+  "loom-input w-full bg-transparent border-0 border-b border-white/30 text-left text-base text-white placeholder:text-white/25 px-0 pt-3.5 pb-1.5 focus:outline-none transition-all";
 
 function formatDob(raw: string) {
   const d = raw.replace(/\D/g, "").slice(0, 8);
@@ -270,7 +270,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
                 ev.preventDefault();
                 submit();
               }}
-              className="space-y-2"
+              className="space-y-4"
             >
               {mode === "signup" && (
                 <>
