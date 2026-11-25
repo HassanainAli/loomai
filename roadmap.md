@@ -9,11 +9,6 @@
 - [x] Loop guest Focus chat and End connection back to Daily prompt, resetting demo matches only.
 - [x] Verify main journey, account-screen arrows, and chat-ending loop on mobile and desktop.
 
-# Landing headline and campus photo
-- [x] Use the selected dating headline with equal-size exclusivity text.
-- [x] Show the campus photo horizontally on desktop and vertically behind mobile sign-in.
-- [x] Verify desktop headline, Join now, and mobile sign-in photo.
-
 
 # SCRUM-52: Profile card unification
 - [x] Share clean match and self-preview hierarchy without yellow banners or prototype specs.

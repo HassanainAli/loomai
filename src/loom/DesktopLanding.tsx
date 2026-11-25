@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Wordmark";
 import quad from "@/assets/uw-quad-dusk.jpg.asset.json";
-import { Button } from "@/components/ui/button";
 
 const BEATS = [
   {
@@ -31,27 +30,25 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <section className="lp-hero relative overflow-hidden">
-        <div className="lp-photo-frame absolute inset-0">
-          <img src={quad.url} alt="The UW Quad at dusk with cherry blossoms" className="lp-quad lp-quad-landscape" />
-        </div>
+      <section className="relative min-h-screen overflow-hidden">
+        <img src={quad.url} alt="The UW Quad at dusk with cherry blossoms" className="lp-quad absolute inset-0 h-full w-full object-cover" />
         <div className="lp-vignette absolute inset-0" />
         <header className="relative z-10 mx-auto flex max-w-7xl px-10 py-8">
           <a href="/" aria-label="loom home"><Wordmark className="text-2xl" /></a>
         </header>
-        <div className="relative z-10 mx-auto flex min-h-[calc(100svh-10rem)] max-w-7xl flex-col justify-center px-10 pb-16">
-          <h1 className="text-5xl font-black leading-[1.08] tracking-normal xl:text-6xl 2xl:text-7xl">
-            College dating, no swiping.
+        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl flex-col justify-center px-10 pb-24">
+          <h1 className="text-6xl font-black leading-[1.02] tracking-[-0.03em] xl:text-7xl">
+            Two matches a day.
             <br />
             Exclusively for UW.
           </h1>
           <p className="mt-6 max-w-md text-lg text-foreground/75">
-            Two intentional matches drop every night at 8:00 PM. Verified .edu only.
+            Catch the drop every night at 8:00 PM. Verified .edu only.
           </p>
           <div className="mt-10">
-            <Button variant="ghost" onClick={() => setOpen(true)} className="lp-glass-btn h-auto rounded-full px-8 py-4 text-base font-semibold">
+            <button onClick={() => setOpen(true)} className="lp-glass-btn rounded-full px-8 py-4 text-base font-semibold">
               Join now →
-            </Button>
+            </button>
           </div>
         </div>
       </section>
