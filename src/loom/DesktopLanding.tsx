@@ -1,260 +1,89 @@
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Wordmark";
+import quad from "@/assets/uw-quad-dusk.jpg.asset.json";
 
-
-function useReveal() {
-  const ref = useRef<HTMLDivElement | null>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            (e.target as HTMLElement).classList.add("is-visible");
-            io.unobserve(e.target);
-          }
-        });
-      },
-      { threshold: 0.2 }
-    );
-    el.querySelectorAll(".nn-reveal").forEach((n) => io.observe(n));
-    return () => io.disconnect();
-  }, []);
-  return ref;
-}
-
-function Nav({ onCta }: { onCta: () => void }) {
-  return (
-    <nav className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/70 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-8 py-4">
-        <a href="/" aria-label="loom home"><Wordmark className="text-lg" /></a>
-        <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-white/70 font-mono">
-          <a href="#logic" className="hover:text-white transition-colors">The Logic</a>
-          <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-          <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
-        </div>
-        <button
-          onClick={onCta}
-          className="nn-cta-ghost rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em] font-mono"
-        >
-          Get Access
-        </button>
-      </div>
-    </nav>
-  );
-}
-
-function PhoneFrame({ children, glitching }: { children: ReactNode; glitching: boolean }) {
-  return (
-    <div className={`nn-phone ${glitching ? "nn-glitch" : ""}`}>
-      <div className="nn-phone-notch" />
-      <div className="nn-phone-screen">{children}</div>
-    </div>
-  );
-}
-
-function BentoCard({
-  index,
-  label,
-  title,
-  body,
-  metric,
-}: {
-  index: number;
-  label: string;
-  title: string;
-  body: string;
-  metric: string;
-}) {
-  return (
-    <div
-      className="nn-reveal group relative flex flex-col justify-between rounded-2xl border border-white/10 bg-zinc-950/80 p-8 transition-colors hover:border-[#FF00FF]/60"
-      data-delay={String(index)}
-    >
-      <div>
-        <div className="flex items-center gap-3 text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_12px_#FF00FF]" />
-          {label}
-        </div>
-        <h3 className="mt-6 text-2xl font-bold text-white tracking-tight leading-tight">{title}</h3>
-        <p className="mt-4 text-sm leading-relaxed text-white/60">{body}</p>
-      </div>
-      <div className="mt-10 flex items-baseline justify-between border-t border-white/10 pt-4 text-[10px] uppercase tracking-[0.22em] font-mono">
-        <span className="text-white/40">{`0${index}`} / 03</span>
-        <span className="text-white/80">{metric}</span>
-      </div>
-    </div>
-  );
-}
+const BEATS = [
+  {
+    title: "Just UW.",
+    body: "No tourists, no strangers three cities away. Every person on Loom has a verified UW email and actually walks this campus.",
+  },
+  {
+    title: "No endless scrolling.",
+    body: "You will never swipe through 200 faces before bed. We look at what you actually care about, how you think, and pick two people for you.",
+  },
+  {
+    title: "8:00 PM every night.",
+    body: "Two matches drop at eight. You both have 24 hours to say yes. If you both do, you are talking one-on-one.",
+  },
+];
 
 export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
-  const [glitching, setGlitching] = useState(false);
-  const [scanning, setScanning] = useState(false);
-  const phoneRef = useRef<HTMLDivElement | null>(null);
-  const revealRoot = useReveal();
+  const [open, setOpen] = useState(false);
 
-  const enterPortal = () => {
-    setScanning(true);
-    setGlitching(true);
-    setTimeout(() => setScanning(false), 520);
-    setTimeout(() => setGlitching(false), 520);
-    phoneRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
-    <div ref={revealRoot} className="min-h-screen bg-black text-white">
-      {scanning && <div className="nn-scan" />}
-      <Nav onCta={enterPortal} />
-
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div
-          className="pointer-events-none absolute inset-0 opacity-40"
-          style={{
-            background:
-              "radial-gradient(circle at 75% 30%, rgba(255,0,255,0.25) 0%, transparent 55%), radial-gradient(circle at 10% 90%, rgba(255,0,255,0.12) 0%, transparent 50%)",
-          }}
-        />
-        <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-16 px-8 py-10 min-h-[calc(100vh-5rem)] lg:grid-cols-[1.1fr_1fr]">
-          {/* Left */}
-          <div>
-            <h1 className="text-5xl font-black leading-[1.02] tracking-[-0.03em] text-white md:text-6xl lg:text-7xl">
-              Two matches.
-              <br />
-              <span className="text-white">No endless</span>{" "}
-              <span className="text-[#FF00FF]">scroll.</span>
-            </h1>
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-white/60">
-              A closed-loop network for verified university students. Catch the drop every night at{" "}
-              <span className="text-white font-mono">8pm</span>.
-            </p>
-            <div className="mt-10 flex items-center gap-4">
-              <button
-                onClick={enterPortal}
-                className="nn-cta rounded-full px-7 py-4 text-sm uppercase tracking-[0.2em] font-mono"
-              >
-                Enter the Portal →
-              </button>
-              <a
-                href="#logic"
-                className="text-xs uppercase tracking-[0.22em] text-white/50 hover:text-white transition-colors font-mono"
-              >
-                Read the logic
-              </a>
-            </div>
-
-            {/* signal row */}
-            <div className="mt-16 grid max-w-md grid-cols-3 gap-6 border-t border-white/10 pt-8 text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
-              <div>
-                <div className="text-white text-lg font-bold tracking-tight font-mono">2</div>
-                <div className="mt-1">Matches / drop</div>
-              </div>
-              <div>
-                <div className="text-white text-lg font-bold tracking-tight font-mono">24h</div>
-                <div className="mt-1">Then it resets</div>
-              </div>
-              <div>
-                <div className="text-white text-lg font-bold tracking-tight font-mono">0</div>
-                <div className="mt-1">Swipes</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right — phone */}
-          <div ref={phoneRef} className="flex items-center justify-center">
-            <PhoneFrame glitching={glitching}>{phoneContent}</PhoneFrame>
+    <div className="min-h-screen bg-background text-foreground">
+      <section className="relative min-h-screen overflow-hidden">
+        <img src={quad.url} alt="The UW Quad at dusk with cherry blossoms" className="lp-quad absolute inset-0 h-full w-full object-cover" />
+        <div className="lp-vignette absolute inset-0" />
+        <header className="relative z-10 mx-auto flex max-w-7xl px-10 py-8">
+          <a href="/" aria-label="loom home"><Wordmark className="text-2xl" /></a>
+        </header>
+        <div className="relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl flex-col justify-center px-10 pb-24">
+          <h1 className="text-6xl font-black leading-[1.02] tracking-[-0.03em] xl:text-7xl">
+            Two matches a day.
+            <br />
+            Exclusively for UW.
+          </h1>
+          <p className="mt-6 max-w-md text-lg text-foreground/75">
+            Catch the drop every night at 8:00 PM. Verified .edu only.
+          </p>
+          <div className="mt-10">
+            <button onClick={() => setOpen(true)} className="lp-glass-btn rounded-full px-8 py-4 text-base font-semibold">
+              Join now →
+            </button>
           </div>
         </div>
       </section>
 
-      {/* SYSTEM LOGIC — bento */}
-      <section id="logic" className="relative border-t border-white/10 bg-black">
-        <div className="mx-auto max-w-7xl px-8 py-24">
-          <div className="nn-reveal mb-16 max-w-2xl" data-delay="1">
-            <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">
-              // System Logic
-            </div>
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.02em] text-white md:text-5xl">
-              The architecture, in three blocks.
-            </h2>
+      <section className="relative mx-auto grid max-w-7xl grid-cols-3 gap-6 px-10 py-28">
+        {BEATS.map((b) => (
+          <div key={b.title} className="lp-glass rounded-3xl p-8">
+            <h2 className="text-2xl font-bold tracking-tight">{b.title}</h2>
+            <p className="mt-4 text-sm leading-relaxed text-foreground/65">{b.body}</p>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            <BentoCard
-              index={1}
-              label="The Gate"
-              title="University-only. .edu verified."
-              body="Access is bound to a verified .edu address. No public profiles, no recycled accounts, no cold outsiders. The closed loop is the product."
-              metric=".edu enforced"
-            />
-            <BentoCard
-              index={2}
-              label="The Engine"
-              title="Behavioral Signal Acquisition."
-              body="The engine reads pace and intention as weighted vectors — Mirror (alignment) vs. Counterweight (productive contrast) — to compose two high-signal matches."
-              metric="Mirror ⇄ Counterweight"
-            />
-            <BentoCard
-              index={3}
-              label="The Drop"
-              title="Two matches. One day to choose."
-              body="Every night at 8:00 PM, two matches drop into your queue. Greenlight or pass before the clock resets."
-              metric="T-minus 24:00:00"
-            />
-          </div>
-        </div>
+        ))}
       </section>
 
-      {/* FOOTER — System Integrity */}
-      <footer id="terms" className="border-t border-white/10 bg-black">
-        <div className="mx-auto max-w-7xl px-8 py-16">
-          <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
-            <div id="safety" className="nn-reveal" data-delay="1">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">
-                // System Integrity
-              </div>
-              <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60">
-                No verified student status, no active dating profile.
-                Accounts that fail .edu verification are not allowed into the
-                matching pool, and their session activity is discarded. For
-                verified users, Loom uses compatibility signals to improve
-                match quality while protecting profile data and limiting what
-                is stored.
-              </p>
-            </div>
-            <div className="nn-reveal" data-delay="2">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
-                Network
-              </div>
-              <ul className="mt-4 space-y-2 text-sm text-white/70 font-mono">
-                <li><a href="#logic" className="hover:text-white">The Logic</a></li>
-                <li><Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="hover:text-foreground">Terms of Service</Link></li>
-              </ul>
-            </div>
-            <div className="nn-reveal" data-delay="3">
-              <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
-                Status
-              </div>
-              <ul className="mt-4 space-y-2 text-sm text-white/70 font-mono">
-                <li className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_10px_#FF00FF]" />
-                  Engine online
-                </li>
-                <li className="flex items-center gap-2">
-                  <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
-                  Next drop 8pm
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
-            <span>loom // closed-loop</span>
-            <span>© {new Date().getFullYear()}</span>
-          </div>
+      <footer className="mx-auto flex max-w-7xl items-center justify-between px-10 py-10 text-sm text-foreground/45">
+        <span>© Loom.</span>
+        <a href="mailto:support@tryloom.cc?subject=Request%20my%20campus" className="hover:text-foreground">Not at UW? Request your campus →</a>
+        <div className="flex gap-6">
+          <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
+          <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
         </div>
       </footer>
+
+      {open && (
+        <div
+          className="lp-backdrop fixed inset-0 z-50 flex items-center justify-center"
+          onClick={() => setOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Join Loom"
+        >
+          <div className="lp-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="nn-phone-screen">{phoneContent}</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
