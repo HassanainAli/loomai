@@ -38,12 +38,12 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
         </header>
         <div className="relative z-10 mx-auto flex min-h-[calc(100vh-6rem)] max-w-7xl flex-col justify-center px-10 pb-24">
           <h1 className="text-6xl font-black leading-[1.02] tracking-[-0.03em] xl:text-7xl">
-            Two matches a day.
+            Two matches a day
             <br />
-            Exclusively for UW.
+            Exclusively for UW
           </h1>
-          <p className="mt-6 max-w-md text-lg text-foreground/75">
-            Catch the drop every night at 8:00 PM. Verified .edu only.
+          <p className="mt-6 max-w-lg text-lg text-foreground/75">
+            Catch the drop at 8:00 PM. Verified .edu only.
           </p>
           <div className="mt-10">
             <button onClick={() => setOpen(true)} className="lp-glass-btn rounded-full px-8 py-4 text-base font-semibold">
