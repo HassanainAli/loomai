@@ -5,16 +5,16 @@ import quad from "@/assets/uw-quad-dusk.jpg.asset.json";
 
 const BEATS = [
   {
-    title: "Just UW.",
-    body: "No tourists, no strangers three cities away. Every person on Loom has a verified UW email and actually walks this campus.",
+    title: "Zero strangers",
+    body: "No fake accounts, no travelers passing through SeaTac, and no one three cities away. Every profile belongs to a student who actually walks this campus.",
   },
   {
-    title: "No endless scrolling.",
-    body: "You will never swipe through 200 faces before bed. We look at what you actually care about, how you think, and pick two people for you.",
+    title: "Answers, not photos",
+    body: "You answer one quick prompt a day. We look at how you live, think, and pace your energy, not an endless casino feed of faces to scroll through.",
   },
   {
-    title: "8:00 PM every night.",
-    body: "Two matches drop at eight. You both have 24 hours to say yes. If you both do, you are talking one-on-one.",
+    title: "24 hours to say yes",
+    body: "When a match drops, you have until the next night to greenlight. If you both do, you unlock a private 1-on-1 chat without the usual inbox ghost town.",
   },
 ];
 
@@ -43,7 +43,7 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
             Exclusively for UW
           </h1>
           <p className="mt-6 max-w-lg text-lg text-foreground/75">
-            Catch the drop at 8:00 PM. Verified .edu only.
+            The dating app with no swiping. Drops at 8:00 PM.
           </p>
           <div className="mt-10">
             <button onClick={() => setOpen(true)} className="lp-glass-btn rounded-full px-8 py-4 text-base font-semibold">
