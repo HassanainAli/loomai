@@ -3,8 +3,8 @@ import { ReactNode } from "react";
 
 export function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center p-0 sm:p-6">
-      <div className="w-full max-w-md h-[100dvh] sm:h-[800px] bg-zinc-950/50 backdrop-blur-sm sm:rounded-3xl border border-zinc-800 sm:shadow-2xl overflow-hidden flex flex-col relative">
+    <div className="min-h-[100dvh] bg-black sm:bg-transparent flex items-center justify-center p-0 sm:p-6">
+      <div className="w-full max-w-md h-[100dvh] sm:h-[800px] bg-zinc-950/50 backdrop-blur-sm sm:rounded-3xl border-0 sm:border sm:border-zinc-800 sm:shadow-2xl overflow-hidden flex flex-col relative">
         {children}
       </div>
     </div>

@@ -147,6 +147,11 @@
 }
 
 @layer base {
+  html {
+    background-color: #000000;
+    color-scheme: dark;
+  }
+
   * {
     border-color: var(--color-border);
   }
@@ -157,8 +162,8 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: var(--color-foreground);
-    background: radial-gradient(circle at top right, #2e0222 0%, #000000 100%);
-    background-attachment: fixed;
+    background-color: #000000;
+    background-image: radial-gradient(circle at top right, #2e0222 0%, #000000 100%);
     min-height: 100vh;
   }
 }
