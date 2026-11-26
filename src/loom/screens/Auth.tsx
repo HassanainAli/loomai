@@ -257,7 +257,7 @@ export function Auth({ onNext, onGuest }: { onNext: () => void; onGuest?: () => 
 
           <div key={mode} className="loom-shutter w-full max-w-xs">
             <h2 className="text-2xl font-black mb-1 text-center">
-              {mode === "signup" ? "Join your campus" : "Welcome back"}
+              {mode === "signup" ? "Dating, not swiping" : "Welcome back"}
             </h2>
             <p className="text-sm text-white/50 mb-6 text-center">
               {mode === "signup"
