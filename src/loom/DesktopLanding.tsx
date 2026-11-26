@@ -62,10 +62,13 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
         ))}
       </section>
 
-      <footer className="mx-auto flex max-w-7xl items-center justify-between px-10 py-10 text-sm text-foreground/45">
-        <span>© Loom.</span>
-        <a href="mailto:support@tryloom.cc?subject=Request%20my%20campus" className="hover:text-foreground">Not at UW? Request your campus →</a>
-        <div className="flex gap-6">
+      <footer className="mx-auto grid max-w-7xl grid-cols-3 items-center gap-6 px-10 py-10 text-sm text-foreground/45">
+        <div className="flex items-center gap-1.5">
+          <span>&copy;</span>
+          <Wordmark className="text-sm font-bold" />
+        </div>
+        <a href="mailto:support@tryloom.cc?subject=Request%20my%20campus" className="justify-self-center hover:text-foreground">Not at UW? Request your campus &rarr;</a>
+        <div className="flex justify-end gap-6">
           <Link to="/privacy" className="hover:text-foreground">Privacy Policy</Link>
           <Link to="/terms" className="hover:text-foreground">Terms of Service</Link>
         </div>
