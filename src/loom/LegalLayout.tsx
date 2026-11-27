@@ -9,13 +9,13 @@ export const LEGAL_EFFECTIVE = "Effective October 2026";
 
 function LegalNav() {
   return (
-    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md">
-      <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5 sm:px-8">
+    <header className="sticky top-0 z-40 w-full px-4 pt-4 sm:pt-5">
+      <div className="legal-island mx-auto flex w-full max-w-lg items-center justify-between rounded-full border border-foreground/10 bg-background/85 py-2 pl-5 pr-2 shadow-[0_12px_36px_rgba(0,0,0,0.65)] backdrop-blur-xl">
         <Link to="/" className="text-sm text-foreground/60 transition-colors hover:text-foreground">&larr; Back</Link>
         <Link to="/" aria-label="loom home"><Wordmark className="text-lg" /></Link>
-        <nav className="flex gap-5 text-sm text-foreground/60" aria-label="Legal">
-          <Link to="/privacy" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Privacy</Link>
-          <Link to="/terms" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Terms</Link>
+        <nav className="flex gap-1 text-sm text-foreground/60" aria-label="Legal">
+          <Link to="/privacy" className="rounded-full px-3 py-1.5 transition-colors hover:text-foreground" activeProps={{ className: "bg-foreground/10 text-foreground" }}>Privacy</Link>
+          <Link to="/terms" className="rounded-full px-3 py-1.5 transition-colors hover:text-foreground" activeProps={{ className: "bg-foreground/10 text-foreground" }}>Terms</Link>
         </nav>
       </div>
     </header>
