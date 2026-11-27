@@ -2,62 +2,34 @@ import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
 import { Wordmark } from "./Wordmark";
 
-
-/** Single contact address used across legal pages — replace with a real monitored inbox. */
-export const LEGAL_CONTACT = "legal@getloom.app";
-export const LEGAL_EFFECTIVE = "Effective Oct 2026 · v1.0 campus pilot";
+/** Monitored inboxes on the primary domain. */
+export const LEGAL_CONTACT = "legal@tryloom.cc";
+export const SUPPORT_CONTACT = "support@tryloom.cc";
+export const LEGAL_EFFECTIVE = "Effective October 2026";
 
 function LegalNav() {
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-white/10 bg-black/70 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 sm:px-8">
+    <header className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-5 sm:px-8">
+        <Link to="/" className="text-sm text-foreground/60 transition-colors hover:text-foreground">&larr; Back</Link>
         <Link to="/" aria-label="loom home"><Wordmark className="text-lg" /></Link>
-        <div className="hidden md:flex items-center gap-8 text-xs uppercase tracking-[0.18em] text-white/70 font-mono">
-          <Link to="/" className="hover:text-white transition-colors">Home</Link>
-          <Link to="/privacy" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>Privacy</Link>
-          <Link to="/terms" className="hover:text-white transition-colors" activeProps={{ className: "text-white" }}>Terms</Link>
-        </div>
-        <Link to="/" className="nn-cta-ghost rounded-full px-4 py-2 text-xs uppercase tracking-[0.18em] font-mono">
-          Get Access
-        </Link>
+        <nav className="flex gap-5 text-sm text-foreground/60" aria-label="Legal">
+          <Link to="/privacy" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Privacy</Link>
+          <Link to="/terms" className="hover:text-foreground" activeProps={{ className: "text-foreground" }}>Terms</Link>
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 }
 
 function LegalFooter() {
   return (
-    <footer className="border-t border-white/10 bg-black">
-      <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8">
-        <div className="grid grid-cols-1 gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-[#FF00FF] font-mono">// System Integrity</div>
-            <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60 font-mono">
-              Loom is an independent service for verified university students. It is not affiliated with any academic institution.
-            </p>
-          </div>
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">Network</div>
-            <ul className="mt-4 space-y-2 text-sm text-white/70 font-mono">
-              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
-            </ul>
-          </div>
-          <div>
-            <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">Status</div>
-            <ul className="mt-4 space-y-2 text-sm text-white/70 font-mono">
-              <li className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-white/40" />
-                Draft · pending legal review
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6 text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
-          <span>loom // closed-loop</span>
-          <span>© {new Date().getFullYear()}</span>
-        </div>
+    <footer className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-10 text-center text-sm text-foreground/45 sm:px-8">
+      <p className="max-w-md">Loom is an independent service and is not affiliated with, endorsed by, or operated by the University of Washington or any school.</p>
+      <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <span className="flex items-center gap-1.5"><span>&copy;</span><Wordmark className="text-sm font-bold" /></span>
+        <a href={`mailto:${SUPPORT_CONTACT}`} className="hover:text-foreground">{SUPPORT_CONTACT}</a>
+        <a href={`mailto:${LEGAL_CONTACT}`} className="hover:text-foreground">{LEGAL_CONTACT}</a>
       </div>
     </footer>
   );
@@ -65,20 +37,12 @@ function LegalFooter() {
 
 export function LegalLayout({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="min-h-dvh bg-black text-white">
+    <div className="min-h-dvh overflow-x-hidden bg-background text-foreground">
       <LegalNav />
-      <main className="mx-auto max-w-3xl px-6 pb-24 pt-24 sm:px-8">
-        <div className="text-[10px] uppercase tracking-[0.22em] text-white/40 font-mono">
-          <Link to="/" className="hover:text-white transition-colors">loom</Link>
-          <span className="mx-2">/</span>
-          <span className="text-white/70">{title}</span>
-        </div>
-        <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-white/70 font-mono">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#FF00FF] shadow-[0_0_10px_#FF00FF]" />
-          {LEGAL_EFFECTIVE}
-        </div>
-        <h1 className="mt-6 text-5xl font-black leading-[1.02] tracking-[-0.04em] text-[#FAFAFA] md:text-6xl">{title}</h1>
-        <div className="mt-16 space-y-14">{children}</div>
+      <main className="mx-auto max-w-3xl px-6 pb-20 pt-10 sm:px-8 sm:pt-16">
+        <h1 className="text-4xl font-bold leading-tight tracking-[-0.03em] sm:text-5xl">{title}</h1>
+        <p className="mt-3 text-sm text-foreground/50">{LEGAL_EFFECTIVE}. Independent of the University of Washington.</p>
+        <div className="mt-12 space-y-12 break-words">{children}</div>
       </main>
       <LegalFooter />
     </div>
@@ -87,9 +51,9 @@ export function LegalLayout({ title, children }: { title: string; children: Reac
 
 export function LegalSection({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="border-t border-white/10 pt-10">
-      <h2 className="text-2xl font-bold tracking-tight text-[#FAFAFA] sm:text-3xl">{title}</h2>
-      <div className="mt-6 space-y-6 text-base leading-8 text-zinc-400 [&_.text-foreground]:text-[#FAFAFA]">{children}</div>
+    <section>
+      <h2 className="text-xl font-bold tracking-tight sm:text-2xl">{title}</h2>
+      <div className="mt-4 space-y-4 text-base leading-7 text-foreground/65 [&_.text-foreground]:text-foreground">{children}</div>
     </section>
   );
 }

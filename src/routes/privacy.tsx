@@ -4,9 +4,9 @@ import { LegalLayout, LegalSection, LEGAL_CONTACT } from "@/loom/LegalLayout";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
-      { title: "Privacy Policy — loom." },
+      { title: "Privacy Policy | loom." },
       { name: "description", content: "What Loom collects, how AI embeddings power matching, who sees your data, and how to delete it." },
-      { property: "og:title", content: "Privacy Policy — loom." },
+      { property: "og:title", content: "Privacy Policy | loom." },
       { property: "og:description", content: "How Loom handles student data: no selling, no ads, no public profiles, deletion on request." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -48,7 +48,7 @@ function Privacy() {
       </LegalSection>
 
       <LegalSection title="4. AI & matching">
-        <p>Your written answers are sent through an AI gateway to generate "embeddings" — lists of numbers that capture the meaning of text. We compare these numbers between students on the same campus, together with your preferences (gender, age range, blocks, past feedback), to choose matches. Matching is fully automated.</p>
+        <p>Your written answers are sent through an AI gateway to generate "embeddings": lists of numbers that capture the meaning of text. We compare these numbers between students on the same campus, together with your preferences (gender, age range, blocks, past feedback), to choose matches. Matching is fully automated.</p>
         <p>Embeddings are not biometric data. We do not collect facial geometry, voiceprints, or health data. Match scores are estimates and do not determine anything about you beyond who you are shown.</p>
       </LegalSection>
 

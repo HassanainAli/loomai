@@ -4,9 +4,9 @@ import { LegalLayout, LegalSection, LEGAL_CONTACT } from "@/loom/LegalLayout";
 export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
-      { title: "Terms of Service — loom." },
+      { title: "Terms of Service | loom." },
       { name: "description", content: "Loom's terms: 18+ verified students, university non-affiliation, code of conduct, safety, arbitration and liability." },
-      { property: "og:title", content: "Terms of Service — loom." },
+      { property: "og:title", content: "Terms of Service | loom." },
       { property: "og:description", content: "The rules for using Loom, the independent closed-loop campus matching network." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
