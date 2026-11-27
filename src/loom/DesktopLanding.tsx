@@ -65,10 +65,9 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
 
       <section className="mx-auto max-w-7xl px-10 py-28" aria-label="How loom works">
         <ol className="grid grid-cols-3 gap-14">
-          {BEATS.map((b, i) => (
+          {BEATS.map((b) => (
             <li key={b.title} className="border-t border-foreground/15 pt-8">
-              <span className="font-mono text-xs tracking-widest text-foreground/40">0{i + 1}</span>
-              <h2 className="mt-5 text-3xl font-bold leading-tight tracking-[-0.02em]">{b.title}</h2>
+              <h2 className="text-3xl font-bold leading-tight tracking-[-0.02em]">{b.title}</h2>
               <p className="mt-5 max-w-sm text-base leading-relaxed text-foreground/60">{b.body}</p>
             </li>
           ))}
