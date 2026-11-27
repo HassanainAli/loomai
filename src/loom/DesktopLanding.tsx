@@ -20,13 +20,23 @@ const BEATS = [
 
 export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
+
+  const close = () => {
+    if (closing) return;
+    setClosing(true);
+    window.setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+    }, 240);
+  };
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && close();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, closing]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -53,13 +63,16 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
         </div>
       </section>
 
-      <section className="relative mx-auto grid max-w-7xl grid-cols-3 gap-6 px-10 py-28">
-        {BEATS.map((b) => (
-          <div key={b.title} className="lp-glass rounded-3xl p-8">
-            <h2 className="text-2xl font-bold tracking-tight">{b.title}</h2>
-            <p className="mt-4 text-sm leading-relaxed text-foreground/65">{b.body}</p>
-          </div>
-        ))}
+      <section className="mx-auto max-w-7xl px-10 py-28" aria-label="How loom works">
+        <ol className="grid grid-cols-3 gap-14">
+          {BEATS.map((b, i) => (
+            <li key={b.title} className="border-t border-foreground/15 pt-8">
+              <span className="font-mono text-xs tracking-widest text-foreground/40">0{i + 1}</span>
+              <h2 className="mt-5 text-3xl font-bold leading-tight tracking-[-0.02em]">{b.title}</h2>
+              <p className="mt-5 max-w-sm text-base leading-relaxed text-foreground/60">{b.body}</p>
+            </li>
+          ))}
+        </ol>
       </section>
 
       <footer className="mx-auto grid max-w-7xl grid-cols-3 items-center gap-6 px-10 py-10 text-sm text-foreground/45">
@@ -76,13 +89,13 @@ export function DesktopLanding({ phoneContent }: { phoneContent: ReactNode }) {
 
       {open && (
         <div
-          className="lp-backdrop fixed inset-0 z-50 flex items-center justify-center"
-          onClick={() => setOpen(false)}
+          className={`lp-backdrop ${closing ? "is-closing" : ""} fixed inset-0 z-50 flex items-center justify-center`}
+          onClick={close}
           role="dialog"
           aria-modal="true"
           aria-label="Join Loom"
         >
-          <div className="lp-sheet" onClick={(e) => e.stopPropagation()}>
+          <div className={`lp-sheet ${closing ? "is-closing" : ""}`} onClick={(e) => e.stopPropagation()}>
             <div className="nn-phone-screen">{phoneContent}</div>
           </div>
         </div>
