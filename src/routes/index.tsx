@@ -23,6 +23,7 @@ import { guestDestination, type GuestScreen } from "@/loom/guest/navigation"; //
 import { AccountMenu, type AccountView } from "@/loom/AccountMenu";
 import { landingScreen } from "@/loom/flow";
 import { notifyMutualGreenlight } from "@/lib/match-notify.functions";
+import { decideGuestMatch } from "@/loom/matchDecisions";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -57,6 +58,8 @@ function Index() {
   const [glSent, setGlSent] = useState<null | (() => void)>(null);
   const [guestMatches, setGuestMatches] = useState<Match[]>(MATCHES); // GUEST MODE
   const [isAdmin, setIsAdmin] = useState(false);
+  const [deciding, setDeciding] = useState(false);
+  const decisionLock = useRef(false);
   const lastUid = useRef<string | null | undefined>(undefined);
   const loadForRef = useRef<((uid: string) => Promise<void>) | null>(null);
   useEffect(() => {
@@ -66,6 +69,10 @@ function Index() {
   const setMatchStatus = async (m: Match | null, action: "greenlit" | "passed") => {
     if (!m?.matchId || guest) return null;
     const { data: result, error } = await (sb as any).rpc("respond_to_match", { p_match: m.matchId, p_action: action });
+    if (result === "already_greenlit") {
+      setProfileNotice("Your green light is already locked in for this drop. Go back to your matches.");
+      return null;
+    }
     if (error || result === "invalid") {
       console.error("[matches] action failed", error ?? result);
       setProfileNotice("That didn't go through. Try again.");
@@ -78,6 +85,44 @@ function Index() {
     setProfileNotice(null);
     const { data } = await (sb as any).rpc("get_my_matches");
     return ((data ?? []) as any[]).find((r) => r.match_id === m.matchId) ?? null;
+  };
+  const decideMatch = async (action: "passed" | "greenlit") => {
+    if (!activeMatch || decisionLock.current) return;
+    decisionLock.current = true;
+    setDeciding(true);
+    try {
+      if (guest) {
+        const next = decideGuestMatch(guestMatches, activeMatch.id, action === "greenlit" ? "waiting" : "passed");
+        if (next === guestMatches) return;
+        setGuestMatches(next);
+        if (action === "passed") {
+          setPassStreak((count) => count + 1);
+          setScreen("queue");
+        } else {
+          setActiveMatch(next.find((match) => match.id === activeMatch.id) ?? null);
+          setGlSent(() => () => setScreen("queue"));
+        }
+        return;
+      }
+      const row = await setMatchStatus(activeMatch, action);
+      if (!row || row.expired) return;
+      if (action === "passed") {
+        setPassStreak((count) => count + 1);
+        setScreen("queue");
+      } else if (row.status === "mutual" && row.thread_id) {
+        notifyMutualGreenlight({ data: { matchId: activeMatch.matchId ?? "" } }).catch((error) => console.error("[notify]", error));
+        setActiveMatch({ ...activeMatch, status: "mutual", threadId: row.thread_id });
+        setScreen("focus");
+      } else {
+        setActiveMatch({ ...activeMatch, status: "waiting" });
+        setGlSent(() => () => setScreen("queue"));
+      }
+    } catch {
+      setProfileNotice("Couldn't save your choice. Try again.");
+    } finally {
+      decisionLock.current = false;
+      setDeciding(false);
+    }
   };
   const updateUserSpec = (patch: Partial<UserSpec>) =>
     setUserSpec((prev) => ({ ...prev, ...patch }));
@@ -176,9 +221,18 @@ function Index() {
       setPassStreak(0);
       setProfileNotice(null);
     }
-    if ((next.screen === "profile" || next.screen === "focus") && !activeMatch) {
-      const sample = MATCHES[0];
-      if (sample) setActiveMatch(sample);
+    if (next.screen === "profile") {
+      const sample = guestMatches.find((match) => match.id === activeMatch?.id && (!match.status || ["pending", "waiting", "mutual"].includes(match.status)))
+        ?? guestMatches.find((match) => !match.status || ["pending", "waiting", "mutual"].includes(match.status));
+      if (!sample) { setAccountView(null); setScreen("queue"); return; }
+      setActiveMatch(sample);
+    }
+    if (next.screen === "focus") {
+      const chosen = guestMatches.find((match) => match.status === "waiting" || match.status === "mutual");
+      if (!chosen) { setAccountView(null); setScreen("queue"); return; }
+      const mutual = { ...chosen, status: "mutual" as const };
+      setGuestMatches((matches) => matches.map((match) => match.id === chosen.id ? mutual : match));
+      setActiveMatch(mutual);
     }
     setAccountView(next.accountView);
     setScreen(next.screen);
@@ -275,31 +329,12 @@ function Index() {
           match={activeMatch}
           userSpec={userSpec}
           isGuest={guest /* GUEST MODE */}
-          hideActions={activeMatch.status === "waiting"}
+          hideActions={!!activeMatch.status && activeMatch.status !== "pending"}
+          deciding={deciding}
           notice={profileNotice}
           onBack={() => { setProfileNotice(null); setScreen("queue"); }}
-          onPass={async () => {
-            const row = await setMatchStatus(activeMatch, "passed");
-            if (!row && !guest) return;
-            setPassStreak((p) => p + 1);
-            setScreen("queue");
-          }}
-          onGreenLight={async () => {
-            if (guest) { // GUEST MODE: lock this match to waiting, back to queue
-              const id = activeMatch.id;
-              setGuestMatches((ms) => ms.map((m) => (m.id === id ? { ...m, status: "waiting" } : m)));
-              return setGlSent(() => () => setScreen("queue"));
-            }
-            const row = await setMatchStatus(activeMatch, "greenlit");
-            if (!row || row.expired) return;
-            if (row.status === "mutual" && row.thread_id) {
-              notifyMutualGreenlight({ data: { matchId: activeMatch.matchId ?? "" } }).catch((e) => console.error("[notify]", e));
-              setActiveMatch({ ...activeMatch, status: "mutual", threadId: row.thread_id });
-              setScreen("focus");
-            } else {
-              setGlSent(() => () => setScreen("queue"));
-            }
-          }}
+          onPass={() => decideMatch("passed")}
+          onGreenLight={() => decideMatch("greenlit")}
         />
       )}
       <AccountMenu open={accountView !== null} view={accountView ?? "menu"} onViewChange={setAccountView}

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { MATCHES, Match, MatchRow, rowToMatch, DropState, emptyQueueMessage, CampusStatus, campusProgressLabel } from "../types";
 import { Nebula } from "../Nebula";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { isOpenMatch } from "../matchDecisions";
 
 export function Queue({
   onOpen,
@@ -14,7 +16,10 @@ export function Queue({
   isGuest?: boolean;
   onGoToPrompt?: () => void;
 }) {
-  const [matches, setMatches] = useState<Match[] | null>(isGuest ? (guestMatches ?? MATCHES) : null);
+  const [liveMatches, setMatches] = useState<Match[] | null>(null);
+  const allMatches = isGuest ? (guestMatches ?? MATCHES) : liveMatches;
+  const matches = allMatches?.filter(isOpenMatch) ?? null;
+  const finished = !!allMatches?.length && matches?.length === 0;
   const [error, setError] = useState<string | null>(null);
   const [dropState, setDropState] = useState<DropState | null>(null);
   const [campus, setCampus] = useState<CampusStatus | null>(null);
@@ -29,8 +34,7 @@ export function Queue({
       else
         setMatches(
           ((data ?? []) as MatchRow[])
-            .map(rowToMatch)
-            .filter((m) => m.status === "pending" || m.status === "waiting" || m.status === "mutual"),
+            .map(rowToMatch),
         );
     });
     sb.rpc("get_drop_state").then(({ data }: any) => {
@@ -55,14 +59,14 @@ export function Queue({
         Your Curated Matches.
       </h2>
       <p className="text-sm text-muted-foreground mb-8">
-        Up to two people. Picked by the engine. That's it for today.
+        Up to two introductions. One green light to give.
       </p>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
       {!error && matches === null && (
         <p className="text-sm text-muted-foreground">Loading…</p>
       )}
-      {!error && matches?.length === 0 && campus && !campus.unlocked && (
+      {!error && !finished && matches?.length === 0 && campus && !campus.unlocked && (
         <div className="bg-card border-2 border-border rounded-3xl p-6">
           <h3 className="text-xl font-black tracking-tight mb-2">Almost there.</h3>
           <p className="text-sm text-muted-foreground mb-4">{campusProgressLabel(campus)}</p>
@@ -75,19 +79,20 @@ export function Queue({
           <p className="text-xs text-muted-foreground mt-4">8 PM drops start automatically once your campus unlocks.</p>
         </div>
       )}
-      {!error && matches?.length === 0 && !(campus && !campus.unlocked) && (
+      {!error && matches?.length === 0 && (finished || !(campus && !campus.unlocked)) && (
         <div className="bg-card border-2 border-border rounded-3xl p-6 text-center">
-          <h3 className="text-xl font-black tracking-tight mb-2">No matches yet.</h3>
+          <h3 className="text-xl font-black tracking-tight mb-2">{finished ? "That's tonight's drop" : "No matches yet."}</h3>
           <p className="text-sm text-muted-foreground mb-5">
-            {emptyQueueMessage(dropState)}
+            {finished ? "No open introductions left. Answer the next daily prompt to join the next 8pm drop." : emptyQueueMessage(dropState)}
           </p>
           {onGoToPrompt && !dropState?.answered_today && !dropState?.in_active_chat && (
-            <button
+            <Button
+              variant="secondary"
               onClick={onGoToPrompt}
-              className="w-full bg-foreground text-background font-bold text-sm py-3 rounded-xl hover:opacity-90 transition-opacity"
+              className="h-auto w-full bg-foreground text-background font-bold text-sm py-3 rounded-xl hover:opacity-90 transition-opacity"
             >
               Go to today's prompt
-            </button>
+            </Button>
           )}
         </div>
       )}
@@ -123,12 +128,13 @@ export function Queue({
                 )}
               </div>
             </div>
-            <button
+            <Button
+              variant="secondary"
               onClick={() => onOpen(m)}
-              className="w-full bg-foreground text-background font-bold text-sm py-3 rounded-xl hover:opacity-90 transition-opacity"
+              className="h-auto w-full bg-foreground text-background font-bold text-sm py-3 rounded-xl hover:opacity-90 transition-opacity"
             >
               {m.status === "mutual" ? "Open chat" : "View Full Profile"}
-            </button>
+            </Button>
           </div>
         ))}
       </div>

@@ -44,6 +44,7 @@
 - [ ] Verify signed-in upload/readback, cross-account access isolation and account photo deletion. Blocked: temporary test-account creation fails with an internal gateway error. Do not close SCRUM-51 until checked.
 
 # One green light per drop
-- [ ] Enforce one final choice per drop, close alternatives without pass feedback, and handle concurrent actions.
-- [ ] Sync live and guest queue, safe back navigation, explicit passes and completion states.
-- [ ] Run decision tests and verify guest and authenticated flows.
+- [x] Enforce one final choice per drop with a persistent choice record, serialized actions and no direct match updates; close alternatives without pass feedback.
+- [x] Sync live and guest queue, safe back navigation, explicit passes and completion states.
+- [x] Run 33 decision/navigation regressions and verify guest exploration, greenlight locking, Focus loop and two-pass completion on phone and desktop.
+- [ ] Verify authenticated decisions, concurrent tabs and mutual chat with real accounts. Blocked: temporary test-account creation fails with an internal gateway error.

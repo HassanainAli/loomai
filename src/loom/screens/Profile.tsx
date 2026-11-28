@@ -19,6 +19,7 @@ export function Profile({
   isGuest = false, // GUEST MODE
   preview = false,
   backLabel,
+  deciding = false,
 }: {
   match: Match;
   onPass?: () => void;
@@ -32,6 +33,7 @@ export function Profile({
   /** Self-preview: show the card as matches see it, with no match actions. */
   preview?: boolean;
   backLabel?: string;
+  deciding?: boolean;
 }) {
   const generate = useServerFn(generateAlignmentSpec);
   const photos = useProfilePhotos(isGuest ? undefined : match.photoOwnerId, isGuest ? match.photos : undefined);
@@ -180,19 +182,19 @@ export function Profile({
       )}
       {!hideActions && !preview && (
         <div className={`absolute bottom-0 left-0 right-0 bg-background border-t border-border p-5 flex gap-4 ${isGuest ? "pb-14" : ""}`}>
-          <button
+          <Button variant="ghost" disabled={deciding} aria-label="Pass" title="Pass"
             onClick={onPass}
-            className="flex-1 bg-zinc-900 border-2 border-rose-900 text-rose-500 rounded-2xl py-4 flex items-center justify-center hover:border-rose-700 transition-colors"
+            className="h-auto flex-1 bg-zinc-900 border-2 border-rose-900 text-rose-500 rounded-2xl py-4 flex items-center justify-center hover:border-rose-700 transition-colors"
           >
             <X className="w-7 h-7" strokeWidth={2.5} />
-          </button>
-          <button
+          </Button>
+          <Button variant="ghost" disabled={deciding} aria-busy={deciding}
             onClick={onGreenLight}
-            className="flex-[2] bg-emerald-400 text-black rounded-2xl py-4 flex items-center justify-center font-bold gap-2 active:scale-[0.98] transition-transform"
+            className="h-auto flex-[2] bg-emerald-400 text-black rounded-2xl py-4 flex items-center justify-center font-bold gap-2 active:scale-[0.98] transition-transform"
           >
             <Check className="w-7 h-7" strokeWidth={3} />
-            <span className="text-sm">Green Light</span>
-          </button>
+            <span className="text-sm">{deciding ? "Saving…" : "Green Light"}</span>
+          </Button>
         </div>
       )}
 
