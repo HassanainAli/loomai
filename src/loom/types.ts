@@ -1,3 +1,6 @@
+import eliPortrait from "@/assets/eli-portrait.webp.asset.json";
+import mayaPortrait from "@/assets/maya-portrait.webp.asset.json";
+
 export type Screen =
   | "auth"
   | "onboard1"
@@ -25,6 +28,8 @@ export interface Match {
   conflictAnswer: string;
   sundayAnswer: string;
   pace: string;
+  photoOwnerId?: string;
+  photos?: string[]; // Guest-only local or fictional photo URLs.
   matchId?: string;
   similarity?: number;
   promptText?: string;
@@ -118,6 +123,7 @@ export const GUEST_PROMPT = "What is a completely harmless hill you are fully pr
 export const ELI_SAMPLE: Match = {
     id: "m2",
     name: "Eli",
+    photos: [eliPortrait.url],
     status: "pending",
     age: 22,
     major: "Senior · Computer Science",
@@ -137,6 +143,7 @@ export const ELI_SAMPLE: Match = {
 export const MAYA_SAMPLE: Match = {
   id: "m1",
   name: "Maya",
+  photos: [mayaPortrait.url],
   status: "pending",
   age: 21,
   major: "Junior · Architecture",
@@ -179,6 +186,7 @@ export function ageFromDob(dob: string | null | undefined, now = new Date()): nu
 
 export interface MatchRow {
   match_id: string;
+  matched_user_id?: string;
   display_name: string | null;
   campus_hub: string | null;
   date_of_birth: string | null;
@@ -205,6 +213,7 @@ export function rowToMatch(r: MatchRow): Match {
   return {
     id: r.match_id,
     matchId: r.match_id,
+    ...(r.matched_user_id ? { photoOwnerId: r.matched_user_id } : {}),
     name: r.display_name || "Loom student",
     age: ageFromDob(r.date_of_birth) ?? 0,
     major: academic,

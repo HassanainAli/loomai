@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
-import { ArrowLeft, Camera, Plus, ChevronDown, X } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, Plus, ChevronDown, X } from "lucide-react";
 import { PrimaryButton } from "../Shell";
 import { OnboardingAnswers, UserSpec, CLASS_YEARS, MAX_HOBBIES, MAX_HOBBY_LENGTH, cleanHobby, capFirst } from "../types";
 import { useServerFn } from "@tanstack/react-start";
 import { embedBaseline } from "@/lib/matching.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { PhotoEditor } from "../PhotoEditor";
+import { guestProfile } from "../guest/mockProfile";
 
 export const COMMON_MAJORS = [
   "Accounting", "Aeronautics & Astronautics", "Anthropology", "Applied Mathematics", "Architecture",
@@ -32,6 +34,7 @@ export function SpecSheet({
   onUpdateUserSpec,
   userId,
   onboarding,
+  isGuest = false,
 }: {
   onNext: (displayName?: string) => void;
   onBack: () => void;
@@ -39,6 +42,7 @@ export function SpecSheet({
   onUpdateUserSpec: (patch: Partial<UserSpec>) => void;
   userId: string | null;
   onboarding: OnboardingAnswers;
+  isGuest?: boolean;
 }) {
   const runEmbedBaseline = useServerFn(embedBaseline);
   const [saving, setSaving] = useState(false);
@@ -52,38 +56,15 @@ export function SpecSheet({
   };
   const removeHobby = (h: string) =>
     onUpdateUserSpec({ hobbies: userSpec.hobbies.filter((x) => x !== h) });
-  const [photos, setPhotos] = useState<(string | null)[]>([null, null, null]);
-  const fileInputs = [useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null), useRef<HTMLInputElement>(null)];
-
-  useEffect(() => {
-    return () => {
-      photos.forEach((p) => p && URL.revokeObjectURL(p));
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleFile = (i: number, file: File | null) => {
-    if (!file) return;
-    setPhotos((prev) => {
-      const next = [...prev];
-      if (next[i]) URL.revokeObjectURL(next[i] as string);
-      next[i] = URL.createObjectURL(file);
-      return next;
-    });
-  };
-
-  const clearPhoto = (i: number) => {
-    setPhotos((prev) => {
-      const next = [...prev];
-      if (next[i]) URL.revokeObjectURL(next[i] as string);
-      next[i] = null;
-      return next;
-    });
-    const input = fileInputs[i].current;
-    if (input) input.value = "";
-  };
+  const [photoState, setPhotoState] = useState({ valid: false, busy: false });
 
   async function handleComplete() {
+    if (!photoState.valid || photoState.busy) return;
+    if (isGuest) {
+      Object.assign(guestProfile, { gender: userSpec.gender || guestProfile.gender, seeking: userSpec.seeking || guestProfile.seeking, campus: userSpec.campus || guestProfile.campus, major: capFirst(userSpec.major) || guestProfile.major, classYear: userSpec.classYear || guestProfile.classYear, hobbies: [...userSpec.hobbies], ...(onboarding.intention ? { intention: onboarding.intention } : {}), ...(onboarding.seeds.length ? { seeds: onboarding.seeds.map((s) => s.a) } : {}), balance: onboarding.balance });
+      onNext(guestProfile.name);
+      return;
+    }
     const { data: sessData } = await supabase.auth.getSession();
     const { data: userData, error: userErr } = await supabase.auth.getUser();
     const activeUserId = userData?.user?.id ?? sessData.session?.user?.id ?? null;
@@ -406,49 +387,7 @@ export function SpecSheet({
           )}
         </div>
 
-        <label className="text-[10px] uppercase tracking-wider text-muted-foreground block mb-2">
-          Photos
-        </label>
-        <div className="grid grid-cols-3 gap-2">
-          {[0, 1, 2].map((i) => {
-            const preview = photos[i];
-            return (
-              <div key={i} className="relative aspect-square">
-                <input
-                  ref={fileInputs[i]}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleFile(i, e.target.files?.[0] ?? null)}
-                  className="hidden"
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputs[i].current?.click()}
-                  className={`w-full h-full rounded-2xl flex items-center justify-center transition-all overflow-hidden ${i === 0 ? "bg-[#FF2BD6]/[0.06] border border-[#FF2BD6]/30 text-[#FF2BD6] hover:border-[#FF2BD6]/70" : "bg-zinc-900/80 border border-dashed border-zinc-700 text-zinc-500 hover:border-zinc-500 hover:text-zinc-300"}`}
-                  aria-label={preview ? "Replace photo" : "Upload photo"}
-                >
-                  {preview ? (
-                    <img src={preview} alt={`Upload ${i + 1}`} className="w-full h-full object-cover" />
-                  ) : i === 0 ? (
-                    <span className="flex flex-col items-center gap-1"><Camera className="w-5 h-5" /><span className="text-[9px] font-bold uppercase tracking-wider">Main photo</span></span>
-                  ) : (
-                    <Plus className="w-5 h-5" />
-                  )}
-                </button>
-                {preview && (
-                  <button
-                    type="button"
-                    onClick={() => clearPhoto(i)}
-                    aria-label="Remove photo"
-                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/80 border border-zinc-700 flex items-center justify-center text-white hover:bg-black hover:border-[#FACC15] hover:text-[#FACC15] transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                )}
-              </div>
-            );
-          })}
-        </div>
+        <PhotoEditor userId={userId} isGuest={isGuest} onState={setPhotoState} />
 
       </section>
       </div>
@@ -458,7 +397,7 @@ export function SpecSheet({
         {saveError && (
           <p className="text-xs text-red-400 mb-3">{saveError}</p>
         )}
-        <PrimaryButton onClick={handleComplete} disabled={saving}>
+        <PrimaryButton onClick={handleComplete} disabled={saving || !photoState.valid || photoState.busy}>
           {saving ? "Saving…" : "Complete Profile"}
         </PrimaryButton>
       </div>

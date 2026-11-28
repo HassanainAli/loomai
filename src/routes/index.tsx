@@ -224,6 +224,7 @@ function Index() {
       )}
       {screen === "specSheet" && (
         <SpecSheet
+          isGuest={guest}
           userId={userId}
           onboarding={onboarding}
           onNext={(name?: string) => {
@@ -292,7 +293,7 @@ function Index() {
             const row = await setMatchStatus(activeMatch, "greenlit");
             if (!row || row.expired) return;
             if (row.status === "mutual" && row.thread_id) {
-              notifyMutualGreenlight({ data: { matchId: activeMatch.matchId! } }).catch((e) => console.error("[notify]", e));
+              notifyMutualGreenlight({ data: { matchId: activeMatch.matchId ?? "" } }).catch((e) => console.error("[notify]", e));
               setActiveMatch({ ...activeMatch, status: "mutual", threadId: row.thread_id });
               setScreen("focus");
             } else {

@@ -5,6 +5,7 @@ import { Match, CURRENT_USER_SPEC, UserSpec } from "../types";
 import { generateAlignmentSpec } from "@/lib/alignment.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { useProfilePhotos } from "../useProfilePhotos";
 
 export function Profile({
   match,
@@ -33,6 +34,7 @@ export function Profile({
   backLabel?: string;
 }) {
   const generate = useServerFn(generateAlignmentSpec);
+  const photos = useProfilePhotos(isGuest ? undefined : match.photoOwnerId, isGuest ? match.photos : undefined);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [spec, setSpec] = useState<string | null>(null);
@@ -96,16 +98,12 @@ export function Profile({
             <p className="text-sm text-muted-foreground font-medium mt-0.5">{match.location}</p>
           </div>
 
+          <ProfilePhoto src={photos.urls[0]} name={match.name} index={0} onRetry={photos.retry} />
+          {photos.error && <div role="alert" className="flex items-center gap-2 text-xs text-muted-foreground"><span>{photos.error}</span><Button variant="ghost" size="sm" onClick={photos.retry}>Retry</Button></div>}
+
           <Section label="Looking for">
             <p className="text-sm font-semibold">{match.intention}</p>
           </Section>
-
-          {/* Photo Masonry: tall left, two stacked squares right */}
-          <div className="grid grid-cols-2 grid-rows-2 gap-3 h-[420px]">
-            <div className="row-span-2 rounded-lg bg-gradient-to-br from-muted to-secondary" />
-            <div className="rounded-lg bg-gradient-to-br from-border to-muted" />
-            <div className="rounded-lg bg-gradient-to-br from-secondary to-background" />
-          </div>
 
           {match.hobbies.length > 0 && (
             <Section label="Interests">
@@ -134,6 +132,8 @@ export function Profile({
             )}
           </Section>}
 
+          <ProfilePhoto src={photos.urls[1]} name={match.name} index={1} onRetry={photos.retry} />
+
           {match.conflictAnswer && (
             <Section label="Conflict style">
               <p className="text-sm leading-relaxed">{match.conflictAnswer}</p>
@@ -145,6 +145,8 @@ export function Profile({
               <p className="text-sm leading-relaxed">{match.sundayAnswer}</p>
             </Section>
           )}
+
+          <ProfilePhoto src={photos.urls[2]} name={match.name} index={2} onRetry={photos.retry} />
 
           {match.pace && (
             <Section label="Hill to die on">
@@ -297,4 +299,11 @@ function Section({
       {children}
     </div>
   );
+}
+function ProfilePhoto({ src, name, index, onRetry }: { src: string | undefined; name: string; index: number; onRetry: () => void }) {
+  const [failed, setFailed] = useState(false);
+  if (!src) return null;
+  return <figure className="relative mx-auto w-full max-w-[280px] aspect-[3/4] overflow-hidden rounded-lg border border-accent/20 bg-secondary">
+    {failed ? <Button variant="ghost" onClick={() => { setFailed(false); onRetry(); }} className="absolute inset-0 w-full h-full">Reload photo</Button> : <img key={src} src={src} alt={`${name}, photo ${index + 1}`} loading={index === 0 ? "eager" : "lazy"} referrerPolicy="no-referrer" onError={() => setFailed(true)} className="w-full h-full object-cover" />}
+  </figure>;
 }

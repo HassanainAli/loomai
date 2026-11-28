@@ -74,6 +74,7 @@ export function AccountMenu({ open, view, onViewChange: setView, onClose, userId
       const intention = m?.intention === "committed" ? "Committed, long-term relationship" : m?.intention === "intentional" ? "Intentional dating, open to seeing where it goes" : "";
       setMe({
         id: "me",
+        photoOwnerId: userId,
         name: p?.display_name || userSpec.name || "You",
         age: ageFromDob(u.user?.user_metadata?.date_of_birth as string | undefined) ?? 0,
         major: [p?.class_year, capFirst(p?.major ?? "")].filter(Boolean).join(" · "),

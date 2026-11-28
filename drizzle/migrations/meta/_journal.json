@@ -120,6 +120,13 @@
       "when": 1794997498503,
       "tag": "0016_profile_major_class_hobbies",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1795839928555,
+      "tag": "0017_private_profile_photos",
+      "breakpoints": true
     }
   ]
 }

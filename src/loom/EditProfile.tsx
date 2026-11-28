@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { embedBaseline } from "@/lib/matching.functions";
 import { guestProfile } from "./guest/mockProfile"; // GUEST MODE
+import { PhotoEditor } from "./PhotoEditor";
+import { Button } from "@/components/ui/button";
 import { SEED_PROMPTS } from "./screens/Onboard2";
 import { COMMON_MAJORS, HOBBY_SUGGESTIONS } from "./screens/SpecSheet";
 import { CLASS_YEARS, MAX_HOBBIES, MAX_HOBBY_LENGTH, ageFromDob, capFirst, cleanHobby, type UserSpec } from "./types";
@@ -64,6 +66,7 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose, isGue
   const [email, setEmail] = useState("");
   const [age, setAge] = useState<number | null>(null);
   const [hobbyDraft, setHobbyDraft] = useState("");
+  const [photoState, setPhotoState] = useState({ valid: false, busy: false });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -108,6 +111,7 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose, isGue
   };
 
   async function save() {
+    if (!photoState.valid || photoState.busy) return;
     if (!s.gender || !s.seeking || !s.campus) { setError("Gender, who you're interested in, and campus are required."); return; }
     if (seeds.some((a) => a.trim().length <= 10)) { setError("Each prompt answer needs a little more detail."); return; }
     setBusy(true); setError(null);
@@ -118,7 +122,7 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose, isGue
       const { error: pErr } = await (supabase as any).from("profiles").update({
         gender: s.gender, target_preference: s.seeking, campus_hub: s.campus,
         major: major || null, class_year: s.classYear || null, hobbies: s.hobbies,
-        seed_prompts: SEED_PROMPTS.map((q, i) => ({ q, a: seeds[i].trim() })),
+        seed_prompts: SEED_PROMPTS.map((q, i) => ({ q, a: (seeds[i] ?? "").trim() })),
       }).eq("id", userId);
       const { error: mErr } = pErr ? { error: null } : await (supabase as any).from("matching_preferences")
         .update({ ...(intention ? { intention } : {}), ...(balance ? { balance } : {}) }).eq("user_id", userId);
@@ -203,6 +207,7 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose, isGue
                 ) : <p className="text-xs text-muted-foreground">Up to 5.</p>}
               </div>
             </div>
+            <div className="mt-5"><PhotoEditor userId={userId} isGuest={isGuest} onState={setPhotoState} /></div>
           </section>
 
           <section className={card}>
@@ -253,9 +258,9 @@ export function EditProfile({ userId, userSpec, onUpdateUserSpec, onClose, isGue
 
       <div className={`shrink-0 px-5 pt-3 ${isGuest ? "pb-16" : "pb-6"} border-t border-zinc-900 bg-background`}>
         {error && <p className="text-sm text-destructive mb-2">{error}</p>}
-        <button disabled={busy || loading} onClick={save} className="w-full rounded-full bg-primary text-primary-foreground py-3 font-bold disabled:opacity-50">
+        <Button disabled={busy || loading || !photoState.valid || photoState.busy} onClick={save} className="w-full rounded-full py-3 h-auto font-bold">
           {busy ? "Saving…" : "Save changes"}
-        </button>
+        </Button>
       </div>
     </div>
   );

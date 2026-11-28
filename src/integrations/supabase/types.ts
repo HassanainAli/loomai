@@ -353,6 +353,7 @@ export type Database = {
           id: string
           is_test_account: boolean
           major: string | null
+          photo_paths: string[]
           seed_prompts: Json | null
           target_preference: string | null
           updated_at: string
@@ -369,6 +370,7 @@ export type Database = {
           id: string
           is_test_account?: boolean
           major?: string | null
+          photo_paths?: string[]
           seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
@@ -385,6 +387,7 @@ export type Database = {
           id?: string
           is_test_account?: boolean
           major?: string | null
+          photo_paths?: string[]
           seed_prompts?: Json | null
           target_preference?: string | null
           updated_at?: string
@@ -497,6 +500,8 @@ export type Database = {
         Returns: number
       }
       campus_participant_count: { Args: { p_campus: string }; Returns: number }
+      can_read_profile_photo: { Args: { p_name: string }; Returns: boolean }
+      can_view_profile_photos: { Args: { p_owner: string }; Returns: boolean }
       current_drop_date: { Args: never; Returns: string }
       end_connection: {
         Args: { p_note: string; p_reason: string; p_thread: string }
@@ -571,6 +576,7 @@ export type Database = {
           unread_count: number
         }[]
       }
+      get_profile_photo_paths: { Args: { p_owner: string }; Returns: string[] }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -590,6 +596,10 @@ export type Database = {
         Returns: string
       }
       run_drop: { Args: { p_drop: string; p_trigger: string }; Returns: number }
+      set_my_profile_photos: {
+        Args: { p_expected: string[]; p_paths: string[] }
+        Returns: string[]
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
