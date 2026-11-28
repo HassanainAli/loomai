@@ -92,10 +92,8 @@ export function SpecSheet({
 
       const { error: pErr } = await (supabase as any)
         .from("profiles")
-        .upsert(
-          [
+        .update(
             {
-              id: activeUserId,
               ...(metaName ? { display_name: metaName } : {}),
               gender: userSpec.gender,
               campus_hub: userSpec.campus,
@@ -105,9 +103,7 @@ export function SpecSheet({
               hobbies: userSpec.hobbies,
               ...(onboarding.seeds.length ? { seed_prompts: onboarding.seeds } : {}),
             },
-          ],
-          { onConflict: "id" },
-        );
+        ).eq("id", activeUserId).select("id").single();
       if (pErr) throw pErr;
 
       const { data: existingPreference, error: prefLookupErr } = await (supabase as any)
@@ -393,7 +389,7 @@ export function SpecSheet({
       </div>
 
       <div className="flex-1 min-h-4" />
-      <div className="p-8 pt-2">
+      <div className={`p-8 pt-2 ${isGuest ? "pb-16" : ""}`}>
         {saveError && (
           <p className="text-xs text-red-400 mb-3">{saveError}</p>
         )}

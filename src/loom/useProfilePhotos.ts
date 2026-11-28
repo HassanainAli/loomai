@@ -6,7 +6,10 @@ export async function signProfilePhotos(paths: string[]): Promise<string[]> {
   if (!paths.length) return [];
   const { data, error } = await supabase.storage.from(PHOTO_BUCKET).createSignedUrls(paths, 300);
   if (error || !data || data.some((photo) => !photo.signedUrl || photo.error)) throw new Error("Couldn't load photos. Try again.");
-  return data.map((photo) => photo.signedUrl);
+  return data.map((photo) => {
+    if (!photo.signedUrl) throw new Error("Couldn't load photos. Try again.");
+    return photo.signedUrl;
+  });
 }
 
 /** Storage policies independently enforce membership for every signed URL. */

@@ -1,0 +1,1 @@
+ALTER POLICY profile_photos_delete ON storage.objects USING (bucket_id = 'profile-photos' AND (storage.foldername(name))[1] = (SELECT auth.uid())::text AND NOT EXISTS (SELECT 1 FROM public.profiles p WHERE p.id = (SELECT auth.uid()) AND name = ANY(p.photo_paths)));

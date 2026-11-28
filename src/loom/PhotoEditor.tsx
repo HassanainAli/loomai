@@ -41,6 +41,15 @@ export function PhotoEditor({ userId, isGuest, onState }: {
         if (e) throw e;
         const saved = data ?? [];
         const signed = await signProfilePhotos(saved);
+        // Retry stale orphan cleanup on reopen. The grace period avoids deleting
+        // a new upload another tab is still committing; RLS protects saved files.
+        for (let offset = 0; offset < 5000; offset += 100) {
+          const { data: files, error: listError } = await supabase.storage.from(PHOTO_BUCKET).list(userId, { limit: 100, offset, sortBy: { column: "name", order: "asc" } });
+          if (listError || !files) break;
+          const stale = files.filter((f) => !saved.includes(`${userId}/${f.name}`) && f.created_at && Date.parse(f.created_at) < Date.now() - 3600000).map((f) => `${userId}/${f.name}`);
+          if (stale.length) await supabase.storage.from(PHOTO_BUCKET).remove(stale);
+          if (files.length < 100) break;
+        }
         if (!off) { setPaths(saved); setUrls(signed); setReady(true); }
       } catch { if (!off) setError("Couldn't load photos. Try again."); }
     };
@@ -89,7 +98,7 @@ export function PhotoEditor({ userId, isGuest, onState }: {
         const obsolete = paths.filter((p) => !next.includes(p));
         if (obsolete.length) {
           const { error: cleanup } = await supabase.storage.from(PHOTO_BUCKET).remove(obsolete);
-          if (cleanup && alive.current) setError("Photo saved, but the old file couldn't be removed. Reopen photos to retry cleanup.");
+          if (cleanup && alive.current) setError("Photo saved. Old-file cleanup will retry when you reopen photos later.");
         }
       }
     } catch (e) {
@@ -114,7 +123,7 @@ export function PhotoEditor({ userId, isGuest, onState }: {
       {[0, 1, 2].map((i) => <div key={i} className="relative aspect-square">
         <input ref={(el) => { inputs.current[i] = el; }} type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif" className="hidden" aria-label={`Choose photo ${i + 1}`} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void change(i, f); }} />
         <Button variant="outline" disabled={busy || !ready || i > paths.length} onClick={() => inputs.current[i]?.click()} aria-label={urls[i] ? `Replace photo ${i + 1}` : `Upload photo ${i + 1}`} className={`w-full h-full p-0 rounded-lg overflow-hidden ${i === 0 ? "border-accent/40 bg-accent/5 text-accent" : "border-dashed bg-secondary text-muted-foreground"}`}>
-          {urls[i] ? <img src={urls[i]} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" onError={() => setRevision((r) => r + 1)} /> : i === 0 ? <span className="flex flex-col items-center gap-1"><Camera className="w-5 h-5" /><span className="text-[9px] font-bold">Main photo</span></span> : <Plus className="w-5 h-5" />}
+        {urls[i] ? <img src={urls[i]} alt={`Photo ${i + 1}`} className="w-full h-full object-cover" onError={() => setError("Couldn't load the photo. Tap retry to refresh it.")} /> : i === 0 ? <span className="flex flex-col items-center gap-1"><Camera className="w-5 h-5" /><span className="text-[9px] font-bold">Main photo</span></span> : <Plus className="w-5 h-5" />}
         </Button>
         {urls[i] && <Button variant="secondary" size="icon" disabled={busy || paths.length === 1} onClick={() => void change(i)} aria-label={`Remove photo ${i + 1}`} title={paths.length === 1 ? "Replace your main photo" : "Remove photo"} className="absolute top-1 right-1 w-6 h-6 rounded-full"><X className="w-3 h-3" /></Button>}
       </div>)}

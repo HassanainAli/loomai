@@ -37,7 +37,8 @@
 - [x] Audit chat profile entry and guest jumps during greenlight confirmation; preserve guest context and clear transient overlays when navigating.
 
 # SCRUM-51: Private profile photos
-- [ ] Create private owner-upload, authorized-match-read photo storage and validated ordered paths.
-- [ ] Add compressed uploads, replacement/removal and the one-photo Spec Sheet gate, including profile editing.
-- [ ] Interleave photos in shared live/preview/guest profiles and add fictional guest portraits.
-- [ ] Verify signed-in upload/readback, access isolation, failure cases, and mobile/desktop layout.
+- [x] Create private owner-upload, authorized-match-read photo storage and validated ordered paths.
+- [x] Add compressed uploads, replacement/removal and the one-photo Spec Sheet gate, including profile editing.
+- [x] Interleave photos in shared live/preview/guest profiles and add fictional guest portraits.
+- [x] Verify guest upload/readback and mobile/desktop layout; 59 regression tests pass.
+- [ ] Verify signed-in upload/readback, cross-account access isolation and account photo deletion. Blocked: temporary test-account creation fails with an internal gateway error. Do not close SCRUM-51 until checked.
