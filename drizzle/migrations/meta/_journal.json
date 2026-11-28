@@ -134,6 +134,13 @@
       "when": 1795840366599,
       "tag": "0018_protect_saved_photo_objects",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795842412473,
+      "tag": "0019_one_greenlight_per_drop",
+      "breakpoints": true
     }
   ]
 }

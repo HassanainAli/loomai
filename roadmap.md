@@ -42,3 +42,8 @@
 - [x] Interleave photos in shared live/preview/guest profiles and add fictional guest portraits.
 - [x] Verify guest upload/readback and mobile/desktop layout; 59 regression tests pass.
 - [ ] Verify signed-in upload/readback, cross-account access isolation and account photo deletion. Blocked: temporary test-account creation fails with an internal gateway error. Do not close SCRUM-51 until checked.
+
+# One green light per drop
+- [ ] Enforce one final choice per drop, close alternatives without pass feedback, and handle concurrent actions.
+- [ ] Sync live and guest queue, safe back navigation, explicit passes and completion states.
+- [ ] Run decision tests and verify guest and authenticated flows.

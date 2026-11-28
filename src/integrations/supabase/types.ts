@@ -65,6 +65,35 @@ export type Database = {
         }
         Relationships: []
       }
+      drop_greenlight_choices: {
+        Row: {
+          created_at: string
+          drop_date: string
+          match_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          drop_date: string
+          match_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          drop_date?: string
+          match_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drop_greenlight_choices_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       loom_plus_members: {
         Row: {
           granted_at: string
